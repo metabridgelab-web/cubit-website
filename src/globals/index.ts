@@ -1,7 +1,7 @@
 import type { Field, GlobalConfig } from 'payload'
 
 import { anyone, canUpdateContent, hasRole, isAdmin } from '../access'
-import { LOCALE_OPTIONS } from '../constants/locales'
+import { DEFAULT_LOCALE, LOCALE_OPTIONS } from '../constants/locales'
 import { linkFields } from '../fields'
 
 const contentAccess = { read: anyone, update: canUpdateContent }
@@ -29,9 +29,9 @@ export const SiteSettings: GlobalConfig = {
               hasMany: true,
               options: LOCALE_OPTIONS,
               defaultValue: LOCALE_OPTIONS.map((option) => option.value),
-              admin: { description: '체크를 끈 언어는 사이트의 언어 선택 목록에서 숨겨집니다. 한국어는 끌 수 없습니다.' },
+              admin: { description: '체크를 끈 언어는 사이트에서 숨겨지고 자동 번역도 하지 않습니다. 영어는 끌 수 없습니다.' },
               validate: (value: string[] | null | undefined) =>
-                (value ?? []).includes('ko') || '한국어는 기본 언어라서 끌 수 없습니다.',
+                (value ?? []).includes(DEFAULT_LOCALE) || '영어는 기본 언어라서 끌 수 없습니다.',
             },
           ],
         },
@@ -80,7 +80,7 @@ export const SiteSettings: GlobalConfig = {
               label: 'AI 생성 콘텐츠 표시 문구',
               type: 'text',
               localized: true,
-              defaultValue: '이 사이트의 아티스트와 콘텐츠는 AI 기술로 제작되었습니다.',
+              defaultValue: 'Artists and content on this site are created with AI technology.',
             },
             { name: 'copyright', label: '저작권 표기', type: 'text', defaultValue: '© CUBIT ENTERTAINMENT. All rights reserved.' },
             {
@@ -138,7 +138,7 @@ export const Navigation: GlobalConfig = {
       label: '메뉴 하단 버튼 글자',
       type: 'text',
       localized: true,
-      defaultValue: '캠페인 견적 받기',
+      defaultValue: 'Get a campaign quote',
     },
   ],
 }
@@ -218,7 +218,7 @@ export const BusinessSettings: GlobalConfig = {
           label: '소개',
           fields: [
             { name: 'eyebrow', label: '작은 제목', type: 'text', localized: true, defaultValue: 'FOR BRANDS' },
-            { name: 'headline', label: '큰 제목', type: 'text', localized: true, defaultValue: '브랜드와 함께 일하는 세 가지 방법' },
+            { name: 'headline', label: '큰 제목', type: 'text', localized: true, defaultValue: 'Three ways to work with our talent' },
             {
               name: 'services',
               label: '서비스 카드',
@@ -226,18 +226,18 @@ export const BusinessSettings: GlobalConfig = {
               minRows: 1,
               defaultValue: [
                 {
-                  title: '탤런트 사용 계약',
-                  description: '소속 AI 탤런트를 광고·영상·SNS에 바로 기용합니다. 용도·기간·지역별 사용 허락 범위가 정해져 있어 계약이 빠릅니다.',
+                  title: 'Talent Licensing',
+                  description: 'Feature our AI talent in ads, video, and social right away. Usage rights are set by purpose, period, and region, so contracts move fast.',
                   url: '/business/licensing',
                 },
                 {
-                  title: '브랜드 전속 AI 탤런트 제작',
-                  description: '브랜드만을 위한 AI 탤런트를 세계관, 외모, 목소리부터 함께 만듭니다. 단기 캠페인부터 장기 IP까지.',
+                  title: 'Brand-Exclusive AI Talent',
+                  description: 'We create an AI talent made only for your brand, from story and look to voice. From short campaigns to long-term IP.',
                   url: '/business/custom',
                 },
                 {
-                  title: '캠페인 빌더',
-                  description: '탤런트와 조건을 직접 고르고 바로 견적을 요청합니다. 섭외 메일을 주고받을 필요가 없습니다.',
+                  title: 'Campaign Builder',
+                  description: 'Pick talent and terms yourself and request a quote instantly. No back-and-forth booking emails.',
                   url: '/business/campaign',
                 },
               ],
@@ -252,13 +252,13 @@ export const BusinessSettings: GlobalConfig = {
         {
           label: '캠페인 빌더',
           fields: [
-            { name: 'builderCtaLabel', label: '견적 버튼 글자', type: 'text', localized: true, defaultValue: '캠페인 견적 시작' },
+            { name: 'builderCtaLabel', label: '견적 버튼 글자', type: 'text', localized: true, defaultValue: 'Start campaign quote' },
             {
               name: 'confirmationMessage',
               label: '견적 요청 완료 안내',
               type: 'textarea',
               localized: true,
-              defaultValue: '견적 요청이 접수되었습니다. 담당자가 확인 후 이메일로 연락드립니다.',
+              defaultValue: 'Your quote request has been received. Our team will review it and contact you by email.',
             },
             {
               name: 'notifyEmails',

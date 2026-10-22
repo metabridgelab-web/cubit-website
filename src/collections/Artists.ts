@@ -10,7 +10,7 @@ export const Artists: CollectionConfig = {
     useAsTitle: 'name',
     defaultColumns: ['name', 'categories', 'featured', '_status', 'updatedAt'],
     group: '아티스트 관리',
-    description: '사진 · 정보 · 자기소개 · 뮤직비디오를 등록합니다. 한국어로 쓰고 저장하면 다른 언어로 번역됩니다.',
+    description: '사진 · 정보 · 자기소개 · 뮤직비디오를 등록합니다. 영어로 쓰고 저장하면 다른 11개 언어로 자동 번역됩니다.',
   },
   access: {
     read: publishedOrLoggedIn,

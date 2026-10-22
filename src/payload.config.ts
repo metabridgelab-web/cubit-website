@@ -39,7 +39,7 @@ export default buildConfig({
     supportedLanguages: { ko, en },
     fallbackLanguage: 'ko',
   },
-  // 사이트 콘텐츠 언어: 12개. 번역이 비어 있으면 한국어 원문을 보여준다
+  // 사이트 콘텐츠 언어: 12개. 영어가 원문이고, 번역이 비어 있으면 영어 원문을 보여준다
   localization: {
     locales: LOCALES.map(({ code, label, rtl }) => ({ code, label, rtl })),
     defaultLocale: DEFAULT_LOCALE,

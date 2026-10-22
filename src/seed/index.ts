@@ -1,105 +1,178 @@
 // 기본 데이터 넣기: 아티스트 카테고리 · 게시판과 분류 · 메뉴.
-// 여러 번 실행해도 이미 있는 항목은 건너뛴다.
+// 영어 원문과 한국어 번역을 함께 넣는다. 여러 번 실행해도 이미 있는 항목은 갱신만 한다.
 // 실행: npm run seed
-import { getPayload } from 'payload'
+import { getPayload, type Where } from 'payload'
 
 import config from '../payload.config'
 
 const payload = await getPayload({ config })
 
-const findOrCreate = async <T extends 'artist-categories' | 'boards' | 'post-categories'>(
-  collection: T,
-  where: Record<string, { equals: unknown }>,
-  data: Record<string, unknown>,
+type SeedCollection = 'artist-categories' | 'boards' | 'post-categories'
+type Localized = { en: string; ko: string }
+
+// 영어 또는 한국어 이름으로 찾고, 없으면 영어로 만든 뒤 한국어 번역을 채운다
+const upsert = async (
+  collection: SeedCollection,
+  findBy: (locale: 'en' | 'ko') => Where,
+  en: Record<string, unknown>,
+  ko: Record<string, unknown>,
 ) => {
-  const existing = await payload.find({ collection, where, limit: 1, depth: 0 })
-  if (existing.docs[0]) return existing.docs[0]
-  payload.logger.info(`추가: ${collection} ${JSON.stringify(where)}`)
-  return payload.create({ collection, data: data as never, depth: 0 })
+  let existing = (await payload.find({ collection, where: findBy('en'), locale: 'en', limit: 1, depth: 0 })).docs[0]
+  existing ??= (await payload.find({ collection, where: findBy('ko'), locale: 'ko', limit: 1, depth: 0 })).docs[0]
+
+  const doc = existing
+    ? await payload.update({ collection, id: existing.id, locale: 'en', data: en as never, depth: 0, context: { seeding: true } })
+    : await payload.create({ collection, locale: 'en', data: en as never, depth: 0, context: { seeding: true } })
+  await payload.update({ collection, id: doc.id, locale: 'ko', data: ko as never, depth: 0, context: { seeding: true } })
+  payload.logger.info(`${existing ? '갱신' : '추가'}: ${collection} ${JSON.stringify(en.name)}`)
+  return doc
 }
 
-const categories = [
-  { slug: 'singers', name: '가수', sortOrder: 1 },
-  { slug: 'models', name: '모델', sortOrder: 2 },
-  { slug: 'actors', name: '배우', sortOrder: 3 },
+const categories: (Localized & { slug: string; sortOrder: number; disclaimer?: Localized })[] = [
+  { slug: 'singers', en: 'Singers', ko: '가수', sortOrder: 1 },
+  { slug: 'models', en: 'Models', ko: '모델', sortOrder: 2 },
+  { slug: 'actors', en: 'Actors', ko: '배우', sortOrder: 3 },
   {
     slug: 'doctors',
-    name: '전문의',
+    en: 'Doctors',
+    ko: '전문의',
     sortOrder: 4,
-    disclaimer: 'AI 캐릭터이며 실제 의사가 아닙니다. 진단·처방을 하지 않습니다.',
+    disclaimer: {
+      en: 'This is an AI character, not a real doctor. It does not diagnose or prescribe.',
+      ko: 'AI 캐릭터이며 실제 의사가 아닙니다. 진단·처방을 하지 않습니다.',
+    },
   },
 ]
 
-for (const category of categories) {
-  await findOrCreate('artist-categories', { slug: { equals: category.slug } }, { ...category, generateSlug: false })
+for (const { slug, en, ko, sortOrder, disclaimer } of categories) {
+  await upsert(
+    'artist-categories',
+    () => ({ slug: { equals: slug } }),
+    { name: en, slug, generateSlug: false, sortOrder, disclaimer: disclaimer?.en },
+    { name: ko, disclaimer: disclaimer?.ko },
+  )
 }
 
-const boards = [
-  { slug: 'news', name: '뉴스', sortOrder: 1, categories: ['음악', '캠페인', '활동', '보도자료'] },
-  { slug: 'notice', name: '공지사항', sortOrder: 2, categories: ['공식 입장', '법적 대응', '사칭 주의', '이벤트'] },
+const boards: (Localized & { slug: string; sortOrder: number; categories: Localized[] })[] = [
+  {
+    slug: 'news',
+    en: 'News',
+    ko: '뉴스',
+    sortOrder: 1,
+    categories: [
+      { en: 'Music', ko: '음악' },
+      { en: 'Campaign', ko: '캠페인' },
+      { en: 'Activity', ko: '활동' },
+      { en: 'Press', ko: '보도자료' },
+    ],
+  },
+  {
+    slug: 'notice',
+    en: 'Notice',
+    ko: '공지사항',
+    sortOrder: 2,
+    categories: [
+      { en: 'Official Statement', ko: '공식 입장' },
+      { en: 'Legal Action', ko: '법적 대응' },
+      { en: 'Impersonation Alert', ko: '사칭 주의' },
+      { en: 'Event', ko: '이벤트' },
+    ],
+  },
 ]
 
-for (const { categories: categoryNames, ...board } of boards) {
-  const created = await findOrCreate('boards', { slug: { equals: board.slug } }, { ...board, generateSlug: false })
-  for (const [index, name] of categoryNames.entries()) {
-    await findOrCreate(
+for (const board of boards) {
+  const created = await upsert(
+    'boards',
+    () => ({ slug: { equals: board.slug } }),
+    { name: board.en, slug: board.slug, generateSlug: false, sortOrder: board.sortOrder },
+    { name: board.ko },
+  )
+  for (const [index, category] of board.categories.entries()) {
+    await upsert(
       'post-categories',
-      { name: { equals: name }, board: { equals: created.id } },
-      { name, board: created.id, sortOrder: index + 1 },
+      (locale): Where => ({ board: { equals: created.id }, name: { equals: category[locale] } }),
+      { name: category.en, board: created.id, sortOrder: index + 1 },
+      { name: category.ko },
     )
   }
 }
 
-const navigation = await payload.findGlobal({ slug: 'navigation', depth: 0 })
-if (!navigation.sections?.length) {
-  payload.logger.info('추가: 메뉴 기본 구성')
-  await payload.updateGlobal({
-    slug: 'navigation',
-    data: {
-      sections: [
-        {
-          label: 'ARTISTS',
-          url: '/artists',
-          items: [
-            { label: '가수', url: '/artists/singers' },
-            { label: '모델', url: '/artists/models' },
-            { label: '배우', url: '/artists/actors' },
-            { label: '전문의', url: '/artists/doctors' },
-          ],
-        },
-        {
-          label: 'COMPANY',
-          url: '/about',
-          items: [
-            { label: '회사 소개', url: '/about' },
-            { label: '연혁', url: '/about/history' },
-            { label: '오시는 길', url: '/about/location' },
-          ],
-        },
-        {
-          label: 'BUSINESS',
-          url: '/business',
-          items: [
-            { label: '개요', url: '/business' },
-            { label: '탤런트 사용 계약', url: '/business/licensing' },
-            { label: '브랜드 전속 AI 탤런트 제작', url: '/business/custom' },
-            { label: '캠페인 빌더', url: '/business/campaign' },
-            { label: '작업 사례', url: '/business/works' },
-          ],
-        },
-        {
-          label: 'NEWS',
-          url: '/news',
-          items: [
-            { label: '뉴스', url: '/news' },
-            { label: '공지사항', url: '/news/notice' },
-          ],
-        },
-        { label: 'CONTACT', url: '/contact', items: [] },
-      ],
-    },
-  })
-}
+// 메뉴: 영어로 저장한 뒤, 같은 줄(id)에 한국어 이름을 채운다
+const menu: (Localized & { url: string; items: (Localized & { url: string })[] })[] = [
+  {
+    en: 'ARTISTS',
+    ko: 'ARTISTS',
+    url: '/artists',
+    items: [
+      { en: 'Singers', ko: '가수', url: '/artists/singers' },
+      { en: 'Models', ko: '모델', url: '/artists/models' },
+      { en: 'Actors', ko: '배우', url: '/artists/actors' },
+      { en: 'Doctors', ko: '전문의', url: '/artists/doctors' },
+    ],
+  },
+  {
+    en: 'COMPANY',
+    ko: 'COMPANY',
+    url: '/about',
+    items: [
+      { en: 'About Us', ko: '회사 소개', url: '/about' },
+      { en: 'History', ko: '연혁', url: '/about/history' },
+      { en: 'Location', ko: '오시는 길', url: '/about/location' },
+    ],
+  },
+  {
+    en: 'BUSINESS',
+    ko: 'BUSINESS',
+    url: '/business',
+    items: [
+      { en: 'Overview', ko: '개요', url: '/business' },
+      { en: 'Talent Licensing', ko: '탤런트 사용 계약', url: '/business/licensing' },
+      { en: 'Brand-Exclusive AI Talent', ko: '브랜드 전속 AI 탤런트 제작', url: '/business/custom' },
+      { en: 'Campaign Builder', ko: '캠페인 빌더', url: '/business/campaign' },
+      { en: 'Case Studies', ko: '작업 사례', url: '/business/works' },
+    ],
+  },
+  {
+    en: 'NEWS',
+    ko: 'NEWS',
+    url: '/news',
+    items: [
+      { en: 'News', ko: '뉴스', url: '/news' },
+      { en: 'Notice', ko: '공지사항', url: '/news/notice' },
+    ],
+  },
+  { en: 'CONTACT', ko: 'CONTACT', url: '/contact', items: [] },
+]
+
+const savedMenu = await payload.updateGlobal({
+  slug: 'navigation',
+  locale: 'en',
+  depth: 0,
+  context: { seeding: true },
+  data: {
+    ctaLabel: 'Get a campaign quote',
+    sections: menu.map(({ en, url, items }) => ({
+      label: en,
+      url,
+      items: items.map((item) => ({ label: item.en, url: item.url })),
+    })),
+  },
+})
+await payload.updateGlobal({
+  slug: 'navigation',
+  locale: 'ko',
+  depth: 0,
+  context: { seeding: true },
+  data: {
+    ctaLabel: '캠페인 견적 받기',
+    sections: (savedMenu.sections ?? []).map((section, sectionIndex) => ({
+      ...section,
+      label: menu[sectionIndex].ko,
+      items: (section.items ?? []).map((item, itemIndex) => ({ ...item, label: menu[sectionIndex].items[itemIndex].ko })),
+    })),
+  },
+})
+payload.logger.info('갱신: 메뉴')
 
 payload.logger.info('기본 데이터 넣기 완료')
 process.exit(0)

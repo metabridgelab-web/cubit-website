@@ -120,8 +120,8 @@ export interface Config {
     | ('false' | 'none' | 'null')
     | false
     | null
-    | ('ko' | 'en' | 'zh' | 'hi' | 'es' | 'ar' | 'fr' | 'bn' | 'pt' | 'ru' | 'id' | 'ja')
-    | ('ko' | 'en' | 'zh' | 'hi' | 'es' | 'ar' | 'fr' | 'bn' | 'pt' | 'ru' | 'id' | 'ja')[];
+    | ('en' | 'ko' | 'zh' | 'ja' | 'es' | 'fr' | 'pt' | 'ru' | 'ar' | 'hi' | 'bn' | 'id')
+    | ('en' | 'ko' | 'zh' | 'ja' | 'es' | 'fr' | 'pt' | 'ru' | 'ar' | 'hi' | 'bn' | 'id')[];
   globals: {
     'site-settings': SiteSetting;
     navigation: Navigation;
@@ -134,7 +134,7 @@ export interface Config {
     'home-settings': HomeSettingsSelect<false> | HomeSettingsSelect<true>;
     'business-settings': BusinessSettingsSelect<false> | BusinessSettingsSelect<true>;
   };
-  locale: 'ko' | 'en' | 'zh' | 'hi' | 'es' | 'ar' | 'fr' | 'bn' | 'pt' | 'ru' | 'id' | 'ja';
+  locale: 'en' | 'ko' | 'zh' | 'ja' | 'es' | 'fr' | 'pt' | 'ru' | 'ar' | 'hi' | 'bn' | 'id';
   widgets: {
     collections: CollectionsWidget;
   };
@@ -204,7 +204,7 @@ export interface HomeSlide {
   createdAt: string;
 }
 /**
- * 사진 · 정보 · 자기소개 · 뮤직비디오를 등록합니다. 한국어로 쓰고 저장하면 다른 언어로 번역됩니다.
+ * 사진 · 정보 · 자기소개 · 뮤직비디오를 등록합니다. 영어로 쓰고 저장하면 다른 11개 언어로 자동 번역됩니다.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "artists".
@@ -639,7 +639,7 @@ export interface QuoteRequest {
   periodEnd?: string | null;
   worldwide?: boolean | null;
   regions?: string[] | null;
-  languages?: ('ko' | 'en' | 'zh' | 'hi' | 'es' | 'ar' | 'fr' | 'bn' | 'pt' | 'ru' | 'id' | 'ja')[] | null;
+  languages?: ('en' | 'ko' | 'zh' | 'ja' | 'es' | 'fr' | 'pt' | 'ru' | 'ar' | 'hi' | 'bn' | 'id')[] | null;
   companyName: string;
   contactName: string;
   email: string;
@@ -1395,9 +1395,9 @@ export interface SiteSetting {
   logo?: (number | null) | Media;
   logoDark?: (number | null) | Media;
   /**
-   * 체크를 끈 언어는 사이트의 언어 선택 목록에서 숨겨집니다. 한국어는 끌 수 없습니다.
+   * 체크를 끈 언어는 사이트에서 숨겨지고 자동 번역도 하지 않습니다. 영어는 끌 수 없습니다.
    */
-  enabledLocales?: ('ko' | 'en' | 'zh' | 'hi' | 'es' | 'ar' | 'fr' | 'bn' | 'pt' | 'ru' | 'id' | 'ja')[] | null;
+  enabledLocales?: ('en' | 'ko' | 'zh' | 'ja' | 'es' | 'fr' | 'pt' | 'ru' | 'ar' | 'hi' | 'bn' | 'id')[] | null;
   companyName?: string | null;
   ceo?: string | null;
   address?: string | null;
