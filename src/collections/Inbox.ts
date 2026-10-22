@@ -2,6 +2,7 @@ import type { CollectionConfig, Field } from 'payload'
 
 import { anyone, canHandleInbox, inboxFieldAccess, isAdmin } from '../access'
 import { LOCALE_OPTIONS } from '../constants/locales'
+import { guardSubmission, queueNotification, submissionFields } from '../inbox'
 
 // 접수함 공통: 처리 상태 · 담당자 · 내부 메모 (방문자는 볼 수도, 넣을 수도 없음)
 const handlingFields = (statusOptions: { label: string; value: string }[]): Field[] => [
@@ -46,7 +47,7 @@ const contactFields: Field[] = [
       { name: 'phone', label: '연락처', type: 'text', admin: { width: '50%' } },
     ],
   },
-  { name: 'message', label: '요청 사항', type: 'textarea' },
+  { name: 'message', label: '요청 사항', type: 'textarea', maxLength: 5000 },
   {
     name: 'privacyConsent',
     label: '개인정보 수집·이용 동의',
@@ -59,6 +60,10 @@ const contactFields: Field[] = [
 // 캠페인 빌더로 들어오는 견적 요청 (수익화 핵심)
 export const QuoteRequests: CollectionConfig = {
   slug: 'quote-requests',
+  hooks: {
+    beforeChange: [guardSubmission('quote-requests')],
+    afterChange: [queueNotification('quote-requests')],
+  },
   labels: { singular: '견적 요청', plural: '견적 요청함' },
   admin: {
     useAsTitle: 'companyName',
@@ -113,6 +118,7 @@ export const QuoteRequests: CollectionConfig = {
       label: '사용 국가',
       type: 'text',
       hasMany: true,
+      maxRows: 50,
       admin: { condition: (_, siblingData) => !siblingData?.worldwide },
     },
     {
@@ -123,6 +129,7 @@ export const QuoteRequests: CollectionConfig = {
       options: LOCALE_OPTIONS,
     },
     ...contactFields,
+    ...submissionFields,
     ...handlingFields([
       { label: '접수', value: 'received' },
       { label: '견적 발송', value: 'quoted' },
@@ -137,6 +144,10 @@ export const QuoteRequests: CollectionConfig = {
 // CONTACT 페이지 문의 (제휴 · 언론 · 투자 · 기타)
 export const Inquiries: CollectionConfig = {
   slug: 'inquiries',
+  hooks: {
+    beforeChange: [guardSubmission('inquiries')],
+    afterChange: [queueNotification('inquiries')],
+  },
   labels: { singular: '문의', plural: '문의함' },
   admin: {
     useAsTitle: 'companyName',
@@ -164,6 +175,7 @@ export const Inquiries: CollectionConfig = {
       ],
     },
     ...contactFields,
+    ...submissionFields,
     ...handlingFields([
       { label: '접수', value: 'received' },
       { label: '처리 중', value: 'in-progress' },

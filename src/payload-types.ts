@@ -141,6 +141,7 @@ export interface Config {
   user: User;
   jobs: {
     tasks: {
+      notifySubmission: TaskNotifySubmission;
       translateDocument: TaskTranslateDocument;
       schedulePublish: TaskSchedulePublish;
       inline: {
@@ -836,6 +837,12 @@ export interface QuoteRequest {
   phone?: string | null;
   message?: string | null;
   privacyConsent: boolean;
+  /**
+   * 요청자가 사이트를 보던 언어. 접수 확인 메일이 이 언어로 갑니다.
+   */
+  submittedLocale?: ('en' | 'ko' | 'zh' | 'ja' | 'es' | 'fr' | 'pt' | 'ru' | 'ar' | 'hi' | 'bn' | 'id') | null;
+  website?: string | null;
+  ipHash?: string | null;
   status?: ('received' | 'quoted' | 'negotiating' | 'contracted' | 'done' | 'cancelled') | null;
   assignee?: (number | null) | User;
   /**
@@ -889,6 +896,12 @@ export interface Inquiry {
   phone?: string | null;
   message?: string | null;
   privacyConsent: boolean;
+  /**
+   * 요청자가 사이트를 보던 언어. 접수 확인 메일이 이 언어로 갑니다.
+   */
+  submittedLocale?: ('en' | 'ko' | 'zh' | 'ja' | 'es' | 'fr' | 'pt' | 'ru' | 'ar' | 'hi' | 'bn' | 'id') | null;
+  website?: string | null;
+  ipHash?: string | null;
   status?: ('received' | 'in-progress' | 'done') | null;
   assignee?: (number | null) | User;
   /**
@@ -983,7 +996,7 @@ export interface PayloadJob {
     | {
         executedAt: string;
         completedAt: string;
-        taskSlug: 'inline' | 'translateDocument' | 'schedulePublish';
+        taskSlug: 'inline' | 'notifySubmission' | 'translateDocument' | 'schedulePublish';
         taskID: string;
         input?:
           | {
@@ -1016,7 +1029,7 @@ export interface PayloadJob {
         id?: string | null;
       }[]
     | null;
-  taskSlug?: ('inline' | 'translateDocument' | 'schedulePublish') | null;
+  taskSlug?: ('inline' | 'notifySubmission' | 'translateDocument' | 'schedulePublish') | null;
   queue?: string | null;
   waitUntil?: string | null;
   processing?: boolean | null;
@@ -1454,6 +1467,9 @@ export interface QuoteRequestsSelect<T extends boolean = true> {
   phone?: T;
   message?: T;
   privacyConsent?: T;
+  submittedLocale?: T;
+  website?: T;
+  ipHash?: T;
   status?: T;
   assignee?: T;
   internalNotes?: T;
@@ -1472,6 +1488,9 @@ export interface InquiriesSelect<T extends boolean = true> {
   phone?: T;
   message?: T;
   privacyConsent?: T;
+  submittedLocale?: T;
+  website?: T;
+  ipHash?: T;
   status?: T;
   assignee?: T;
   internalNotes?: T;
@@ -1689,6 +1708,10 @@ export interface SiteSetting {
   businessNumber?: string | null;
   email?: string | null;
   phone?: string | null;
+  /**
+   * CONTACT 페이지로 문의가 들어오면 이 주소로 알림이 갑니다. 견적 요청 알림은 비즈니스 설정에서 정합니다.
+   */
+  notifyEmails?: string[] | null;
   socials?:
     | {
         platform: 'YouTube' | 'Instagram' | 'TikTok' | 'X' | 'Weibo' | 'Facebook' | 'LinkedIn' | '기타';
@@ -1870,6 +1893,7 @@ export interface SiteSettingsSelect<T extends boolean = true> {
   businessNumber?: T;
   email?: T;
   phone?: T;
+  notifyEmails?: T;
   socials?:
     | T
     | {
@@ -1996,6 +2020,17 @@ export interface CollectionsWidget {
     [k: string]: unknown;
   };
   width: 'full';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskNotifySubmission".
+ */
+export interface TaskNotifySubmission {
+  input: {
+    slug: string;
+    id: string;
+  };
+  output?: unknown;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

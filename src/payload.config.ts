@@ -1,4 +1,5 @@
 import { sqliteAdapter } from '@payloadcms/db-sqlite'
+import { resendAdapter } from '@payloadcms/email-resend'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { en } from '@payloadcms/translations/languages/en'
 import { ko } from '@payloadcms/translations/languages/ko'
@@ -20,6 +21,7 @@ import { Posts } from './collections/Posts'
 import { Users } from './collections/Users'
 import { DEFAULT_LOCALE, LOCALES } from './constants/locales'
 import { globals } from './globals'
+import { notifyTask } from './inbox'
 import { translationPlugin } from './translation/plugin'
 
 const filename = fileURLToPath(import.meta.url)
@@ -74,8 +76,16 @@ export default buildConfig({
   }),
   sharp,
   // 예약된 작업(자동 번역 등)을 10초마다 처리한다. 서버리스 배포에서는 7단계에서 정기 호출로 바꾼다.
+  // 메일: RESEND_API_KEY가 있으면 Resend로 실제 발송, 없으면 개발 서버 화면(콘솔)에만 찍힌다
+  email: process.env.RESEND_API_KEY
+    ? resendAdapter({
+        apiKey: process.env.RESEND_API_KEY,
+        defaultFromAddress: process.env.EMAIL_FROM_ADDRESS || 'no-reply@cubitenter.com',
+        defaultFromName: process.env.EMAIL_FROM_NAME || 'CUBIT ENTERTAINMENT',
+      })
+    : undefined,
   jobs: {
-    tasks: [],
+    tasks: [notifyTask],
     autoRun: [{ cron: '*/10 * * * * *', queue: 'default', limit: 10 }],
     shouldAutoRun: () => process.env.DISABLE_JOB_AUTORUN !== 'true',
     // 끝난 작업 기록을 남겨 두어 번역 실패 원인을 확인할 수 있게 한다

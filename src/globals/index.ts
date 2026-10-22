@@ -44,6 +44,16 @@ export const SiteSettings: GlobalConfig = {
             { name: 'businessNumber', label: '사업자등록번호', type: 'text' },
             { name: 'email', label: '대표 이메일', type: 'email' },
             { name: 'phone', label: '대표 전화', type: 'text' },
+            {
+              name: 'notifyEmails',
+              label: '문의 알림 받을 이메일',
+              type: 'text',
+              hasMany: true,
+              admin: { description: 'CONTACT 페이지로 문의가 들어오면 이 주소로 알림이 갑니다. 견적 요청 알림은 비즈니스 설정에서 정합니다.' },
+              validate: (value: string[] | null | undefined) =>
+                (value ?? []).every((email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) ||
+                '이메일 주소 형식을 확인해 주세요.',
+            },
           ],
         },
         {
