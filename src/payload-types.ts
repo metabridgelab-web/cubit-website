@@ -127,12 +127,14 @@ export interface Config {
     navigation: Navigation;
     'home-settings': HomeSetting;
     'business-settings': BusinessSetting;
+    'ui-labels': UiLabel;
   };
   globalsSelect: {
     'site-settings': SiteSettingsSelect<false> | SiteSettingsSelect<true>;
     navigation: NavigationSelect<false> | NavigationSelect<true>;
     'home-settings': HomeSettingsSelect<false> | HomeSettingsSelect<true>;
     'business-settings': BusinessSettingsSelect<false> | BusinessSettingsSelect<true>;
+    'ui-labels': UiLabelsSelect<false> | UiLabelsSelect<true>;
   };
   locale: 'en' | 'ko' | 'zh' | 'ja' | 'es' | 'fr' | 'pt' | 'ru' | 'ar' | 'hi' | 'bn' | 'id';
   widgets: {
@@ -1879,6 +1881,80 @@ export interface BusinessSetting {
   createdAt?: string | null;
 }
 /**
+ * 버튼·제목처럼 화면 곳곳에 쓰이는 짧은 글입니다. 영어로 고치고 저장하면 자동 번역됩니다.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ui-labels".
+ */
+export interface UiLabel {
+  id: number;
+  common: {
+    viewAll: string;
+    readMore: string;
+    back: string;
+    menu: string;
+    close: string;
+    language: string;
+    prev: string;
+    next: string;
+    soundOn: string;
+    soundOff: string;
+    watchMv: string;
+    getQuote: string;
+    notFound: string;
+  };
+  home: {
+    newRelease: string;
+    artists: string;
+    news: string;
+    notice: string;
+    scrollDown: string;
+  };
+  artist: {
+    profile: string;
+    introduction: string;
+    gallery: string;
+    musicVideos: string;
+    birthday: string;
+    debut: string;
+    nationality: string;
+    quoteWithArtist: string;
+    relatedNews: string;
+  };
+  forms: {
+    submit: string;
+    sending: string;
+    success: string;
+    required: string;
+    privacyConsent: string;
+    tooMany: string;
+    error: string;
+  };
+  /**
+   * 영어 원문을 저장하면 자동 번역됩니다. 다시 번역하려면 상태를 "다시 번역"으로 바꾸고 저장하세요.
+   */
+  translationStatus?:
+    | {
+        locale: 'en' | 'ko' | 'zh' | 'ja' | 'es' | 'fr' | 'pt' | 'ru' | 'ar' | 'hi' | 'bn' | 'id';
+        status: 'pending' | 'auto' | 'reviewed' | 'outdated' | 'failed';
+        updatedAt?: string | null;
+        note?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  translationMeta?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "site-settings_select".
  */
@@ -1996,6 +2072,75 @@ export interface BusinessSettingsSelect<T extends boolean = true> {
         logo?: T;
         url?: T;
         id?: T;
+      };
+  translationStatus?:
+    | T
+    | {
+        locale?: T;
+        status?: T;
+        updatedAt?: T;
+        note?: T;
+        id?: T;
+      };
+  translationMeta?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ui-labels_select".
+ */
+export interface UiLabelsSelect<T extends boolean = true> {
+  common?:
+    | T
+    | {
+        viewAll?: T;
+        readMore?: T;
+        back?: T;
+        menu?: T;
+        close?: T;
+        language?: T;
+        prev?: T;
+        next?: T;
+        soundOn?: T;
+        soundOff?: T;
+        watchMv?: T;
+        getQuote?: T;
+        notFound?: T;
+      };
+  home?:
+    | T
+    | {
+        newRelease?: T;
+        artists?: T;
+        news?: T;
+        notice?: T;
+        scrollDown?: T;
+      };
+  artist?:
+    | T
+    | {
+        profile?: T;
+        introduction?: T;
+        gallery?: T;
+        musicVideos?: T;
+        birthday?: T;
+        debut?: T;
+        nationality?: T;
+        quoteWithArtist?: T;
+        relatedNews?: T;
+      };
+  forms?:
+    | T
+    | {
+        submit?: T;
+        sending?: T;
+        success?: T;
+        required?: T;
+        privacyConsent?: T;
+        tooMany?: T;
+        error?: T;
       };
   translationStatus?:
     | T

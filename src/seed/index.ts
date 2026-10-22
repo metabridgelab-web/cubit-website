@@ -172,5 +172,10 @@ await payload.updateGlobal({
 })
 payload.logger.info('갱신: 메뉴')
 
+// 사이트 고정 문구와 비즈니스 문구를 한 번 저장해서 기본값(영어)이 자동 번역되게 한다
+await payload.updateGlobal({ slug: 'ui-labels', locale: 'en', data: {} })
+await payload.updateGlobal({ slug: 'business-settings', locale: 'en', data: {} })
+payload.logger.info('갱신: 사이트 고정 문구 · 비즈니스 문구')
+
 payload.logger.info('기본 데이터 넣기 완료')
 process.exit(0)

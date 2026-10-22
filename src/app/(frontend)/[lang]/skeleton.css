@@ -1,0 +1,23 @@
+/* 디자인 적용 전 임시 스타일: 글을 읽을 수 있을 정도만. 디자인 파일이 오면 통째로 바꾼다. */
+body {
+  margin: 0 auto;
+  max-width: 1100px;
+  padding: 16px;
+  font-family: system-ui, 'Noto Sans', 'Noto Sans KR', 'Noto Sans JP', 'Noto Sans SC', 'Noto Sans Arabic', sans-serif;
+  line-height: 1.6;
+}
+img,
+video,
+iframe {
+  max-width: 100%;
+}
+iframe {
+  aspect-ratio: 16 / 9;
+  width: 100%;
+  border: 0;
+}
+header,
+footer,
+section {
+  margin-block: 24px;
+}
