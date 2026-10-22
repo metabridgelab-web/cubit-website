@@ -67,18 +67,48 @@ export interface Config {
   };
   blocks: {};
   collections: {
-    users: User;
+    'home-slides': HomeSlide;
+    'artist-categories': ArtistCategory;
+    artists: Artist;
+    boards: Board;
+    'post-categories': PostCategory;
+    posts: Post;
+    'case-studies': CaseStudy;
+    pages: Page;
+    'quote-requests': QuoteRequest;
+    inquiries: Inquiry;
     media: Media;
+    glossary: Glossary;
+    users: User;
     'payload-kv': PayloadKv;
+    'payload-jobs': PayloadJob;
+    'payload-folders': FolderInterface;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
   };
-  collectionsJoins: {};
+  collectionsJoins: {
+    'payload-folders': {
+      documentsAndFolders: 'payload-folders' | 'media';
+    };
+  };
   collectionsSelect: {
-    users: UsersSelect<false> | UsersSelect<true>;
+    'home-slides': HomeSlidesSelect<false> | HomeSlidesSelect<true>;
+    'artist-categories': ArtistCategoriesSelect<false> | ArtistCategoriesSelect<true>;
+    artists: ArtistsSelect<false> | ArtistsSelect<true>;
+    boards: BoardsSelect<false> | BoardsSelect<true>;
+    'post-categories': PostCategoriesSelect<false> | PostCategoriesSelect<true>;
+    posts: PostsSelect<false> | PostsSelect<true>;
+    'case-studies': CaseStudiesSelect<false> | CaseStudiesSelect<true>;
+    pages: PagesSelect<false> | PagesSelect<true>;
+    'quote-requests': QuoteRequestsSelect<false> | QuoteRequestsSelect<true>;
+    inquiries: InquiriesSelect<false> | InquiriesSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
+    glossary: GlossarySelect<false> | GlossarySelect<true>;
+    users: UsersSelect<false> | UsersSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
+    'payload-jobs': PayloadJobsSelect<false> | PayloadJobsSelect<true>;
+    'payload-folders': PayloadFoldersSelect<false> | PayloadFoldersSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
@@ -86,16 +116,37 @@ export interface Config {
   db: {
     defaultIDType: number;
   };
-  fallbackLocale: null;
-  globals: {};
-  globalsSelect: {};
-  locale: null;
+  fallbackLocale:
+    | ('false' | 'none' | 'null')
+    | false
+    | null
+    | ('ko' | 'en' | 'zh' | 'hi' | 'es' | 'ar' | 'fr' | 'bn' | 'pt' | 'ru' | 'id' | 'ja')
+    | ('ko' | 'en' | 'zh' | 'hi' | 'es' | 'ar' | 'fr' | 'bn' | 'pt' | 'ru' | 'id' | 'ja')[];
+  globals: {
+    'site-settings': SiteSetting;
+    navigation: Navigation;
+    'home-settings': HomeSetting;
+    'business-settings': BusinessSetting;
+  };
+  globalsSelect: {
+    'site-settings': SiteSettingsSelect<false> | SiteSettingsSelect<true>;
+    navigation: NavigationSelect<false> | NavigationSelect<true>;
+    'home-settings': HomeSettingsSelect<false> | HomeSettingsSelect<true>;
+    'business-settings': BusinessSettingsSelect<false> | BusinessSettingsSelect<true>;
+  };
+  locale: 'ko' | 'en' | 'zh' | 'hi' | 'es' | 'ar' | 'fr' | 'bn' | 'pt' | 'ru' | 'id' | 'ja';
   widgets: {
     collections: CollectionsWidget;
   };
   user: User;
   jobs: {
-    tasks: unknown;
+    tasks: {
+      schedulePublish: TaskSchedulePublish;
+      inline: {
+        input: unknown;
+        output: unknown;
+      };
+    };
     workflows: unknown;
   };
 }
@@ -118,11 +169,503 @@ export interface UserAuthOperations {
   };
 }
 /**
+ * 5~10개를 권장합니다. 목록에서 끌어서 순서를 바꿀 수 있습니다.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "home-slides".
+ */
+export interface HomeSlide {
+  id: number;
+  _order?: string | null;
+  title: string;
+  artist?: (number | null) | Artist;
+  releaseDate?: string | null;
+  videoSource: 'file' | 'youtube';
+  videoFile?: (number | null) | Media;
+  youtubeUrl?: string | null;
+  /**
+   * 영상이 뜨기 전에 먼저 보이는 이미지
+   */
+  poster: number | Media;
+  /**
+   * 보통 YouTube 전체 영상 주소를 넣습니다.
+   */
+  mvUrl?: string | null;
+  active?: boolean | null;
+  /**
+   * 비우면 바로 노출
+   */
+  startAt?: string | null;
+  /**
+   * 비우면 계속 노출
+   */
+  endAt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * 사진 · 정보 · 자기소개 · 뮤직비디오를 등록합니다. 한국어로 쓰고 저장하면 다른 언어로 번역됩니다.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "artists".
+ */
+export interface Artist {
+  id: number;
+  /**
+   * 이름은 번역하지 않고 모든 언어에서 그대로 보입니다.
+   */
+  name: string;
+  categories: (number | ArtistCategory)[];
+  birthday?: string | null;
+  debutDate?: string | null;
+  nationality?: string | null;
+  /**
+   * 키, 전문 분야, 출연작처럼 카테고리마다 필요한 항목을 자유롭게 추가합니다.
+   */
+  extraInfo?:
+    | {
+        label: string;
+        value: string;
+        id?: string | null;
+      }[]
+    | null;
+  socials?:
+    | {
+        platform:
+          | 'YouTube'
+          | 'Instagram'
+          | 'TikTok'
+          | 'X'
+          | 'Weibo'
+          | 'Facebook'
+          | 'Spotify'
+          | 'Apple Music'
+          | 'Melon'
+          | '기타';
+        url: string;
+        id?: string | null;
+      }[]
+    | null;
+  profilePhoto: number | Media;
+  gallery?: (number | Media)[] | null;
+  intro?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * YouTube 주소만 붙여넣으면 됩니다. 위에 있을수록 먼저 보입니다.
+   */
+  videos?:
+    | {
+        title: string;
+        youtubeUrl: string;
+        releaseDate?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null;
+  slug: string;
+  featured?: boolean | null;
+  /**
+   * 숫자가 작을수록 앞에 보입니다.
+   */
+  sortOrder?: number | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "artist-categories".
+ */
+export interface ArtistCategory {
+  id: number;
+  name: string;
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null;
+  slug: string;
+  /**
+   * 이 카테고리 아티스트의 상세 페이지에 항상 표시할 문구. 전문의는 필수입니다.
+   */
+  disclaimer?: string | null;
+  /**
+   * 숫자가 작을수록 앞에 보입니다.
+   */
+  sortOrder?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * 사진·영상·PDF를 끌어다 놓으면 올라갑니다. 사진은 화면 크기별로 자동으로 줄여 저장됩니다.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "media".
+ */
+export interface Media {
+  id: number;
+  /**
+   * 사진을 볼 수 없는 사람(화면 낭독기)과 검색엔진을 위한 짧은 설명. 예: "AI-01 프로필 사진"
+   */
+  alt?: string | null;
+  folder?: (number | null) | FolderInterface;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
+  sizes?: {
+    thumbnail?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    card?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    large?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    hero?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-folders".
+ */
+export interface FolderInterface {
+  id: number;
+  name: string;
+  folder?: (number | null) | FolderInterface;
+  documentsAndFolders?: {
+    docs?: (
+      | {
+          relationTo?: 'payload-folders';
+          value: number | FolderInterface;
+        }
+      | {
+          relationTo?: 'media';
+          value: number | Media;
+        }
+    )[];
+    hasNextPage?: boolean;
+    totalDocs?: number;
+  };
+  folderType?: 'media'[] | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * 이름과 영문 주소만 정하면 새 게시판이 만들어집니다.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "boards".
+ */
+export interface Board {
+  id: number;
+  name: string;
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null;
+  slug: string;
+  description?: string | null;
+  /**
+   * 숫자가 작을수록 앞에 보입니다.
+   */
+  sortOrder?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "post-categories".
+ */
+export interface PostCategory {
+  id: number;
+  name: string;
+  board: number | Board;
+  /**
+   * 숫자가 작을수록 앞에 보입니다.
+   */
+  sortOrder?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "posts".
+ */
+export interface Post {
+  id: number;
+  title: string;
+  board: number | Board;
+  /**
+   * 게시판을 먼저 고르면 그 게시판의 분류만 보입니다.
+   */
+  category?: (number | null) | PostCategory;
+  thumbnail?: (number | null) | Media;
+  /**
+   * 목록에 보이는 한두 줄 요약
+   */
+  excerpt?: string | null;
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * 고르면 해당 아티스트 상세 페이지의 소식에도 보입니다.
+   */
+  artists?: (number | Artist)[] | null;
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null;
+  slug: string;
+  publishedAt: string;
+  /**
+   * 사칭 주의처럼 중요한 글을 목록 맨 위에 고정합니다.
+   */
+  pinned?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "case-studies".
+ */
+export interface CaseStudy {
+  id: number;
+  title: string;
+  brandName: string;
+  date?: string | null;
+  brandLogo?: (number | null) | Media;
+  thumbnail: number | Media;
+  talents?: (number | Artist)[] | null;
+  summary?: string | null;
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  gallery?: (number | Media)[] | null;
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null;
+  slug: string;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * 글 · 사진 · 영상 블록을 원하는 순서로 쌓아 페이지를 만듭니다.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pages".
+ */
+export interface Page {
+  id: number;
+  title: string;
+  intro?: string | null;
+  heroImage?: (number | null) | Media;
+  layout?:
+    | (
+        | {
+            heading?: string | null;
+            body?: {
+              root: {
+                type: string;
+                children: {
+                  type: any;
+                  version: number;
+                  [k: string]: unknown;
+                }[];
+                direction: ('ltr' | 'rtl') | null;
+                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                indent: number;
+                version: number;
+              };
+              [k: string]: unknown;
+            } | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'text';
+          }
+        | {
+            images: (number | Media)[];
+            caption?: string | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'image';
+          }
+        | {
+            youtubeUrl?: string | null;
+            file?: (number | null) | Media;
+            caption?: string | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'video';
+          }
+        | {
+            items?:
+              | {
+                  year: string;
+                  month?: string | null;
+                  text: string;
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'timeline';
+          }
+        | {
+            offices?:
+              | {
+                  name: string;
+                  address: string;
+                  phone?: string | null;
+                  email?: string | null;
+                  mapUrl?: string | null;
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'location';
+          }
+        | {
+            text?: string | null;
+            label?: string | null;
+            /**
+             * 사이트 안 주소는 /business 처럼, 바깥 주소는 https:// 로 시작하게 입력하세요.
+             */
+            url?: string | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'cta';
+          }
+      )[]
+    | null;
+  section: 'company' | 'business' | 'studio' | 'trust' | 'join' | 'investors' | 'legal';
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null;
+  slug: string;
+  /**
+   * 개인정보처리방침 · 위험 고지처럼 법적 문서는 체크하세요. 자동 번역만으로는 게시되지 않습니다.
+   */
+  reviewRequired?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * 캠페인 빌더로 들어온 견적 요청입니다. 상태를 바꿔 가며 진행 상황을 관리하세요.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "quote-requests".
+ */
+export interface QuoteRequest {
+  id: number;
+  talents: (number | Artist)[];
+  usage: ('ads' | 'video' | 'social' | 'other')[];
+  periodStart?: string | null;
+  periodEnd?: string | null;
+  worldwide?: boolean | null;
+  regions?: string[] | null;
+  languages?: ('ko' | 'en' | 'zh' | 'hi' | 'es' | 'ar' | 'fr' | 'bn' | 'pt' | 'ru' | 'id' | 'ja')[] | null;
+  companyName: string;
+  contactName: string;
+  email: string;
+  phone?: string | null;
+  message?: string | null;
+  privacyConsent: boolean;
+  status?: ('received' | 'quoted' | 'negotiating' | 'contracted' | 'done' | 'cancelled') | null;
+  assignee?: (number | null) | User;
+  /**
+   * 방문자에게는 보이지 않습니다.
+   */
+  internalNotes?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users".
  */
 export interface User {
   id: number;
+  name: string;
+  /**
+   * 최고 관리자: 모든 기능 · 편집자: 콘텐츠 관리 · 번역 검수자: 번역 수정 · 영업 담당자: 견적 요청·문의 · 공시 담당자: 투자자 정보
+   */
+  roles?: ('admin' | 'editor' | 'translator' | 'sales' | 'disclosure')[] | null;
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -145,22 +688,41 @@ export interface User {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "media".
+ * via the `definition` "inquiries".
  */
-export interface Media {
+export interface Inquiry {
   id: number;
-  alt: string;
+  type: 'partnership' | 'press' | 'investment' | 'other';
+  companyName: string;
+  contactName: string;
+  email: string;
+  phone?: string | null;
+  message?: string | null;
+  privacyConsent: boolean;
+  status?: ('received' | 'in-progress' | 'done') | null;
+  assignee?: (number | null) | User;
+  /**
+   * 방문자에게는 보이지 않습니다.
+   */
+  internalNotes?: string | null;
   updatedAt: string;
   createdAt: string;
-  url?: string | null;
-  thumbnailURL?: string | null;
-  filename?: string | null;
-  mimeType?: string | null;
-  filesize?: number | null;
-  width?: number | null;
-  height?: number | null;
-  focalX?: number | null;
-  focalY?: number | null;
+}
+/**
+ * 여기 등록한 단어는 자동 번역할 때 바꾸지 않고 그대로 둡니다.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "glossary".
+ */
+export interface Glossary {
+  id: number;
+  term: string;
+  /**
+   * 예: 아티스트 이름, 곡 제목
+   */
+  note?: string | null;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -181,18 +743,158 @@ export interface PayloadKv {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-jobs".
+ */
+export interface PayloadJob {
+  id: number;
+  /**
+   * Input data provided to the job
+   */
+  input?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  taskStatus?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  completedAt?: string | null;
+  totalTried?: number | null;
+  /**
+   * If hasError is true this job will not be retried
+   */
+  hasError?: boolean | null;
+  /**
+   * If hasError is true, this is the error that caused it
+   */
+  error?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * Task execution log
+   */
+  log?:
+    | {
+        executedAt: string;
+        completedAt: string;
+        taskSlug: 'inline' | 'schedulePublish';
+        taskID: string;
+        input?:
+          | {
+              [k: string]: unknown;
+            }
+          | unknown[]
+          | string
+          | number
+          | boolean
+          | null;
+        output?:
+          | {
+              [k: string]: unknown;
+            }
+          | unknown[]
+          | string
+          | number
+          | boolean
+          | null;
+        state: 'failed' | 'succeeded';
+        error?:
+          | {
+              [k: string]: unknown;
+            }
+          | unknown[]
+          | string
+          | number
+          | boolean
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  taskSlug?: ('inline' | 'schedulePublish') | null;
+  queue?: string | null;
+  waitUntil?: string | null;
+  processing?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-locked-documents".
  */
 export interface PayloadLockedDocument {
   id: number;
   document?:
     | ({
-        relationTo: 'users';
-        value: number | User;
+        relationTo: 'home-slides';
+        value: number | HomeSlide;
+      } | null)
+    | ({
+        relationTo: 'artist-categories';
+        value: number | ArtistCategory;
+      } | null)
+    | ({
+        relationTo: 'artists';
+        value: number | Artist;
+      } | null)
+    | ({
+        relationTo: 'boards';
+        value: number | Board;
+      } | null)
+    | ({
+        relationTo: 'post-categories';
+        value: number | PostCategory;
+      } | null)
+    | ({
+        relationTo: 'posts';
+        value: number | Post;
+      } | null)
+    | ({
+        relationTo: 'case-studies';
+        value: number | CaseStudy;
+      } | null)
+    | ({
+        relationTo: 'pages';
+        value: number | Page;
+      } | null)
+    | ({
+        relationTo: 'quote-requests';
+        value: number | QuoteRequest;
+      } | null)
+    | ({
+        relationTo: 'inquiries';
+        value: number | Inquiry;
       } | null)
     | ({
         relationTo: 'media';
         value: number | Media;
+      } | null)
+    | ({
+        relationTo: 'glossary';
+        value: number | Glossary;
+      } | null)
+    | ({
+        relationTo: 'users';
+        value: number | User;
+      } | null)
+    | ({
+        relationTo: 'payload-folders';
+        value: number | FolderInterface;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -238,9 +940,350 @@ export interface PayloadMigration {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "home-slides_select".
+ */
+export interface HomeSlidesSelect<T extends boolean = true> {
+  _order?: T;
+  title?: T;
+  artist?: T;
+  releaseDate?: T;
+  videoSource?: T;
+  videoFile?: T;
+  youtubeUrl?: T;
+  poster?: T;
+  mvUrl?: T;
+  active?: T;
+  startAt?: T;
+  endAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "artist-categories_select".
+ */
+export interface ArtistCategoriesSelect<T extends boolean = true> {
+  name?: T;
+  generateSlug?: T;
+  slug?: T;
+  disclaimer?: T;
+  sortOrder?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "artists_select".
+ */
+export interface ArtistsSelect<T extends boolean = true> {
+  name?: T;
+  categories?: T;
+  birthday?: T;
+  debutDate?: T;
+  nationality?: T;
+  extraInfo?:
+    | T
+    | {
+        label?: T;
+        value?: T;
+        id?: T;
+      };
+  socials?:
+    | T
+    | {
+        platform?: T;
+        url?: T;
+        id?: T;
+      };
+  profilePhoto?: T;
+  gallery?: T;
+  intro?: T;
+  videos?:
+    | T
+    | {
+        title?: T;
+        youtubeUrl?: T;
+        releaseDate?: T;
+        id?: T;
+      };
+  generateSlug?: T;
+  slug?: T;
+  featured?: T;
+  sortOrder?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "boards_select".
+ */
+export interface BoardsSelect<T extends boolean = true> {
+  name?: T;
+  generateSlug?: T;
+  slug?: T;
+  description?: T;
+  sortOrder?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "post-categories_select".
+ */
+export interface PostCategoriesSelect<T extends boolean = true> {
+  name?: T;
+  board?: T;
+  sortOrder?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "posts_select".
+ */
+export interface PostsSelect<T extends boolean = true> {
+  title?: T;
+  board?: T;
+  category?: T;
+  thumbnail?: T;
+  excerpt?: T;
+  content?: T;
+  artists?: T;
+  generateSlug?: T;
+  slug?: T;
+  publishedAt?: T;
+  pinned?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "case-studies_select".
+ */
+export interface CaseStudiesSelect<T extends boolean = true> {
+  title?: T;
+  brandName?: T;
+  date?: T;
+  brandLogo?: T;
+  thumbnail?: T;
+  talents?: T;
+  summary?: T;
+  content?: T;
+  gallery?: T;
+  generateSlug?: T;
+  slug?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pages_select".
+ */
+export interface PagesSelect<T extends boolean = true> {
+  title?: T;
+  intro?: T;
+  heroImage?: T;
+  layout?:
+    | T
+    | {
+        text?:
+          | T
+          | {
+              heading?: T;
+              body?: T;
+              id?: T;
+              blockName?: T;
+            };
+        image?:
+          | T
+          | {
+              images?: T;
+              caption?: T;
+              id?: T;
+              blockName?: T;
+            };
+        video?:
+          | T
+          | {
+              youtubeUrl?: T;
+              file?: T;
+              caption?: T;
+              id?: T;
+              blockName?: T;
+            };
+        timeline?:
+          | T
+          | {
+              items?:
+                | T
+                | {
+                    year?: T;
+                    month?: T;
+                    text?: T;
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        location?:
+          | T
+          | {
+              offices?:
+                | T
+                | {
+                    name?: T;
+                    address?: T;
+                    phone?: T;
+                    email?: T;
+                    mapUrl?: T;
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        cta?:
+          | T
+          | {
+              text?: T;
+              label?: T;
+              url?: T;
+              id?: T;
+              blockName?: T;
+            };
+      };
+  section?: T;
+  generateSlug?: T;
+  slug?: T;
+  reviewRequired?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "quote-requests_select".
+ */
+export interface QuoteRequestsSelect<T extends boolean = true> {
+  talents?: T;
+  usage?: T;
+  periodStart?: T;
+  periodEnd?: T;
+  worldwide?: T;
+  regions?: T;
+  languages?: T;
+  companyName?: T;
+  contactName?: T;
+  email?: T;
+  phone?: T;
+  message?: T;
+  privacyConsent?: T;
+  status?: T;
+  assignee?: T;
+  internalNotes?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "inquiries_select".
+ */
+export interface InquiriesSelect<T extends boolean = true> {
+  type?: T;
+  companyName?: T;
+  contactName?: T;
+  email?: T;
+  phone?: T;
+  message?: T;
+  privacyConsent?: T;
+  status?: T;
+  assignee?: T;
+  internalNotes?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "media_select".
+ */
+export interface MediaSelect<T extends boolean = true> {
+  alt?: T;
+  folder?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+  focalX?: T;
+  focalY?: T;
+  sizes?:
+    | T
+    | {
+        thumbnail?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+        card?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+        large?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+        hero?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+      };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "glossary_select".
+ */
+export interface GlossarySelect<T extends boolean = true> {
+  term?: T;
+  note?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users_select".
  */
 export interface UsersSelect<T extends boolean = true> {
+  name?: T;
+  roles?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;
@@ -261,29 +1304,54 @@ export interface UsersSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "media_select".
- */
-export interface MediaSelect<T extends boolean = true> {
-  alt?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  url?: T;
-  thumbnailURL?: T;
-  filename?: T;
-  mimeType?: T;
-  filesize?: T;
-  width?: T;
-  height?: T;
-  focalX?: T;
-  focalY?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv_select".
  */
 export interface PayloadKvSelect<T extends boolean = true> {
   key?: T;
   data?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-jobs_select".
+ */
+export interface PayloadJobsSelect<T extends boolean = true> {
+  input?: T;
+  taskStatus?: T;
+  completedAt?: T;
+  totalTried?: T;
+  hasError?: T;
+  error?: T;
+  log?:
+    | T
+    | {
+        executedAt?: T;
+        completedAt?: T;
+        taskSlug?: T;
+        taskID?: T;
+        input?: T;
+        output?: T;
+        state?: T;
+        error?: T;
+        id?: T;
+      };
+  taskSlug?: T;
+  queue?: T;
+  waitUntil?: T;
+  processing?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-folders_select".
+ */
+export interface PayloadFoldersSelect<T extends boolean = true> {
+  name?: T;
+  folder?: T;
+  documentsAndFolders?: T;
+  folderType?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -319,6 +1387,230 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-settings".
+ */
+export interface SiteSetting {
+  id: number;
+  siteName: string;
+  logo?: (number | null) | Media;
+  logoDark?: (number | null) | Media;
+  /**
+   * 체크를 끈 언어는 사이트의 언어 선택 목록에서 숨겨집니다. 한국어는 끌 수 없습니다.
+   */
+  enabledLocales?: ('ko' | 'en' | 'zh' | 'hi' | 'es' | 'ar' | 'fr' | 'bn' | 'pt' | 'ru' | 'id' | 'ja')[] | null;
+  companyName?: string | null;
+  ceo?: string | null;
+  address?: string | null;
+  businessNumber?: string | null;
+  email?: string | null;
+  phone?: string | null;
+  socials?:
+    | {
+        platform: 'YouTube' | 'Instagram' | 'TikTok' | 'X' | 'Weibo' | 'Facebook' | 'LinkedIn' | '기타';
+        url: string;
+        id?: string | null;
+      }[]
+    | null;
+  aiNotice?: string | null;
+  copyright?: string | null;
+  /**
+   * 개인정보처리방침 · 쿠키 정책 등 "정책" 섹션 페이지를 고르세요.
+   */
+  policyLinks?: (number | Page)[] | null;
+  cookieBannerText?: string | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * 전체 화면 메뉴의 섹션과 항목입니다. 끌어서 순서를 바꿀 수 있습니다.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "navigation".
+ */
+export interface Navigation {
+  id: number;
+  sections?:
+    | {
+        label: string;
+        url?: string | null;
+        hidden?: boolean | null;
+        items?:
+          | {
+              label?: string | null;
+              /**
+               * 사이트 안 주소는 /business 처럼, 바깥 주소는 https:// 로 시작하게 입력하세요.
+               */
+              url?: string | null;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  ctaLabel?: string | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "home-settings".
+ */
+export interface HomeSetting {
+  id: number;
+  /**
+   * 영상이 이 시간보다 짧으면 영상이 끝날 때 넘어갑니다.
+   */
+  autoAdvanceSeconds?: number | null;
+  /**
+   * 끌어서 순서를 바꾸고, 숨기기로 감출 수 있습니다. BUSINESS 섹션은 숨길 수 없습니다.
+   */
+  sections?:
+    | {
+        section: 'new-release' | 'artists' | 'business' | 'news' | 'notice';
+        hidden?: boolean | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "business-settings".
+ */
+export interface BusinessSetting {
+  id: number;
+  eyebrow?: string | null;
+  headline?: string | null;
+  services?:
+    | {
+        title: string;
+        description: string;
+        url?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  builderCtaLabel?: string | null;
+  confirmationMessage?: string | null;
+  /**
+   * 견적 요청이 들어오면 이 주소로 알림이 갑니다. 여러 개 입력할 수 있습니다.
+   */
+  notifyEmails?: string[] | null;
+  brands?:
+    | {
+        name: string;
+        logo: number | Media;
+        url?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-settings_select".
+ */
+export interface SiteSettingsSelect<T extends boolean = true> {
+  siteName?: T;
+  logo?: T;
+  logoDark?: T;
+  enabledLocales?: T;
+  companyName?: T;
+  ceo?: T;
+  address?: T;
+  businessNumber?: T;
+  email?: T;
+  phone?: T;
+  socials?:
+    | T
+    | {
+        platform?: T;
+        url?: T;
+        id?: T;
+      };
+  aiNotice?: T;
+  copyright?: T;
+  policyLinks?: T;
+  cookieBannerText?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "navigation_select".
+ */
+export interface NavigationSelect<T extends boolean = true> {
+  sections?:
+    | T
+    | {
+        label?: T;
+        url?: T;
+        hidden?: T;
+        items?:
+          | T
+          | {
+              label?: T;
+              url?: T;
+              id?: T;
+            };
+        id?: T;
+      };
+  ctaLabel?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "home-settings_select".
+ */
+export interface HomeSettingsSelect<T extends boolean = true> {
+  autoAdvanceSeconds?: T;
+  sections?:
+    | T
+    | {
+        section?: T;
+        hidden?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "business-settings_select".
+ */
+export interface BusinessSettingsSelect<T extends boolean = true> {
+  eyebrow?: T;
+  headline?: T;
+  services?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        url?: T;
+        id?: T;
+      };
+  builderCtaLabel?: T;
+  confirmationMessage?: T;
+  notifyEmails?: T;
+  brands?:
+    | T
+    | {
+        name?: T;
+        logo?: T;
+        url?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "collections_widget".
  */
 export interface CollectionsWidget {
@@ -326,6 +1618,26 @@ export interface CollectionsWidget {
     [k: string]: unknown;
   };
   width: 'full';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskSchedulePublish".
+ */
+export interface TaskSchedulePublish {
+  input: {
+    type?: ('publish' | 'unpublish') | null;
+    locale?: string | null;
+    doc?: {
+      relationTo: 'posts';
+      value: number | Post;
+    } | null;
+    global?: string | null;
+    user?: {
+      relationTo: 'users';
+      value: number | User;
+    } | null;
+  };
+  output?: unknown;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
