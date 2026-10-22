@@ -8,6 +8,7 @@ import { buildConfig } from 'payload'
 import { fileURLToPath } from 'url'
 import sharp from 'sharp'
 
+import { hasRole } from './access'
 import { ArtistCategories } from './collections/ArtistCategories'
 import { Artists } from './collections/Artists'
 import { Boards, PostCategories } from './collections/Boards'
@@ -75,7 +76,6 @@ export default buildConfig({
     },
   }),
   sharp,
-  // 예약된 작업(자동 번역 등)을 10초마다 처리한다. 서버리스 배포에서는 7단계에서 정기 호출로 바꾼다.
   // 메일: RESEND_API_KEY가 있으면 Resend로 실제 발송, 없으면 개발 서버 화면(콘솔)에만 찍힌다
   email: process.env.RESEND_API_KEY
     ? resendAdapter({
@@ -84,10 +84,23 @@ export default buildConfig({
         defaultFromName: process.env.EMAIL_FROM_NAME || 'CUBIT ENTERTAINMENT',
       })
     : undefined,
+  // 예약된 작업(자동 번역 · 알림 메일 · 예약 게시)
+  // - 개발 서버: 10초마다 자동 처리
+  // - Vercel: 서버가 계속 켜져 있지 않으므로 vercel.json의 정기 호출(1분마다)이 /api/payload-jobs/run 을 부른다
   jobs: {
     tasks: [notifyTask],
     autoRun: [{ cron: '*/10 * * * * *', queue: 'default', limit: 10 }],
-    shouldAutoRun: () => process.env.DISABLE_JOB_AUTORUN !== 'true',
+    shouldAutoRun: () => process.env.VERCEL !== '1' && process.env.DISABLE_JOB_AUTORUN !== 'true',
+    access: {
+      // 정기 호출은 CRON_SECRET으로 확인하고, 사람은 최고 관리자만 직접 실행할 수 있다
+      run: ({ req }) => {
+        if (hasRole(req)) return true
+        const secret = process.env.CRON_SECRET
+        return Boolean(secret) && req.headers.get('authorization') === `Bearer ${secret}`
+      },
+      queue: ({ req }) => hasRole(req),
+      cancel: ({ req }) => hasRole(req),
+    },
     // 끝난 작업 기록을 남겨 두어 번역 실패 원인을 확인할 수 있게 한다
     deleteJobOnComplete: false,
     enableConcurrencyControl: true,
