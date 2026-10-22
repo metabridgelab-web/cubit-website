@@ -20,7 +20,7 @@ export const Posts: CollectionConfig = {
   },
   versions: {
     drafts: { schedulePublish: true },
-    maxPerDoc: 30,
+    maxPerDoc: 100,
   },
   defaultSort: '-publishedAt',
   fields: [

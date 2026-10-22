@@ -21,9 +21,9 @@ const upsert = async (
   existing ??= (await payload.find({ collection, where: findBy('ko'), locale: 'ko', limit: 1, depth: 0 })).docs[0]
 
   const doc = existing
-    ? await payload.update({ collection, id: existing.id, locale: 'en', data: en as never, depth: 0, context: { seeding: true } })
-    : await payload.create({ collection, locale: 'en', data: en as never, depth: 0, context: { seeding: true } })
-  await payload.update({ collection, id: doc.id, locale: 'ko', data: ko as never, depth: 0, context: { seeding: true } })
+    ? await payload.update({ collection, id: existing.id, locale: 'en', data: en as never, depth: 0 })
+    : await payload.create({ collection, locale: 'en', data: en as never, depth: 0 })
+  await payload.update({ collection, id: doc.id, locale: 'ko', data: ko as never, depth: 0 })
   payload.logger.info(`${existing ? '갱신' : '추가'}: ${collection} ${JSON.stringify(en.name)}`)
   return doc
 }
@@ -148,7 +148,6 @@ const savedMenu = await payload.updateGlobal({
   slug: 'navigation',
   locale: 'en',
   depth: 0,
-  context: { seeding: true },
   data: {
     ctaLabel: 'Get a campaign quote',
     sections: menu.map(({ en, url, items }) => ({
@@ -162,7 +161,6 @@ await payload.updateGlobal({
   slug: 'navigation',
   locale: 'ko',
   depth: 0,
-  context: { seeding: true },
   data: {
     ctaLabel: '캠페인 견적 받기',
     sections: (savedMenu.sections ?? []).map((section, sectionIndex) => ({

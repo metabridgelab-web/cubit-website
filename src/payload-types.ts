@@ -141,6 +141,7 @@ export interface Config {
   user: User;
   jobs: {
     tasks: {
+      translateDocument: TaskTranslateDocument;
       schedulePublish: TaskSchedulePublish;
       inline: {
         input: unknown;
@@ -200,6 +201,27 @@ export interface HomeSlide {
    * 비우면 계속 노출
    */
   endAt?: string | null;
+  /**
+   * 영어 원문을 저장하면 자동 번역됩니다. 다시 번역하려면 상태를 "다시 번역"으로 바꾸고 저장하세요.
+   */
+  translationStatus?:
+    | {
+        locale: 'en' | 'ko' | 'zh' | 'ja' | 'es' | 'fr' | 'pt' | 'ru' | 'ar' | 'hi' | 'bn' | 'id';
+        status: 'pending' | 'auto' | 'reviewed' | 'outdated' | 'failed';
+        updatedAt?: string | null;
+        note?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  translationMeta?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -284,6 +306,27 @@ export interface Artist {
    * 숫자가 작을수록 앞에 보입니다.
    */
   sortOrder?: number | null;
+  /**
+   * 영어 원문을 저장하면 자동 번역됩니다. 다시 번역하려면 상태를 "다시 번역"으로 바꾸고 저장하세요.
+   */
+  translationStatus?:
+    | {
+        locale: 'en' | 'ko' | 'zh' | 'ja' | 'es' | 'fr' | 'pt' | 'ru' | 'ar' | 'hi' | 'bn' | 'id';
+        status: 'pending' | 'auto' | 'reviewed' | 'outdated' | 'failed';
+        updatedAt?: string | null;
+        note?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  translationMeta?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -308,6 +351,27 @@ export interface ArtistCategory {
    * 숫자가 작을수록 앞에 보입니다.
    */
   sortOrder?: number | null;
+  /**
+   * 영어 원문을 저장하면 자동 번역됩니다. 다시 번역하려면 상태를 "다시 번역"으로 바꾸고 저장하세요.
+   */
+  translationStatus?:
+    | {
+        locale: 'en' | 'ko' | 'zh' | 'ja' | 'es' | 'fr' | 'pt' | 'ru' | 'ar' | 'hi' | 'bn' | 'id';
+        status: 'pending' | 'auto' | 'reviewed' | 'outdated' | 'failed';
+        updatedAt?: string | null;
+        note?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  translationMeta?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -323,6 +387,27 @@ export interface Media {
    * 사진을 볼 수 없는 사람(화면 낭독기)과 검색엔진을 위한 짧은 설명. 예: "AI-01 프로필 사진"
    */
   alt?: string | null;
+  /**
+   * 영어 원문을 저장하면 자동 번역됩니다. 다시 번역하려면 상태를 "다시 번역"으로 바꾸고 저장하세요.
+   */
+  translationStatus?:
+    | {
+        locale: 'en' | 'ko' | 'zh' | 'ja' | 'es' | 'fr' | 'pt' | 'ru' | 'ar' | 'hi' | 'bn' | 'id';
+        status: 'pending' | 'auto' | 'reviewed' | 'outdated' | 'failed';
+        updatedAt?: string | null;
+        note?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  translationMeta?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   folder?: (number | null) | FolderInterface;
   updatedAt: string;
   createdAt: string;
@@ -415,6 +500,27 @@ export interface Board {
    * 숫자가 작을수록 앞에 보입니다.
    */
   sortOrder?: number | null;
+  /**
+   * 영어 원문을 저장하면 자동 번역됩니다. 다시 번역하려면 상태를 "다시 번역"으로 바꾸고 저장하세요.
+   */
+  translationStatus?:
+    | {
+        locale: 'en' | 'ko' | 'zh' | 'ja' | 'es' | 'fr' | 'pt' | 'ru' | 'ar' | 'hi' | 'bn' | 'id';
+        status: 'pending' | 'auto' | 'reviewed' | 'outdated' | 'failed';
+        updatedAt?: string | null;
+        note?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  translationMeta?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -430,6 +536,27 @@ export interface PostCategory {
    * 숫자가 작을수록 앞에 보입니다.
    */
   sortOrder?: number | null;
+  /**
+   * 영어 원문을 저장하면 자동 번역됩니다. 다시 번역하려면 상태를 "다시 번역"으로 바꾸고 저장하세요.
+   */
+  translationStatus?:
+    | {
+        locale: 'en' | 'ko' | 'zh' | 'ja' | 'es' | 'fr' | 'pt' | 'ru' | 'ar' | 'hi' | 'bn' | 'id';
+        status: 'pending' | 'auto' | 'reviewed' | 'outdated' | 'failed';
+        updatedAt?: string | null;
+        note?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  translationMeta?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -479,6 +606,27 @@ export interface Post {
    * 사칭 주의처럼 중요한 글을 목록 맨 위에 고정합니다.
    */
   pinned?: boolean | null;
+  /**
+   * 영어 원문을 저장하면 자동 번역됩니다. 다시 번역하려면 상태를 "다시 번역"으로 바꾸고 저장하세요.
+   */
+  translationStatus?:
+    | {
+        locale: 'en' | 'ko' | 'zh' | 'ja' | 'es' | 'fr' | 'pt' | 'ru' | 'ar' | 'hi' | 'bn' | 'id';
+        status: 'pending' | 'auto' | 'reviewed' | 'outdated' | 'failed';
+        updatedAt?: string | null;
+        note?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  translationMeta?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -517,6 +665,27 @@ export interface CaseStudy {
    */
   generateSlug?: boolean | null;
   slug: string;
+  /**
+   * 영어 원문을 저장하면 자동 번역됩니다. 다시 번역하려면 상태를 "다시 번역"으로 바꾸고 저장하세요.
+   */
+  translationStatus?:
+    | {
+        locale: 'en' | 'ko' | 'zh' | 'ja' | 'es' | 'fr' | 'pt' | 'ru' | 'ar' | 'hi' | 'bn' | 'id';
+        status: 'pending' | 'auto' | 'reviewed' | 'outdated' | 'failed';
+        updatedAt?: string | null;
+        note?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  translationMeta?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -621,6 +790,27 @@ export interface Page {
    * 개인정보처리방침 · 위험 고지처럼 법적 문서는 체크하세요. 자동 번역만으로는 게시되지 않습니다.
    */
   reviewRequired?: boolean | null;
+  /**
+   * 영어 원문을 저장하면 자동 번역됩니다. 다시 번역하려면 상태를 "다시 번역"으로 바꾸고 저장하세요.
+   */
+  translationStatus?:
+    | {
+        locale: 'en' | 'ko' | 'zh' | 'ja' | 'es' | 'fr' | 'pt' | 'ru' | 'ar' | 'hi' | 'bn' | 'id';
+        status: 'pending' | 'auto' | 'reviewed' | 'outdated' | 'failed';
+        updatedAt?: string | null;
+        note?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  translationMeta?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -793,7 +983,7 @@ export interface PayloadJob {
     | {
         executedAt: string;
         completedAt: string;
-        taskSlug: 'inline' | 'schedulePublish';
+        taskSlug: 'inline' | 'translateDocument' | 'schedulePublish';
         taskID: string;
         input?:
           | {
@@ -826,10 +1016,14 @@ export interface PayloadJob {
         id?: string | null;
       }[]
     | null;
-  taskSlug?: ('inline' | 'schedulePublish') | null;
+  taskSlug?: ('inline' | 'translateDocument' | 'schedulePublish') | null;
   queue?: string | null;
   waitUntil?: string | null;
   processing?: boolean | null;
+  /**
+   * Used for concurrency control. Jobs with the same key are subject to exclusive/supersedes rules.
+   */
+  concurrencyKey?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -955,6 +1149,16 @@ export interface HomeSlidesSelect<T extends boolean = true> {
   active?: T;
   startAt?: T;
   endAt?: T;
+  translationStatus?:
+    | T
+    | {
+        locale?: T;
+        status?: T;
+        updatedAt?: T;
+        note?: T;
+        id?: T;
+      };
+  translationMeta?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -968,6 +1172,16 @@ export interface ArtistCategoriesSelect<T extends boolean = true> {
   slug?: T;
   disclaimer?: T;
   sortOrder?: T;
+  translationStatus?:
+    | T
+    | {
+        locale?: T;
+        status?: T;
+        updatedAt?: T;
+        note?: T;
+        id?: T;
+      };
+  translationMeta?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1010,6 +1224,16 @@ export interface ArtistsSelect<T extends boolean = true> {
   slug?: T;
   featured?: T;
   sortOrder?: T;
+  translationStatus?:
+    | T
+    | {
+        locale?: T;
+        status?: T;
+        updatedAt?: T;
+        note?: T;
+        id?: T;
+      };
+  translationMeta?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -1024,6 +1248,16 @@ export interface BoardsSelect<T extends boolean = true> {
   slug?: T;
   description?: T;
   sortOrder?: T;
+  translationStatus?:
+    | T
+    | {
+        locale?: T;
+        status?: T;
+        updatedAt?: T;
+        note?: T;
+        id?: T;
+      };
+  translationMeta?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1035,6 +1269,16 @@ export interface PostCategoriesSelect<T extends boolean = true> {
   name?: T;
   board?: T;
   sortOrder?: T;
+  translationStatus?:
+    | T
+    | {
+        locale?: T;
+        status?: T;
+        updatedAt?: T;
+        note?: T;
+        id?: T;
+      };
+  translationMeta?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1054,6 +1298,16 @@ export interface PostsSelect<T extends boolean = true> {
   slug?: T;
   publishedAt?: T;
   pinned?: T;
+  translationStatus?:
+    | T
+    | {
+        locale?: T;
+        status?: T;
+        updatedAt?: T;
+        note?: T;
+        id?: T;
+      };
+  translationMeta?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -1074,6 +1328,16 @@ export interface CaseStudiesSelect<T extends boolean = true> {
   gallery?: T;
   generateSlug?: T;
   slug?: T;
+  translationStatus?:
+    | T
+    | {
+        locale?: T;
+        status?: T;
+        updatedAt?: T;
+        note?: T;
+        id?: T;
+      };
+  translationMeta?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -1158,6 +1422,16 @@ export interface PagesSelect<T extends boolean = true> {
   generateSlug?: T;
   slug?: T;
   reviewRequired?: T;
+  translationStatus?:
+    | T
+    | {
+        locale?: T;
+        status?: T;
+        updatedAt?: T;
+        note?: T;
+        id?: T;
+      };
+  translationMeta?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -1210,6 +1484,16 @@ export interface InquiriesSelect<T extends boolean = true> {
  */
 export interface MediaSelect<T extends boolean = true> {
   alt?: T;
+  translationStatus?:
+    | T
+    | {
+        locale?: T;
+        status?: T;
+        updatedAt?: T;
+        note?: T;
+        id?: T;
+      };
+  translationMeta?: T;
   folder?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -1338,6 +1622,7 @@ export interface PayloadJobsSelect<T extends boolean = true> {
   queue?: T;
   waitUntil?: T;
   processing?: T;
+  concurrencyKey?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1418,6 +1703,27 @@ export interface SiteSetting {
    */
   policyLinks?: (number | Page)[] | null;
   cookieBannerText?: string | null;
+  /**
+   * 영어 원문을 저장하면 자동 번역됩니다. 다시 번역하려면 상태를 "다시 번역"으로 바꾸고 저장하세요.
+   */
+  translationStatus?:
+    | {
+        locale: 'en' | 'ko' | 'zh' | 'ja' | 'es' | 'fr' | 'pt' | 'ru' | 'ar' | 'hi' | 'bn' | 'id';
+        status: 'pending' | 'auto' | 'reviewed' | 'outdated' | 'failed';
+        updatedAt?: string | null;
+        note?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  translationMeta?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -1448,6 +1754,27 @@ export interface Navigation {
       }[]
     | null;
   ctaLabel?: string | null;
+  /**
+   * 영어 원문을 저장하면 자동 번역됩니다. 다시 번역하려면 상태를 "다시 번역"으로 바꾸고 저장하세요.
+   */
+  translationStatus?:
+    | {
+        locale: 'en' | 'ko' | 'zh' | 'ja' | 'es' | 'fr' | 'pt' | 'ru' | 'ar' | 'hi' | 'bn' | 'id';
+        status: 'pending' | 'auto' | 'reviewed' | 'outdated' | 'failed';
+        updatedAt?: string | null;
+        note?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  translationMeta?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -1504,6 +1831,27 @@ export interface BusinessSetting {
         id?: string | null;
       }[]
     | null;
+  /**
+   * 영어 원문을 저장하면 자동 번역됩니다. 다시 번역하려면 상태를 "다시 번역"으로 바꾸고 저장하세요.
+   */
+  translationStatus?:
+    | {
+        locale: 'en' | 'ko' | 'zh' | 'ja' | 'es' | 'fr' | 'pt' | 'ru' | 'ar' | 'hi' | 'bn' | 'id';
+        status: 'pending' | 'auto' | 'reviewed' | 'outdated' | 'failed';
+        updatedAt?: string | null;
+        note?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  translationMeta?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -1533,6 +1881,16 @@ export interface SiteSettingsSelect<T extends boolean = true> {
   copyright?: T;
   policyLinks?: T;
   cookieBannerText?: T;
+  translationStatus?:
+    | T
+    | {
+        locale?: T;
+        status?: T;
+        updatedAt?: T;
+        note?: T;
+        id?: T;
+      };
+  translationMeta?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
@@ -1558,6 +1916,16 @@ export interface NavigationSelect<T extends boolean = true> {
         id?: T;
       };
   ctaLabel?: T;
+  translationStatus?:
+    | T
+    | {
+        locale?: T;
+        status?: T;
+        updatedAt?: T;
+        note?: T;
+        id?: T;
+      };
+  translationMeta?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
@@ -1605,6 +1973,16 @@ export interface BusinessSettingsSelect<T extends boolean = true> {
         url?: T;
         id?: T;
       };
+  translationStatus?:
+    | T
+    | {
+        locale?: T;
+        status?: T;
+        updatedAt?: T;
+        note?: T;
+        id?: T;
+      };
+  translationMeta?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
@@ -1618,6 +1996,18 @@ export interface CollectionsWidget {
     [k: string]: unknown;
   };
   width: 'full';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskTranslateDocument".
+ */
+export interface TaskTranslateDocument {
+  input: {
+    kind: string;
+    slug: string;
+    id?: string | null;
+  };
+  output?: unknown;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

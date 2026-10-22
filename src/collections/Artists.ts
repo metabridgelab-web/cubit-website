@@ -18,7 +18,7 @@ export const Artists: CollectionConfig = {
     update: canUpdateContent,
     delete: canEditContent,
   },
-  versions: { drafts: true, maxPerDoc: 30 },
+  versions: { drafts: true, maxPerDoc: 100 },
   defaultSort: 'sortOrder',
   fields: [
     {

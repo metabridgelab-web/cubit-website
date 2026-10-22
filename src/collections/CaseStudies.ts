@@ -17,7 +17,7 @@ export const CaseStudies: CollectionConfig = {
     update: ({ req }) => hasRole(req, 'editor', 'translator', 'sales'),
     delete: canEditContent,
   },
-  versions: { drafts: true, maxPerDoc: 20 },
+  versions: { drafts: true, maxPerDoc: 100 },
   defaultSort: '-date',
   fields: [
     { name: 'title', label: '캠페인 이름', type: 'text', required: true, localized: true },

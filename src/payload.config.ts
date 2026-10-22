@@ -20,6 +20,7 @@ import { Posts } from './collections/Posts'
 import { Users } from './collections/Users'
 import { DEFAULT_LOCALE, LOCALES } from './constants/locales'
 import { globals } from './globals'
+import { translationPlugin } from './translation/plugin'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -72,5 +73,14 @@ export default buildConfig({
     },
   }),
   sharp,
-  plugins: [],
+  // 예약된 작업(자동 번역 등)을 10초마다 처리한다. 서버리스 배포에서는 7단계에서 정기 호출로 바꾼다.
+  jobs: {
+    tasks: [],
+    autoRun: [{ cron: '*/10 * * * * *', queue: 'default', limit: 10 }],
+    shouldAutoRun: () => process.env.DISABLE_JOB_AUTORUN !== 'true',
+    // 끝난 작업 기록을 남겨 두어 번역 실패 원인을 확인할 수 있게 한다
+    deleteJobOnComplete: false,
+    enableConcurrencyControl: true,
+  },
+  plugins: [translationPlugin({ exclude: ['users', 'glossary'] })],
 })

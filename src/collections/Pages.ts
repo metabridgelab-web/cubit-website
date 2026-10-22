@@ -90,7 +90,7 @@ export const Pages: CollectionConfig = {
     update: canUpdateContent,
     delete: canEditContent,
   },
-  versions: { drafts: true, maxPerDoc: 30 },
+  versions: { drafts: true, maxPerDoc: 100 },
   fields: [
     { name: 'title', label: '페이지 제목', type: 'text', required: true, localized: true },
     { name: 'intro', label: '첫 문단', type: 'textarea', localized: true },
