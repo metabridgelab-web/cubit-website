@@ -28,7 +28,6 @@ export const submissionFields: Field[] = [
     label: '접수 언어',
     type: 'select',
     options: LOCALE_OPTIONS,
-    defaultValue: DEFAULT_LOCALE,
     admin: { position: 'sidebar', readOnly: true, description: '요청자가 사이트를 보던 언어. 접수 확인 메일이 이 언어로 갑니다.' },
   },
   {
@@ -47,8 +46,12 @@ export const submissionFields: Field[] = [
   },
 ]
 
+// 배포 플랫폼(Vercel)이 직접 붙이는 주소를 먼저 믿고, 없으면 일반 프록시 주소를 쓴다
 const clientIp = (req: PayloadRequest) =>
-  req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || req.headers.get('x-real-ip') || 'unknown'
+  req.headers.get('x-vercel-forwarded-for')?.split(',')[0]?.trim() ||
+  req.headers.get('x-real-ip') ||
+  req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
+  'unknown'
 
 const hashIp = (ip: string) =>
   createHash('sha256')
@@ -76,7 +79,8 @@ export const guardSubmission =
     }
 
     const locale = LOCALES.some((l) => l.code === req.locale) ? (req.locale as LocaleCode) : DEFAULT_LOCALE
-    return { ...data, ipHash, website: null, submittedLocale: data.submittedLocale ?? locale }
+    // 접수 언어는 요청 주소의 ?locale= 값(방문자가 보던 언어)으로 정한다
+    return { ...data, ipHash, website: null, submittedLocale: locale }
   }
 
 export const queueNotification =
