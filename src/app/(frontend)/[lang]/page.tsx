@@ -1,7 +1,9 @@
-import Link from 'next/link'
+import type { ReactNode } from 'react'
 
-import { localePath } from '@/i18n'
+import { HeroSlider, type HeroSlide } from '@/components/home/HeroSlider'
+import { ArtistsSection, BusinessSection, NewReleaseSection, PostsSection } from '@/components/home/Sections'
 import {
+  getArtistCategories,
   getArtists,
   getBoard,
   getBusinessSettings,
@@ -11,16 +13,17 @@ import {
   getPosts,
   getUiLabels,
 } from '@/lib/data'
-import { mediaUrl, resolveLocale, type LangParams } from '@/lib/page'
+import { mediaUrl, resolveLocale, youtubeId, type LangParams } from '@/lib/page'
 
-// 홈. 디자인 적용 전 임시 뼈대: 데이터가 제대로 나오는지 확인하는 용도.
+// 홈: 화면 전체 영상 슬라이드 + 관리자 화면 "홈 화면 설정" 순서대로 섹션
 export default async function HomePage({ params }: { params: Promise<LangParams> }) {
   const locale = await resolveLocale(params)
-  const [labels, settings, slides, business, newsBoard, noticeBoard] = await Promise.all([
+  const [labels, settings, slides, business, categories, newsBoard, noticeBoard] = await Promise.all([
     getUiLabels(locale),
     getHomeSettings(),
     getHomeSlides(locale),
     getBusinessSettings(locale),
+    getArtistCategories(locale),
     getBoard('news', locale),
     getBoard('notice', locale),
   ])
@@ -31,113 +34,58 @@ export default async function HomePage({ params }: { params: Promise<LangParams>
     noticeBoard ? getPosts(locale, { boardId: noticeBoard.id, limit: 3 }) : null,
   ])
 
-  const sections: Record<string, React.ReactNode> = {
-    'new-release': (
-      <section key="new-release">
-        <h2>{labels.home.newRelease}</h2>
-        <ul>
-          {releases.map((video) => (
-            <li key={video.id}>
-              {video.artist.name} — {video.title} ({video.releaseDate?.slice(0, 10)}){' '}
-              <a href={video.youtubeUrl} target="_blank" rel="noopener noreferrer">
-                {labels.common.watchMv}
-              </a>
-            </li>
-          ))}
-        </ul>
-      </section>
-    ),
-    artists: (
-      <section key="artists">
-        <h2>{labels.home.artists}</h2>
-        <ul>
-          {artists.map((artist) => {
-            const category = artist.categories?.[0]
-            const slug = typeof category === 'object' ? category.slug : ''
-            return (
-              <li key={artist.id}>
-                <Link href={localePath(locale, `/artists/${slug}/${artist.slug}`)}>{artist.name}</Link>
-              </li>
-            )
-          })}
-        </ul>
-        <Link href={localePath(locale, '/artists')}>{labels.common.viewAll}</Link>
-      </section>
-    ),
-    business: (
-      <section key="business">
-        <p>{business.eyebrow}</p>
-        <h2>{business.headline}</h2>
-        <ol>
-          {(business.services ?? []).map((service) => (
-            <li key={service.id}>
-              <h3>{service.title}</h3>
-              <p>{service.description}</p>
-            </li>
-          ))}
-        </ol>
-        <Link href={localePath(locale, '/business/campaign')}>{business.builderCtaLabel}</Link>
-        <ul>
-          {(business.brands ?? []).map((brand) => {
-            const logo = mediaUrl(brand.logo, 'thumbnail')
-            return <li key={brand.id}>{logo ? <img src={logo} alt={brand.name} /> : brand.name}</li>
-          })}
-        </ul>
-        <Link href={localePath(locale, '/business/works')}>{labels.common.viewAll}</Link>
-      </section>
-    ),
-    news: (
-      <section key="news">
-        <h2>{labels.home.news}</h2>
-        <ul>
-          {(news?.docs ?? []).map((post) => (
-            <li key={post.id}>
-              <Link href={localePath(locale, `/news/article/${post.slug}`)}>{post.title}</Link> {post.publishedAt?.slice(0, 10)}
-            </li>
-          ))}
-        </ul>
-        <Link href={localePath(locale, '/news')}>{labels.common.viewAll}</Link>
-      </section>
-    ),
-    notice: (
-      <section key="notice">
-        <h2>{labels.home.notice}</h2>
-        <ul>
-          {(notices?.docs ?? []).map((post) => (
-            <li key={post.id}>
-              {post.pinned ? '* ' : ''}
-              <Link href={localePath(locale, `/news/article/${post.slug}`)}>{post.title}</Link>
-            </li>
-          ))}
-        </ul>
-      </section>
-    ),
+  const heroSlides: HeroSlide[] = slides.map((slide) => {
+    const artistName = typeof slide.artist === 'object' && slide.artist ? slide.artist.name : ''
+    const file = slide.videoSource === 'file' ? mediaUrl(slide.videoFile) : null
+    const yt = slide.videoSource === 'youtube' ? youtubeId(slide.youtubeUrl) : null
+    return {
+      id: String(slide.id),
+      headline: slide.headline || artistName || slide.title,
+      title: slide.title,
+      releaseDate: slide.releaseDate ?? null,
+      video: file ? { type: 'file', src: file } : yt ? { type: 'youtube', id: yt } : null,
+      poster: mediaUrl(slide.poster, 'hero'),
+      mvUrl: slide.mvUrl ?? null,
+    }
+  })
+
+  let n = 0
+  const section = (key: string): ReactNode => {
+    switch (key) {
+      case 'new-release':
+        return releases.length ? <NewReleaseSection key={key} index={++n} locale={locale} labels={labels} releases={releases} /> : null
+      case 'artists':
+        return artists.length ? <ArtistsSection key={key} index={++n} locale={locale} labels={labels} artists={artists} categories={categories} /> : null
+      case 'business':
+        return <BusinessSection key={key} index={++n} locale={locale} labels={labels} business={business} />
+      case 'news':
+        return news?.docs.length ? (
+          <PostsSection key={key} index={++n} locale={locale} labels={labels} eyebrow="Global feed" title={labels.home.news} posts={news.docs} href="/news" />
+        ) : null
+      case 'notice':
+        return notices?.docs.length ? (
+          <PostsSection key={key} index={++n} locale={locale} labels={labels} eyebrow="Priority transmissions" title={labels.home.notice} posts={notices.docs} href="/news/notice" />
+        ) : null
+      default:
+        return null
+    }
   }
 
   return (
     <>
-      <section aria-label="Main visual">
-        <ol>
-          {slides.map((slide) => (
-            <li key={slide.id}>
-              <strong>{typeof slide.artist === 'object' && slide.artist ? slide.artist.name : ''}</strong> — {slide.title}{' '}
-              {slide.releaseDate?.slice(0, 10)} ({slide.videoSource === 'file' ? mediaUrl(slide.videoFile) : slide.youtubeUrl})
-              {slide.mvUrl ? (
-                <>
-                  {' '}
-                  <a href={slide.mvUrl} target="_blank" rel="noopener noreferrer">
-                    {labels.common.watchMv}
-                  </a>
-                </>
-              ) : null}
-            </li>
-          ))}
-        </ol>
-        <p>
-          {labels.common.next}: {settings.autoAdvanceSeconds}s
-        </p>
-      </section>
-      {(settings.sections ?? []).filter((row) => !row.hidden).map((row) => sections[row.section])}
+      <HeroSlider
+        slides={heroSlides}
+        autoAdvanceSeconds={settings.autoAdvanceSeconds ?? 8}
+        labels={{
+          watchMv: labels.common.watchMv,
+          prev: labels.common.prev,
+          next: labels.common.next,
+          soundOn: labels.common.soundOn,
+          soundOff: labels.common.soundOff,
+          scrollDown: labels.home.scrollDown,
+        }}
+      />
+      {(settings.sections ?? []).filter((row) => !row.hidden).map((row) => section(row.section))}
     </>
   )
 }

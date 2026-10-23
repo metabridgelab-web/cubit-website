@@ -132,6 +132,13 @@ export const Navigation: GlobalConfig = {
           ],
         },
         {
+          name: 'previewImage',
+          label: '미리보기 사진',
+          type: 'upload',
+          relationTo: 'media',
+          admin: { description: '전체 화면 메뉴에서 이 섹션에 마우스를 올리면 오른쪽 화면에 보이는 사진' },
+        },
+        {
           name: 'items',
           label: '하위 메뉴',
           type: 'array',
@@ -168,7 +175,7 @@ export const HomeSettings: GlobalConfig = {
       defaultValue: 8,
       min: 3,
       max: 60,
-      admin: { description: '영상이 이 시간보다 짧으면 영상이 끝날 때 넘어갑니다.' },
+      admin: { description: 'YouTube 영상이나 사진만 있는 슬라이드가 머무는 시간. 직접 올린 영상은 끝까지 재생된 뒤 넘어갑니다.' },
     },
     {
       name: 'sections',

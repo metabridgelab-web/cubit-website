@@ -1,0 +1,207 @@
+@import 'tailwindcss';
+
+/* 디자인 기준: design/01~09 (검은 배경 + 홀로그램 색 + HUD 효과) */
+@theme {
+  --color-void: #000000;
+  --color-cyan: #00f3ff;
+  --color-pink: #ff00e5;
+  --color-lime: #d4ff00;
+  --color-line: rgb(255 255 255 / 0.15);
+  --color-glass: rgb(255 255 255 / 0.03);
+
+  --font-sans: var(--font-inter), var(--font-cjk), var(--font-noto-kr), var(--font-noto-ar), var(--font-noto-hi),
+    var(--font-noto-bn), system-ui, sans-serif;
+  --font-mono: var(--font-space-mono), var(--font-cjk), var(--font-noto-kr), ui-monospace, monospace;
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* 한자 모양은 언어마다 다르므로 일본어·중국어는 각자 글꼴을 먼저 쓴다 */
+:root {
+  --font-cjk: var(--font-noto-kr);
+}
+:root:lang(ja) {
+  --font-cjk: var(--font-noto-jp);
+}
+:root:lang(zh) {
+  --font-cjk: var(--font-noto-sc);
+}
+
+@layer base {
+  html {
+    background: var(--color-void);
+    color: #fff;
+    -webkit-font-smoothing: antialiased;
+  }
+  body {
+    font-family: var(--font-sans);
+    min-height: 100dvh;
+  }
+  ::selection {
+    background: var(--color-cyan);
+    color: #000;
+  }
+  :focus-visible {
+    outline: 1px solid var(--color-cyan);
+    outline-offset: 3px;
+  }
+}
+
+@layer components {
+  /* 무지개빛 버튼 (캠페인 견적 등) */
+  .btn-irid {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: 9999px;
+    padding: 0.75rem 2rem;
+    background: linear-gradient(90deg, var(--color-cyan), var(--color-pink));
+    color: #000;
+    font-weight: 700;
+    font-size: 0.8125rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    transition:
+      transform 0.3s var(--ease-out-expo),
+      box-shadow 0.3s ease;
+  }
+  .btn-irid:hover {
+    transform: scale(1.04);
+    box-shadow: 0 0 24px rgb(0 243 255 / 0.4);
+  }
+
+  /* 테두리만 있는 버튼 */
+  .btn-line {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border: 1px solid var(--color-line);
+    border-radius: 9999px;
+    padding: 0.75rem 1.5rem;
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    transition: all 0.3s ease;
+  }
+  .btn-line:hover {
+    background: #fff;
+    color: #000;
+    border-color: #fff;
+  }
+
+  /* 작은 정보 글자 (HUD 라벨) */
+  .hud-label {
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgb(255 255 255 / 0.45);
+  }
+
+  /* 유리 느낌 카드 */
+  .glass {
+    background: var(--color-glass);
+    border: 1px solid var(--color-line);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
+
+  /* 무지개빛 글자 */
+  .text-irid {
+    background: linear-gradient(90deg, var(--color-cyan), var(--color-pink), var(--color-lime));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  /* 로고 앞 회전하는 동그라미 */
+  .logo-orb {
+    position: relative;
+    width: 24px;
+    height: 24px;
+    border: 2px solid #fff;
+    border-radius: 9999px;
+    flex: none;
+  }
+  .logo-orb::after {
+    content: '';
+    position: absolute;
+    inset: 2px;
+    border-radius: 9999px;
+    background: linear-gradient(45deg, var(--color-cyan), var(--color-pink), var(--color-lime));
+    animation: orb-rotate 4s linear infinite;
+  }
+
+  /* 화면을 위에서 아래로 지나가는 스캔라인 */
+  .scanline {
+    position: absolute;
+    inset-inline: 0;
+    top: -100px;
+    height: 100px;
+    background: linear-gradient(to bottom, transparent, rgb(0 243 255 / 0.05), transparent);
+    animation: scan 8s linear infinite;
+    pointer-events: none;
+  }
+  .scanlines {
+    background: repeating-linear-gradient(0deg, rgb(0 0 0 / 0.12), rgb(0 0 0 / 0.12) 1px, transparent 1px, transparent 2px);
+    pointer-events: none;
+  }
+
+  /* 네 귀퉁이 HUD 괄호 */
+  .hud-bracket {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border: 1px solid var(--color-cyan);
+  }
+}
+
+@keyframes orb-rotate {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes scan {
+  to {
+    top: 100%;
+  }
+}
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+@keyframes float-up {
+  to {
+    transform: translateY(-100vh) translateX(50px);
+  }
+}
+
+/* 아랍어는 글자가 이어지는 문자라 글자 간격을 넣으면 끊어져 보인다 → 간격과 대문자 효과를 끈다 */
+:root:lang(ar) * {
+  letter-spacing: 0 !important;
+}
+/* 한국어·일본어·중국어는 넓은 글자 간격이 어색하므로 줄인다 */
+:root:lang(ko) :is(.hud-label, .tracking-wide-cjk),
+:root:lang(ja) :is(.hud-label, .tracking-wide-cjk),
+:root:lang(zh) :is(.hud-label, .tracking-wide-cjk) {
+  letter-spacing: 0.08em;
+}
+/* 한국어는 단어 중간에서 줄이 바뀌지 않게 한다 */
+:root:lang(ko) {
+  word-break: keep-all;
+}
+
+/* 움직임 줄이기를 켠 방문자에게는 장식 움직임을 멈춘다 */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

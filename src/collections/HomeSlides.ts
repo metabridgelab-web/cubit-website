@@ -11,7 +11,7 @@ export const HomeSlides: CollectionConfig = {
     useAsTitle: 'title',
     defaultColumns: ['title', 'artist', 'videoSource', 'active', 'startAt', 'endAt'],
     group: '홈 관리',
-    description: '5~10개를 권장합니다. 목록에서 끌어서 순서를 바꿀 수 있습니다.',
+    description: '5~10개를 권장합니다. 목록에서 끌어서 순서를 바꿀 수 있습니다. 직접 올린 영상은 끝까지 재생된 뒤 다음 슬라이드로 넘어갑니다.',
   },
   access: {
     read: anyone,
@@ -45,6 +45,12 @@ export const HomeSlides: CollectionConfig = {
           admin: { width: '50%', date: { pickerAppearance: 'dayOnly' } },
         },
       ],
+    },
+    {
+      name: 'headline',
+      label: '큰 글자',
+      type: 'text',
+      admin: { description: '화면 가운데 크게 보이는 이름. 비우면 아티스트 이름이 나옵니다. 예: 계열사 소개 영상이면 "VIONA"' },
     },
     {
       name: 'videoSource',

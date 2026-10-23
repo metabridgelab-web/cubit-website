@@ -31,6 +31,18 @@ export const UI_LABELS = {
       news: 'News',
       notice: 'Notice',
       scrollDown: 'Scroll down',
+      pinned: 'Pinned',
+    },
+  },
+  business: {
+    label: '비즈니스',
+    items: {
+      step1: 'Choose talent',
+      step2: 'Usage: Ads · Video · Social',
+      step3: 'Period & Region',
+      step4: 'Languages',
+      brandsTitle: "Brands we've worked with",
+      viewCases: 'View case studies',
     },
   },
   artist: {

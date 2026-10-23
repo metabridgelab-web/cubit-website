@@ -1,7 +1,7 @@
 import type { CollectionConfig, Field } from 'payload'
 
 import { anyone, canHandleInbox, inboxFieldAccess, isAdmin } from '../access'
-import { LOCALE_OPTIONS } from '../constants/locales'
+import { CAMPAIGN_LANGUAGES, CAMPAIGN_REGIONS, CAMPAIGN_USAGES } from '../constants/campaign'
 import { guardSubmission, queueNotification, submissionFields } from '../inbox'
 
 // 접수함 공통: 처리 상태 · 담당자 · 내부 메모 (방문자는 볼 수도, 넣을 수도 없음)
@@ -93,12 +93,7 @@ export const QuoteRequests: CollectionConfig = {
       type: 'select',
       hasMany: true,
       required: true,
-      options: [
-        { label: '광고', value: 'ads' },
-        { label: '영상', value: 'video' },
-        { label: 'SNS', value: 'social' },
-        { label: '기타', value: 'other' },
-      ],
+      options: [...CAMPAIGN_USAGES],
     },
     {
       type: 'row',
@@ -108,25 +103,25 @@ export const QuoteRequests: CollectionConfig = {
       ],
     },
     {
-      name: 'worldwide',
-      label: '전 세계 사용',
-      type: 'checkbox',
-      defaultValue: false,
+      name: 'regions',
+      label: '사용 지역',
+      type: 'select',
+      hasMany: true,
+      options: [...CAMPAIGN_REGIONS],
     },
     {
-      name: 'regions',
-      label: '사용 국가',
+      name: 'regionsOther',
+      label: '기타 국가 (직접 입력)',
       type: 'text',
       hasMany: true,
       maxRows: 50,
-      admin: { condition: (_, siblingData) => !siblingData?.worldwide },
     },
     {
       name: 'languages',
       label: '사용 언어',
       type: 'select',
       hasMany: true,
-      options: LOCALE_OPTIONS,
+      options: [...CAMPAIGN_LANGUAGES],
     },
     ...contactFields,
     ...submissionFields,

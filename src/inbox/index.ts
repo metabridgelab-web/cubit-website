@@ -9,6 +9,7 @@ import {
 } from 'payload'
 
 import { hasRole } from '../access'
+import { CAMPAIGN_LANGUAGES, CAMPAIGN_REGIONS, CAMPAIGN_USAGES, labelOf } from '../constants/campaign'
 import { DEFAULT_LOCALE, LOCALE_OPTIONS, LOCALES, type LocaleCode } from '../constants/locales'
 
 // 방문자가 보내는 접수(견적 요청 · 문의) 공통 처리
@@ -100,7 +101,6 @@ const table = (rows: [string, unknown][]) =>
     .map(([label, value]) => `<tr><td style="color:#666;vertical-align:top">${escapeHtml(label)}</td><td>${escapeHtml(value)}</td></tr>`)
     .join('')}</table>`
 
-const USAGE_LABELS: Record<string, string> = { ads: '광고', video: '영상', social: 'SNS', other: '기타' }
 const TYPE_LABELS: Record<string, string> = { partnership: '제휴', press: '언론', investment: '투자', other: '기타' }
 
 export const notifyTask: TaskConfig = {
@@ -130,10 +130,10 @@ export const notifyTask: TaskConfig = {
         ['이메일', doc.email],
         ['연락처', doc.phone],
         ['탤런트', talents],
-        ['용도', (doc.usage ?? []).map((u) => USAGE_LABELS[u] ?? u).join(', ')],
+        ['용도', (doc.usage ?? []).map((u) => labelOf(CAMPAIGN_USAGES, u)).join(', ')],
         ['기간', [doc.periodStart?.slice(0, 10), doc.periodEnd?.slice(0, 10)].filter(Boolean).join(' ~ ')],
-        ['지역', doc.worldwide ? '전 세계' : (doc.regions ?? []).join(', ')],
-        ['언어', (doc.languages ?? []).join(', ')],
+        ['지역', [...(doc.regions ?? []).map((r) => labelOf(CAMPAIGN_REGIONS, r)), ...(doc.regionsOther ?? [])].join(', ')],
+        ['언어', (doc.languages ?? []).map((l) => labelOf(CAMPAIGN_LANGUAGES, l)).join(', ')],
         ['요청 사항', doc.message],
       ])
 

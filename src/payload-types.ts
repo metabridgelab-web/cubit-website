@@ -173,7 +173,7 @@ export interface UserAuthOperations {
   };
 }
 /**
- * 5~10개를 권장합니다. 목록에서 끌어서 순서를 바꿀 수 있습니다.
+ * 5~10개를 권장합니다. 목록에서 끌어서 순서를 바꿀 수 있습니다. 직접 올린 영상은 끝까지 재생된 뒤 다음 슬라이드로 넘어갑니다.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "home-slides".
@@ -184,6 +184,10 @@ export interface HomeSlide {
   title: string;
   artist?: (number | null) | Artist;
   releaseDate?: string | null;
+  /**
+   * 화면 가운데 크게 보이는 이름. 비우면 아티스트 이름이 나옵니다. 예: 계열사 소개 영상이면 "VIONA"
+   */
+  headline?: string | null;
   videoSource: 'file' | 'youtube';
   videoFile?: (number | null) | Media;
   youtubeUrl?: string | null;
@@ -827,12 +831,13 @@ export interface Page {
 export interface QuoteRequest {
   id: number;
   talents: (number | Artist)[];
-  usage: ('ads' | 'video' | 'social' | 'other')[];
+  usage: ('digital' | 'video' | 'social' | 'ooh')[];
   periodStart?: string | null;
   periodEnd?: string | null;
-  worldwide?: boolean | null;
-  regions?: string[] | null;
-  languages?: ('en' | 'ko' | 'zh' | 'ja' | 'es' | 'fr' | 'pt' | 'ru' | 'ar' | 'hi' | 'bn' | 'id')[] | null;
+  regions?: ('worldwide' | 'kr' | 'north-america' | 'europe' | 'asia-pacific')[] | null;
+  regionsOther?: string[] | null;
+  languages?:
+    ('en' | 'ko' | 'ja' | 'zh' | 'es' | 'fr' | 'de' | 'pt' | 'ru' | 'ar' | 'hi' | 'bn' | 'id' | 'th' | 'vi')[] | null;
   companyName: string;
   contactName: string;
   email: string;
@@ -1156,6 +1161,7 @@ export interface HomeSlidesSelect<T extends boolean = true> {
   title?: T;
   artist?: T;
   releaseDate?: T;
+  headline?: T;
   videoSource?: T;
   videoFile?: T;
   youtubeUrl?: T;
@@ -1460,8 +1466,8 @@ export interface QuoteRequestsSelect<T extends boolean = true> {
   usage?: T;
   periodStart?: T;
   periodEnd?: T;
-  worldwide?: T;
   regions?: T;
+  regionsOther?: T;
   languages?: T;
   companyName?: T;
   contactName?: T;
@@ -1765,6 +1771,10 @@ export interface Navigation {
         label: string;
         url?: string | null;
         hidden?: boolean | null;
+        /**
+         * 전체 화면 메뉴에서 이 섹션에 마우스를 올리면 오른쪽 화면에 보이는 사진
+         */
+        previewImage?: (number | null) | Media;
         items?:
           | {
               label?: string | null;
@@ -1810,7 +1820,7 @@ export interface Navigation {
 export interface HomeSetting {
   id: number;
   /**
-   * 영상이 이 시간보다 짧으면 영상이 끝날 때 넘어갑니다.
+   * YouTube 영상이나 사진만 있는 슬라이드가 머무는 시간. 직접 올린 영상은 끝까지 재생된 뒤 넘어갑니다.
    */
   autoAdvanceSeconds?: number | null;
   /**
@@ -1909,6 +1919,15 @@ export interface UiLabel {
     news: string;
     notice: string;
     scrollDown: string;
+    pinned: string;
+  };
+  business: {
+    step1: string;
+    step2: string;
+    step3: string;
+    step4: string;
+    brandsTitle: string;
+    viewCases: string;
   };
   artist: {
     profile: string;
@@ -2006,6 +2025,7 @@ export interface NavigationSelect<T extends boolean = true> {
         label?: T;
         url?: T;
         hidden?: T;
+        previewImage?: T;
         items?:
           | T
           | {
@@ -2117,6 +2137,17 @@ export interface UiLabelsSelect<T extends boolean = true> {
         news?: T;
         notice?: T;
         scrollDown?: T;
+        pinned?: T;
+      };
+  business?:
+    | T
+    | {
+        step1?: T;
+        step2?: T;
+        step3?: T;
+        step4?: T;
+        brandsTitle?: T;
+        viewCases?: T;
       };
   artist?:
     | T
