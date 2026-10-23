@@ -3,6 +3,8 @@ import {
   GlobeSimple,
   InstagramLogo,
   LinkedinLogo,
+  MusicNotes,
+  SpotifyLogo,
   TiktokLogo,
   XLogo,
   YoutubeLogo,
@@ -15,6 +17,9 @@ const ICONS = {
   X: XLogo,
   Facebook: FacebookLogo,
   LinkedIn: LinkedinLogo,
+  Spotify: SpotifyLogo,
+  'Apple Music': MusicNotes,
+  Melon: MusicNotes,
 } as const
 
 // 관리자 화면 "공식 SNS"의 플랫폼 이름에 맞는 아이콘

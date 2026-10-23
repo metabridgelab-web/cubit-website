@@ -149,6 +149,46 @@
     pointer-events: none;
   }
 
+  /* 관리자 화면 서식 있는 본문(리치 텍스트) */
+  .prose-cubit :where(p, ul, ol, blockquote) {
+    margin-block-end: 1em;
+  }
+  .prose-cubit :where(h2, h3, h4) {
+    margin-block: 1.5em 0.5em;
+    color: #fff;
+    font-weight: 900;
+    line-height: 1.2;
+  }
+  .prose-cubit h2 {
+    font-size: 1.5em;
+  }
+  .prose-cubit h3 {
+    font-size: 1.25em;
+  }
+  .prose-cubit :where(ul) {
+    list-style: disc;
+    padding-inline-start: 1.25em;
+  }
+  .prose-cubit :where(ol) {
+    list-style: decimal;
+    padding-inline-start: 1.25em;
+  }
+  .prose-cubit a {
+    color: var(--color-cyan);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .prose-cubit strong {
+    color: #fff;
+  }
+  .prose-cubit blockquote {
+    border-inline-start: 2px solid var(--color-pink);
+    padding-inline-start: 1em;
+  }
+  .prose-cubit :where(p, ul, ol, blockquote):last-child {
+    margin-block-end: 0;
+  }
+
   /* 네 귀퉁이 HUD 괄호 */
   .hud-bracket {
     position: absolute;

@@ -1912,6 +1912,8 @@ export interface UiLabel {
     watchMv: string;
     getQuote: string;
     notFound: string;
+    empty: string;
+    all: string;
   };
   home: {
     newRelease: string;
@@ -1939,6 +1941,9 @@ export interface UiLabel {
     nationality: string;
     quoteWithArtist: string;
     relatedNews: string;
+    entries: string;
+    viewAllPhotos: string;
+    notice: string;
   };
   forms: {
     submit: string;
@@ -2128,6 +2133,8 @@ export interface UiLabelsSelect<T extends boolean = true> {
         watchMv?: T;
         getQuote?: T;
         notFound?: T;
+        empty?: T;
+        all?: T;
       };
   home?:
     | T
@@ -2161,6 +2168,9 @@ export interface UiLabelsSelect<T extends boolean = true> {
         nationality?: T;
         quoteWithArtist?: T;
         relatedNews?: T;
+        entries?: T;
+        viewAllPhotos?: T;
+        notice?: T;
       };
   forms?:
     | T

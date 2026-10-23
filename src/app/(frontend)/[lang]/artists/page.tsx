@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 
-import { ArtistList } from '@/components/skeleton/ArtistList'
+import { ArtistList } from '@/components/artists/ArtistList'
 import { getUiLabels } from '@/lib/data'
 import { pageMetadata, resolveLocale, type LangParams } from '@/lib/page'
 

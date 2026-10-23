@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 
-import { ArtistList } from '@/components/skeleton/ArtistList'
+import { ArtistList } from '@/components/artists/ArtistList'
 import { getArtistCategory } from '@/lib/data'
 import { pageMetadata, resolveLocale, type LangParams } from '@/lib/page'
 

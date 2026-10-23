@@ -21,6 +21,8 @@ export const UI_LABELS = {
       watchMv: 'Watch MV',
       getQuote: 'Get a campaign quote',
       notFound: 'The page you are looking for does not exist.',
+      empty: 'Coming soon',
+      all: 'All',
     },
   },
   home: {
@@ -57,6 +59,9 @@ export const UI_LABELS = {
       nationality: 'Nationality',
       quoteWithArtist: 'Get a campaign quote with this artist',
       relatedNews: 'Related News',
+      entries: 'Entries',
+      viewAllPhotos: 'View all photos',
+      notice: 'Notice',
     },
   },
   forms: {

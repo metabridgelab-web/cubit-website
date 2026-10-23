@@ -6,6 +6,7 @@ import type { LocaleCode } from '@/constants/locales'
 import { localePath } from '@/i18n'
 import type { getBusinessSettings, getNewReleases, getUiLabels } from '@/lib/data'
 import { mediaUrl, youtubeId } from '@/lib/page'
+import { ArtistTile } from '@/components/artists/ArtistTile'
 import type { Artist, ArtistCategory, Post } from '@/payload-types'
 
 // 홈 첫 화면 아래 섹션들. 디자인 파일에 없던 부분이라 design/03·08의 부품(HUD 라벨, 유리 카드, 무지개빛 버튼)으로 맞춰 만들었다.
@@ -73,25 +74,6 @@ export function NewReleaseSection({ index, locale, labels, releases }: { index: 
   )
 }
 
-export function ArtistCard({ locale, artist, categorySlug }: { locale: LocaleCode; artist: Artist; categorySlug?: string }) {
-  const categories = (artist.categories ?? []).filter((c): c is ArtistCategory => typeof c === 'object')
-  const slug = categorySlug ?? categories[0]?.slug ?? 'all'
-  const photo = mediaUrl(artist.profilePhoto, 'card')
-  return (
-    <Link href={localePath(locale, `/artists/${slug}/${artist.slug}`)} className="group block">
-      <div className="relative mb-4 aspect-[3/4] overflow-hidden border border-white/10 bg-[#111]">
-        {photo ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={photo} alt={artist.name} loading="lazy" className="h-full w-full object-cover contrast-[1.15] grayscale transition duration-500 group-hover:scale-105 group-hover:contrast-100 group-hover:grayscale-0" />
-        ) : null}
-        <div className="scanlines absolute inset-0 opacity-0 transition-opacity group-hover:opacity-100" />
-      </div>
-      <p className="font-mono text-[10px] tracking-[0.15em] text-cyan uppercase">{categories.map((c) => c.name).join(' · ')}</p>
-      <p className="mt-1 text-xl font-black tracking-[-0.01em] uppercase">{artist.name}</p>
-    </Link>
-  )
-}
-
 export function ArtistsSection({ index, locale, labels, artists, categories }: { index: number; locale: LocaleCode; labels: Labels; artists: Artist[]; categories: ArtistCategory[] }) {
   if (!artists.length) return null
   return (
@@ -106,10 +88,10 @@ export function ArtistsSection({ index, locale, labels, artists, categories }: {
           </li>
         ))}
       </ul>
-      <ul className="grid grid-cols-2 gap-x-5 gap-y-10 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
+      <ul className="grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-6 lg:grid-cols-4 xl:grid-cols-6">
         {artists.map((artist) => (
           <li key={artist.id}>
-            <ArtistCard locale={locale} artist={artist} />
+            <ArtistTile locale={locale} artist={artist} />
           </li>
         ))}
       </ul>

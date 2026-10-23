@@ -3,6 +3,8 @@
 import { ArrowLeft, ArrowRight, ArrowUpRight, CaretDown, SpeakerHigh, SpeakerSlash } from '@phosphor-icons/react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
+import { fitHeadline } from '@/lib/fit'
+
 export type HeroSlide = {
   id: string
   headline: string
@@ -15,12 +17,8 @@ export type HeroSlide = {
 
 type Labels = { watchMv: string; prev: string; next: string; soundOn: string; soundOff: string; scrollDown: string }
 
-// 가장 긴 단어가 화면 폭(92%) 안에 한 줄로 들어가도록 글자 크기를 정한다 (최대 8rem).
-// 굵은 대문자 한 글자는 대략 글자 크기의 0.72배 폭이다.
-const headlineSize = (text: string) => {
-  const longest = Math.max(...text.split(/\s+/).map((word) => word.length), 1)
-  return `min(8rem, calc(92vw / ${(longest * 0.72).toFixed(2)}))`
-}
+// 가운데 큰 글자: 화면 폭의 92% 안, 최대 8rem
+const headlineSize = (text: string) => fitHeadline(text, { maxRem: 8, widthVw: 92 })
 
 // 홈 첫 화면: 화면 전체 영상 슬라이드 (design/01_홈-첫화면)
 // - 음소거로 자동 재생 · 직접 올린 영상은 끝나면 다음으로, YouTube·사진은 정해진 시간 뒤 다음으로
