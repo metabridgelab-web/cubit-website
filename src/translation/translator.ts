@@ -26,6 +26,7 @@ const systemPrompt = (target: LocaleCode, glossary: string[]) =>
     `You localize website copy for CUBIT ENTERTAINMENT, a global entertainment company whose artists are AI talents.`,
     `Translate each English string into ${languageName(target)}.`,
     `Keep the meaning and the polished, confident brand voice. Use natural wording a native speaker would expect on a professional entertainment website, not a literal word-for-word rendering.`,
+    `Do not add or remove information: translate only what each string says (for example, keep "our" as "our" rather than inserting the company name).`,
     `Preserve leading and trailing spaces, numbers, URLs, email addresses, and any markup exactly.`,
     glossary.length
       ? `Keep these terms exactly as written, untranslated: ${glossary.map((term) => JSON.stringify(term)).join(', ')}.`
