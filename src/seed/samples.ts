@@ -30,7 +30,7 @@ if (step === 'add') {
     { name: 'LUNA V', slug: 'sample-luna-v', cats: ['singers', 'models'], photo: 0, nationality: 'Korea', extra: [{ label: 'Height', value: '168 cm' }] },
     { name: 'ARIA', slug: 'sample-aria', cats: ['singers'], photo: 1, nationality: 'Japan', extra: [] },
     { name: 'KAI', slug: 'sample-kai', cats: ['actors'], photo: 2, nationality: 'Korea', extra: [{ label: 'Filmography', value: 'Neon Horizon (2026)' }] },
-    { name: 'DR. SEO', slug: 'sample-dr-seo', cats: ['doctors'], photo: 3, nationality: 'Korea', extra: [{ label: 'Specialty', value: 'Dermatology' }] },
+    { name: 'SEO', slug: 'sample-seo', cats: ['experts'], photo: 3, nationality: 'Korea', extra: [{ label: 'Specialty', value: 'Dermatology' }] },
   ]
   for (const s of samples) {
     await payload.create({

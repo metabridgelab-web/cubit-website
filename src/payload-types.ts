@@ -351,7 +351,7 @@ export interface ArtistCategory {
   generateSlug?: boolean | null;
   slug: string;
   /**
-   * 이 카테고리 아티스트의 상세 페이지에 항상 표시할 문구. 전문의는 필수입니다.
+   * 이 카테고리 아티스트의 상세 페이지에 항상 표시할 문구. 예: 전문가 카테고리의 "실제 자격을 가진 전문가가 아닙니다" 안내
    */
   disclaimer?: string | null;
   /**

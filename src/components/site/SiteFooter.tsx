@@ -9,7 +9,8 @@ import { mediaUrl } from '@/lib/page'
 import { DEFAULT_LOGO } from './SiteHeader'
 import { SocialIcon } from './SocialIcon'
 
-// 모든 페이지 하단: 회사 정보(법적 표시) · 메뉴 바로가기 · 정책 링크 · AI 생성 표시 · 저작권
+// 모든 페이지 하단: 회사 정보(법적 표시) · 정책 링크 · AI 생성 표시 · 저작권
+// 메뉴 바로가기는 두지 않는다 (오른쪽 위 메뉴 버튼으로 충분)
 export async function SiteFooter({ locale }: { locale: LocaleCode }) {
   const [settings, nav, labels] = await Promise.all([getSiteSettings(locale), getNavigation(locale), getUiLabels(locale)])
   const logo = mediaUrl(settings.logoDark, 'thumbnail') ?? mediaUrl(settings.logo, 'thumbnail') ?? DEFAULT_LOGO
@@ -50,18 +51,7 @@ export async function SiteFooter({ locale }: { locale: LocaleCode }) {
               </p>
             ))}
           </div>
-          <nav aria-label="Footer">
-            <ul className="flex flex-col gap-2.5">
-              {nav.sections.map((section) => (
-                <li key={section.id}>
-                  <Link href={localePath(locale, section.url ?? '/')} className="font-mono text-xs tracking-[0.15em] text-white/60 uppercase transition-colors hover:text-cyan">
-                    {section.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </nav>
-          <ul className="flex flex-col gap-2.5">
+          <ul className="flex flex-col gap-2.5 lg:col-start-4">
             {(settings.policyLinks ?? []).map((page) =>
               typeof page === 'object' ? (
                 <li key={page.id}>

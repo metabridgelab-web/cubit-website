@@ -33,13 +33,13 @@ const categories: (Localized & { slug: string; sortOrder: number; disclaimer?: L
   { slug: 'models', en: 'Models', ko: '모델', sortOrder: 2 },
   { slug: 'actors', en: 'Actors', ko: '배우', sortOrder: 3 },
   {
-    slug: 'doctors',
-    en: 'Doctors',
-    ko: '전문의',
+    slug: 'experts',
+    en: 'Experts',
+    ko: '전문가',
     sortOrder: 4,
     disclaimer: {
-      en: 'This is an AI character, not a real doctor. It does not diagnose or prescribe.',
-      ko: 'AI 캐릭터이며 실제 의사가 아닙니다. 진단·처방을 하지 않습니다.',
+      en: 'This is an AI character, not a licensed professional. Content is for information only and is not professional advice.',
+      ko: 'AI 캐릭터이며 실제 자격을 가진 전문가가 아닙니다. 정보 제공용이며 전문적인 조언을 대신하지 않습니다.',
     },
   },
 ]
@@ -107,7 +107,7 @@ const menu: (Localized & { url: string; items: (Localized & { url: string })[] }
       { en: 'Singers', ko: '가수', url: '/artists/singers' },
       { en: 'Models', ko: '모델', url: '/artists/models' },
       { en: 'Actors', ko: '배우', url: '/artists/actors' },
-      { en: 'Doctors', ko: '전문의', url: '/artists/doctors' },
+      { en: 'Experts', ko: '전문가', url: '/artists/experts' },
     ],
   },
   {

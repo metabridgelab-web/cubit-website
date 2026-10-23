@@ -3,7 +3,7 @@ import { slugField, type CollectionConfig } from 'payload'
 import { anyone, canEditContent, canUpdateContent } from '../access'
 import { sortOrderField } from '../fields'
 
-// 가수 · 모델 · 배우 · 전문의. 관리자 화면에서 카테고리를 더 추가할 수 있다.
+// 가수 · 모델 · 배우 · 전문가. 관리자 화면에서 카테고리를 더 추가할 수 있다.
 export const ArtistCategories: CollectionConfig = {
   slug: 'artist-categories',
   labels: { singular: '아티스트 카테고리', plural: '아티스트 카테고리' },
@@ -34,7 +34,7 @@ export const ArtistCategories: CollectionConfig = {
       type: 'textarea',
       localized: true,
       admin: {
-        description: '이 카테고리 아티스트의 상세 페이지에 항상 표시할 문구. 전문의는 필수입니다.',
+        description: '이 카테고리 아티스트의 상세 페이지에 항상 표시할 문구. 예: 전문가 카테고리의 "실제 자격을 가진 전문가가 아닙니다" 안내',
       },
     },
     sortOrderField,
