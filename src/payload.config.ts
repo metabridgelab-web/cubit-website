@@ -80,7 +80,7 @@ export default buildConfig({
   email: process.env.RESEND_API_KEY
     ? resendAdapter({
         apiKey: process.env.RESEND_API_KEY,
-        defaultFromAddress: process.env.EMAIL_FROM_ADDRESS || 'no-reply@cubitenter.com',
+        defaultFromAddress: process.env.EMAIL_FROM_ADDRESS || 'no-reply@mail.cubitenter.com',
         defaultFromName: process.env.EMAIL_FROM_NAME || 'CUBIT ENTERTAINMENT',
       })
     : undefined,
