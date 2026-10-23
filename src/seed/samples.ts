@@ -1,4 +1,4 @@
-// 시험용 아티스트 4명 (화면 확인용). 주소가 sample- 로 시작한다.
+// 시험용 아티스트 4명과 게시글 4개 (화면 확인용). 주소가 sample- 로 시작한다.
 // 넣기: npm run samples -- add <사진 폴더>   지우기: npm run samples -- remove
 import fs from 'fs'
 import path from 'path'
@@ -63,9 +63,44 @@ if (step === 'add') {
     })
     console.log(`CHECK added ${s.name}`)
   }
+
+  // 시험용 게시글: 뉴스 3개 + 고정 공지 1개
+  const boards = Object.fromEntries((await payload.find({ collection: 'boards', depth: 0 })).docs.map((b) => [b.slug, b.id]))
+  const categories = (await payload.find({ collection: 'post-categories', depth: 0, limit: 50 })).docs
+  const categoryOf = (board: string, name: string) => categories.find((c) => c.board === boards[board] && c.name === name)?.id
+  const luna = (await payload.find({ collection: 'artists', where: { slug: { equals: 'sample-luna-v' } }, depth: 0 })).docs[0]
+  const posts = [
+    { slug: 'sample-luna-v-debut', board: 'news', category: 'Music', title: 'LUNA V releases debut single', excerpt: 'Our AI artist LUNA V debuts with an energetic summer track.', thumb: 0, artists: [luna?.id], pinned: false, date: '2026-10-20' },
+    { slug: 'sample-brand-campaign', board: 'news', category: 'Campaign', title: 'ARIA fronts a global beauty campaign', excerpt: 'A sample campaign story to preview the news layout.', thumb: 1, artists: [], pinned: false, date: '2026-10-12' },
+    { slug: 'sample-studio-opening', board: 'news', category: 'Press', title: 'CUBIT opens a new production studio', excerpt: 'A sample press release to preview the news layout.', thumb: 5, artists: [], pinned: false, date: '2026-10-02' },
+    { slug: 'sample-impersonation-alert', board: 'notice', category: 'Impersonation Alert', title: 'Beware of fake accounts and fake auditions', excerpt: 'CUBIT only recruits through its official channels.', thumb: null, artists: [], pinned: true, date: '2026-10-22' },
+  ]
+  for (const p of posts) {
+    await payload.create({
+      collection: 'posts',
+      locale: 'en',
+      draft: false,
+      data: {
+        title: p.title,
+        slug: p.slug,
+        generateSlug: false,
+        board: boards[p.board],
+        category: categoryOf(p.board, p.category),
+        excerpt: p.excerpt,
+        thumbnail: p.thumb === null ? undefined : photos[p.thumb].id,
+        artists: p.artists.filter(Boolean) as number[],
+        pinned: p.pinned,
+        publishedAt: `${p.date}T09:00:00.000Z`,
+        content: { root: { type: 'root', version: 1, direction: 'ltr', format: '', indent: 0, children: [paragraph(p.excerpt), paragraph('This is sample text to preview the article page. Replace it with the real story.')] } },
+        _status: 'published',
+      },
+    })
+    console.log(`CHECK added post ${p.slug}`)
+  }
 }
 
 if (step === 'remove') {
+  await payload.delete({ collection: 'posts', where: { slug: { like: 'sample-' } } })
   await payload.delete({ collection: 'artists', where: { slug: { like: 'sample-' } } })
   await payload.delete({ collection: 'media', where: { filename: { like: 'sample-' } } })
   console.log('CHECK samples removed')

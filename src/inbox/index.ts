@@ -13,15 +13,22 @@ import { CAMPAIGN_LANGUAGES, CAMPAIGN_REGIONS, CAMPAIGN_USAGES, labelOf } from '
 import { DEFAULT_LOCALE, LOCALE_OPTIONS, LOCALES, type LocaleCode } from '../constants/locales'
 
 // 방문자가 보내는 접수(견적 요청 · 문의) 공통 처리
-// - 스팸 막기: 숨은 칸(봇만 채움) · 같은 곳에서 1시간에 5건까지
+// - 스팸 막기: 숨은 칸(봇만 채움) · 같은 곳에서 1시간에 5건까지 (첨부 파일은 15개까지)
 // - 접수 후: 담당자 알림 메일 + 요청자 접수 확인 메일 (작업 대기열에서 보내고, 실패하면 다시 시도)
 
 export const NOTIFY_TASK = 'notifySubmission'
-const MAX_PER_HOUR = 5
-
 type InboxSlug = 'quote-requests' | 'inquiries'
 
 const staffOnly = ({ req }: { req: PayloadRequest }) => hasRole(req, 'sales')
+
+// 같은 곳에서 1시간에 보낼 수 있는 개수를 세기 위한 칸 (접속 주소를 그대로 저장하지 않고 암호화한 값)
+export const ipHashField: Field = {
+  name: 'ipHash',
+  type: 'text',
+  index: true,
+  admin: { hidden: true },
+  access: { read: staffOnly, update: () => false },
+}
 
 export const submissionFields: Field[] = [
   {
@@ -38,13 +45,7 @@ export const submissionFields: Field[] = [
     admin: { hidden: true },
     access: { read: () => false, update: () => false },
   },
-  {
-    name: 'ipHash',
-    type: 'text',
-    index: true,
-    admin: { hidden: true },
-    access: { read: staffOnly, update: () => false },
-  },
+  ipHashField,
 ]
 
 // 배포 플랫폼(Vercel)이 직접 붙이는 주소를 먼저 믿고, 없으면 일반 프록시 주소를 쓴다
@@ -61,11 +62,11 @@ const hashIp = (ip: string) =>
     .slice(0, 32)
 
 export const guardSubmission =
-  (slug: InboxSlug): CollectionBeforeChangeHook =>
+  (slug: InboxSlug | 'attachments', { maxPerHour = 5 }: { maxPerHour?: number } = {}): CollectionBeforeChangeHook =>
   async ({ data, operation, req }) => {
     if (operation !== 'create' || req.user) return data
 
-    if (data.website) throw new APIError('Submission rejected.', 400, undefined, true)
+    if (slug !== 'attachments' && data.website) throw new APIError('Submission rejected.', 400, undefined, true)
 
     const ipHash = hashIp(clientIp(req))
     const since = new Date(Date.now() - 60 * 60 * 1000).toISOString()
@@ -75,9 +76,11 @@ export const guardSubmission =
       overrideAccess: true,
       req,
     })
-    if (totalDocs >= MAX_PER_HOUR) {
+    if (totalDocs >= maxPerHour) {
       throw new APIError('Too many submissions. Please try again later.', 429, undefined, true)
     }
+
+    if (slug === 'attachments') return { ...data, ipHash }
 
     const locale = LOCALES.some((l) => l.code === req.locale) ? (req.locale as LocaleCode) : DEFAULT_LOCALE
     // 접수 언어는 요청 주소의 ?locale= 값(방문자가 보던 언어)으로 정한다
@@ -161,6 +164,7 @@ export const notifyTask: TaskConfig = {
         ['이메일', doc.email],
         ['연락처', doc.phone],
         ['내용', doc.message],
+        ['첨부 파일', doc.attachments?.length ? `${doc.attachments.length}개 (관리자 화면에서 확인)` : ''],
       ])
       if (settings.notifyEmails?.length) {
         await payload.sendEmail({

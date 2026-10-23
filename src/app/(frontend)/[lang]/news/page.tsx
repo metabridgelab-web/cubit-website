@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 
-import { PostList, type ListSearch } from '@/components/skeleton/PostList'
+import { NewsList, type ListSearch } from '@/components/news/NewsList'
 import { getBoard } from '@/lib/data'
 import { pageMetadata, resolveLocale, type LangParams } from '@/lib/page'
 
@@ -13,5 +13,5 @@ export async function generateMetadata({ params }: { params: Promise<LangParams>
 // /news = "뉴스" 게시판
 export default async function NewsPage({ params, searchParams }: { params: Promise<LangParams>; searchParams: Promise<ListSearch> }) {
   const locale = await resolveLocale(params)
-  return <PostList locale={locale} boardSlug="news" basePath="/news" search={await searchParams} />
+  return <NewsList locale={locale} boardSlug="news" basePath="/news" search={await searchParams} />
 }

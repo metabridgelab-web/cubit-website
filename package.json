@@ -17,7 +17,8 @@
     "test": "pnpm run test:int && pnpm run test:e2e",
     "test:e2e": "cross-env NODE_OPTIONS=\"--no-deprecation --import=tsx/esm\" playwright test --config=playwright.config.ts",
     "test:int": "cross-env NODE_OPTIONS=--no-deprecation vitest run --config ./vitest.config.mts",
-    "samples": "cross-env NODE_OPTIONS=--no-deprecation payload run src/seed/samples.ts"
+    "samples": "cross-env NODE_OPTIONS=--no-deprecation payload run src/seed/samples.ts",
+    "films": "cross-env NODE_OPTIONS=--no-deprecation payload run src/seed/films.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^1.1.0",

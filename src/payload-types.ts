@@ -77,6 +77,7 @@ export interface Config {
     pages: Page;
     'quote-requests': QuoteRequest;
     inquiries: Inquiry;
+    attachments: Attachment;
     media: Media;
     glossary: Glossary;
     users: User;
@@ -103,6 +104,7 @@ export interface Config {
     pages: PagesSelect<false> | PagesSelect<true>;
     'quote-requests': QuoteRequestsSelect<false> | QuoteRequestsSelect<true>;
     inquiries: InquiriesSelect<false> | InquiriesSelect<true>;
+    attachments: AttachmentsSelect<false> | AttachmentsSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     glossary: GlossarySelect<false> | GlossarySelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
@@ -903,6 +905,7 @@ export interface Inquiry {
   phone?: string | null;
   message?: string | null;
   privacyConsent: boolean;
+  attachments?: (number | Attachment)[] | null;
   /**
    * 요청자가 사이트를 보던 언어. 접수 확인 메일이 이 언어로 갑니다.
    */
@@ -917,6 +920,27 @@ export interface Inquiry {
   internalNotes?: string | null;
   updatedAt: string;
   createdAt: string;
+}
+/**
+ * 문의 양식으로 받은 파일입니다. 담당자만 열어볼 수 있습니다.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "attachments".
+ */
+export interface Attachment {
+  id: number;
+  ipHash?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
 }
 /**
  * 여기 등록한 단어는 자동 번역할 때 바꾸지 않고 그대로 둡니다.
@@ -1093,6 +1117,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'inquiries';
         value: number | Inquiry;
+      } | null)
+    | ({
+        relationTo: 'attachments';
+        value: number | Attachment;
       } | null)
     | ({
         relationTo: 'media';
@@ -1496,6 +1524,7 @@ export interface InquiriesSelect<T extends boolean = true> {
   phone?: T;
   message?: T;
   privacyConsent?: T;
+  attachments?: T;
   submittedLocale?: T;
   website?: T;
   ipHash?: T;
@@ -1504,6 +1533,24 @@ export interface InquiriesSelect<T extends boolean = true> {
   internalNotes?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "attachments_select".
+ */
+export interface AttachmentsSelect<T extends boolean = true> {
+  ipHash?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+  focalX?: T;
+  focalY?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1945,6 +1992,82 @@ export interface UiLabel {
     viewAllPhotos: string;
     notice: string;
   };
+  campaign: {
+    eyebrow: string;
+    title: string;
+    step1: string;
+    step2: string;
+    step3: string;
+    step4: string;
+    step5: string;
+    talentTitle: string;
+    talentHint: string;
+    usageTitle: string;
+    usageHint: string;
+    usageDigital: string;
+    usageDigitalDesc: string;
+    usageVideo: string;
+    usageVideoDesc: string;
+    usageSocial: string;
+    usageSocialDesc: string;
+    usageOoh: string;
+    usageOohDesc: string;
+    periodTitle: string;
+    duration: string;
+    to: string;
+    scope: string;
+    regionWorldwide: string;
+    regionKr: string;
+    regionNa: string;
+    regionEu: string;
+    regionApac: string;
+    regionOther: string;
+    languagesTitle: string;
+    languagesHint: string;
+    contactTitle: string;
+    company: string;
+    contactName: string;
+    email: string;
+    phone: string;
+    brief: string;
+    briefPlaceholder: string;
+    previous: string;
+    continue: string;
+    submit: string;
+    summary: string;
+    selectedTalent: string;
+    pickTalent: string;
+    pickUsage: string;
+    fillContact: string;
+    doneTitle: string;
+  };
+  contact: {
+    eyebrow: string;
+    title: string;
+    fastTitle: string;
+    fastText: string;
+    fastButton: string;
+    formTitle: string;
+    type: string;
+    typePartnership: string;
+    typePress: string;
+    typeInvestment: string;
+    typeOther: string;
+    name: string;
+    message: string;
+    attach: string;
+    attachHint: string;
+    send: string;
+    office: string;
+    channels: string;
+  };
+  news: {
+    eyebrow: string;
+    priority: string;
+    archive: string;
+    search: string;
+    more: string;
+  };
   forms: {
     submit: string;
     sending: string;
@@ -2171,6 +2294,88 @@ export interface UiLabelsSelect<T extends boolean = true> {
         entries?: T;
         viewAllPhotos?: T;
         notice?: T;
+      };
+  campaign?:
+    | T
+    | {
+        eyebrow?: T;
+        title?: T;
+        step1?: T;
+        step2?: T;
+        step3?: T;
+        step4?: T;
+        step5?: T;
+        talentTitle?: T;
+        talentHint?: T;
+        usageTitle?: T;
+        usageHint?: T;
+        usageDigital?: T;
+        usageDigitalDesc?: T;
+        usageVideo?: T;
+        usageVideoDesc?: T;
+        usageSocial?: T;
+        usageSocialDesc?: T;
+        usageOoh?: T;
+        usageOohDesc?: T;
+        periodTitle?: T;
+        duration?: T;
+        to?: T;
+        scope?: T;
+        regionWorldwide?: T;
+        regionKr?: T;
+        regionNa?: T;
+        regionEu?: T;
+        regionApac?: T;
+        regionOther?: T;
+        languagesTitle?: T;
+        languagesHint?: T;
+        contactTitle?: T;
+        company?: T;
+        contactName?: T;
+        email?: T;
+        phone?: T;
+        brief?: T;
+        briefPlaceholder?: T;
+        previous?: T;
+        continue?: T;
+        submit?: T;
+        summary?: T;
+        selectedTalent?: T;
+        pickTalent?: T;
+        pickUsage?: T;
+        fillContact?: T;
+        doneTitle?: T;
+      };
+  contact?:
+    | T
+    | {
+        eyebrow?: T;
+        title?: T;
+        fastTitle?: T;
+        fastText?: T;
+        fastButton?: T;
+        formTitle?: T;
+        type?: T;
+        typePartnership?: T;
+        typePress?: T;
+        typeInvestment?: T;
+        typeOther?: T;
+        name?: T;
+        message?: T;
+        attach?: T;
+        attachHint?: T;
+        send?: T;
+        office?: T;
+        channels?: T;
+      };
+  news?:
+    | T
+    | {
+        eyebrow?: T;
+        priority?: T;
+        archive?: T;
+        search?: T;
+        more?: T;
       };
   forms?:
     | T

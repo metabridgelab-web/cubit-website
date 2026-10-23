@@ -1,27 +1,52 @@
 import type { Metadata } from 'next'
 
-import { getArtists, getBusinessSettings } from '@/lib/data'
-import { pageMetadata, resolveLocale, type LangParams } from '@/lib/page'
+import { CampaignBuilder } from '@/components/forms/CampaignBuilder'
+import { PageHeader, PageShell } from '@/components/site/Hud'
+import { CAMPAIGN_LANGUAGES } from '@/constants/campaign'
+import { localePath } from '@/i18n'
+import { getArtists, getBusinessSettings, getSiteSettings, getUiLabels } from '@/lib/data'
+import { mediaUrl, pageMetadata, resolveLocale, type LangParams } from '@/lib/page'
+import type { ArtistCategory } from '@/payload-types'
 
 export async function generateMetadata({ params }: { params: Promise<LangParams> }): Promise<Metadata> {
   const locale = await resolveLocale(params)
-  const business = await getBusinessSettings(locale)
-  return pageMetadata(locale, '/business/campaign', { title: business.builderCtaLabel })
+  const labels = await getUiLabels(locale)
+  return pageMetadata(locale, '/business/campaign', { title: labels.campaign.title })
 }
 
-// 캠페인 빌더 자리. 입력 양식은 디자인과 함께 만든다.
-// 접수는 이미 동작한다: POST /api/quote-requests?locale=<언어> (스팸 차단 · 알림 메일 포함)
-export default async function CampaignBuilderPage({ params }: { params: Promise<LangParams> }) {
+// 캠페인 빌더 (수익화 핵심). 아티스트 상세의 견적 버튼에서 오면 ?talent=<id>로 미리 선택된다.
+export default async function CampaignBuilderPage({ params, searchParams }: { params: Promise<LangParams>; searchParams: Promise<{ talent?: string | string[] }> }) {
   const locale = await resolveLocale(params)
-  const [business, artists] = await Promise.all([getBusinessSettings(locale), getArtists(locale)])
+  const [labels, business, artists, settings, search] = await Promise.all([
+    getUiLabels(locale),
+    getBusinessSettings(locale),
+    getArtists(locale),
+    getSiteSettings(locale),
+    searchParams,
+  ])
+  const initial = [search.talent ?? []].flat().map(Number).filter(Boolean)
+  const privacy = (settings.policyLinks ?? []).find((page) => typeof page === 'object')
+
   return (
-    <>
-      <h1>{business.builderCtaLabel}</h1>
-      <ol>
-        {artists.map((artist) => (
-          <li key={artist.id}>{artist.name}</li>
-        ))}
-      </ol>
-    </>
+    <PageShell>
+      <PageHeader eyebrow={labels.campaign.eyebrow} title={labels.campaign.title} />
+      <CampaignBuilder
+        locale={locale}
+        talents={artists.map((artist) => ({
+          id: artist.id,
+          name: artist.name,
+          photo: mediaUrl(artist.profilePhoto, 'card'),
+          categories: (artist.categories ?? [])
+            .filter((c): c is ArtistCategory => typeof c === 'object')
+            .map((c) => c.name)
+            .join(' · '),
+        }))}
+        initialTalents={initial}
+        languages={[...CAMPAIGN_LANGUAGES]}
+        labels={{ campaign: labels.campaign as Record<string, string>, forms: labels.forms as Record<string, string>, common: labels.common as Record<string, string> }}
+        confirmation={business.confirmationMessage ?? ''}
+        privacyHref={privacy && typeof privacy === 'object' ? localePath(locale, `/legal/${privacy.slug}`) : null}
+      />
+    </PageShell>
   )
 }

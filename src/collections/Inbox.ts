@@ -170,6 +170,14 @@ export const Inquiries: CollectionConfig = {
       ],
     },
     ...contactFields,
+    {
+      name: 'attachments',
+      label: '첨부 파일',
+      type: 'upload',
+      relationTo: 'attachments',
+      hasMany: true,
+      maxRows: 5,
+    },
     ...submissionFields,
     ...handlingFields([
       { label: '접수', value: 'received' },

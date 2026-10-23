@@ -10,6 +10,7 @@ import sharp from 'sharp'
 
 import { hasRole } from './access'
 import { ArtistCategories } from './collections/ArtistCategories'
+import { Attachments } from './collections/Attachments'
 import { Artists } from './collections/Artists'
 import { Boards, PostCategories } from './collections/Boards'
 import { CaseStudies } from './collections/CaseStudies'
@@ -60,6 +61,7 @@ export default buildConfig({
     Pages,
     QuoteRequests,
     Inquiries,
+    Attachments,
     Media,
     Glossary,
     Users,
@@ -76,6 +78,8 @@ export default buildConfig({
     },
   }),
   sharp,
+  // 올리는 파일 하나의 최대 크기 (문의 첨부 50MB). 큰 영상은 Cloudflare 연결 후 저장소로 바로 올린다.
+  upload: { limits: { fileSize: 50 * 1024 * 1024 } },
   // 메일: RESEND_API_KEY가 있으면 Resend로 실제 발송, 없으면 개발 서버 화면(콘솔)에만 찍힌다
   email: process.env.RESEND_API_KEY
     ? resendAdapter({
