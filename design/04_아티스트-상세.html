@@ -1,0 +1,492 @@
+<html lang="en" vid="0"><head vid="1">
+    <meta charset="UTF-8" vid="2">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" vid="3">
+    <title vid="4">AEON_01 | ARTIST_PROFILE: ECLIPSA</title>
+    <script src="https://cdn.tailwindcss.com/3.4.17" vid="5"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" vid="6">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" vid="7">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;500;700;900&amp;family=Space+Mono&amp;display=swap" rel="stylesheet" vid="8">
+    <script src="https://unpkg.com/@phosphor-icons/web" vid="9"></script>
+    <style vid="10">
+        :root {
+            --irid-cyan: #00f3ff;
+            --irid-pink: #ff00e5;
+            --irid-lime: #d4ff00;
+            --glass: rgba(255, 255, 255, 0.03);
+            --border: rgba(255, 255, 255, 0.1);
+            --bg-void: #000000;
+        }
+
+        body {
+            background: var(--bg-void);
+            color: #fff;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            width: 100%;
+        }
+
+        .mono { font-family: 'Space Mono', monospace; }
+
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--irid-cyan); }
+
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .particle {
+            position: absolute;
+            background: #fff;
+            border-radius: 50%;
+            opacity: 0.15;
+            filter: blur(1px);
+            animation: float 30s infinite linear;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0) translateX(0); }
+            100% { transform: translateY(-100vh) translateX(40px); }
+        }
+
+        .logo-mark {
+            width: 20px;
+            height: 20px;
+            border: 1.5px solid #fff;
+            border-radius: 50%;
+            position: relative;
+        }
+
+        .logo-mark::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 13px;
+            height: 13px;
+            background: linear-gradient(45deg, var(--irid-cyan), var(--irid-pink), var(--irid-lime));
+            border-radius: 50%;
+            animation: rotate 4s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .hero-section {
+            height: 90vh;
+            position: relative;
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .hero-img-container {
+            position: absolute;
+            right: 0;
+            top: 0;
+            width: 60%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .hero-img-container::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to right, #000 0%, transparent 40%, transparent 60%, #000 100%);
+        }
+
+        .hero-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: grayscale(1) contrast(1.1);
+        }
+
+        .artist-name-big {
+            font-size: 10rem;
+            font-weight: 900;
+            letter-spacing: -0.05em;
+            line-height: 0.8;
+            background: linear-gradient(to bottom, #fff, rgba(255,255,255,0.2));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            position: relative;
+            z-index: 2;
+        }
+
+        .profile-list-item {
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding: 12px 0;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .section-header {
+            border-left: 2px solid var(--irid-cyan);
+            padding-left: 16px;
+            margin-bottom: 32px;
+        }
+
+        .gallery-item {
+            aspect-ratio: 1/1;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            position: relative;
+            cursor: pointer;
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease, filter 0.5s ease;
+            filter: grayscale(1);
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.08);
+            filter: grayscale(0);
+        }
+
+        .video-card {
+            background: #0a0a0a;
+            border: 1px solid var(--border);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .video-card:hover {
+            border-color: var(--irid-cyan);
+            transform: translateY(-4px);
+        }
+
+        .thumbnail-container {
+            position: relative;
+            aspect-ratio: 16/9;
+            background: #111;
+        }
+
+        .play-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .video-card:hover .play-overlay {
+            opacity: 1;
+        }
+
+        .sticky-btn-container {
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+        }
+
+        .campaign-btn {
+            background: linear-gradient(90deg, var(--irid-cyan), var(--irid-pink));
+            color: #000;
+            font-weight: 700;
+            padding: 16px 40px;
+            border-radius: 100px;
+            font-size: 13px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            box-shadow: 0 10px 40px rgba(0, 243, 255, 0.3);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .campaign-btn:hover {
+            transform: scale(1.05) translateY(-5px);
+            box-shadow: 0 20px 60px rgba(0, 243, 255, 0.5);
+        }
+
+        .scanlines {
+            position: absolute;
+            inset: 0;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0, 0, 0, 0.05),
+                rgba(0, 0, 0, 0.05) 1px,
+                transparent 1px,
+                transparent 2px
+            );
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        .hud-tag {
+            font-family: 'Space Mono', monospace;
+            font-size: 9px;
+            color: var(--irid-cyan);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body vid="11">
+
+    <div class="particles" id="particles" vid="12"></div>
+
+    
+    <header class="fixed top-0 left-0 w-full z-50 p-10 flex justify-between items-center mix-blend-difference" vid="13">
+        <div class="flex items-center gap-4" vid="14">
+            <div class="logo-mark" vid="15"></div>
+            <span class="font-black tracking-[0.4em] text-sm text-white" vid="16">AEON_01</span>
+        </div>
+        <div class="flex items-center gap-10" vid="17">
+            <nav class="hidden md:flex gap-8" vid="18">
+                <a href="#" class="mono text-[10px] text-zinc-400 hover:text-white transition-colors" vid="19">DIRECTORY</a>
+                <a href="#" class="mono text-[10px] text-zinc-400 hover:text-white transition-colors" vid="20">COMPANY</a>
+                <a href="#" class="mono text-[10px] text-zinc-400 hover:text-white transition-colors" vid="21">JOIN</a>
+            </nav>
+            <button class="w-10 h-10 border border-zinc-800 rounded-full flex items-center justify-center text-white hover:bg-white hover:text-black transition-all" vid="22">
+                <i class="ph ph-arrow-left text-xl" vid="23"></i>
+            </button>
+        </div>
+    </header>
+
+    
+    <section class="hero-section px-24" vid="24">
+        <div class="hero-img-container" vid="25">
+            <div class="scanlines" vid="26"></div>
+            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&amp;fit=crop&amp;w=1600&amp;q=90" alt="Eclipsa Hero" class="hero-img" vid="27">
+        </div>
+        
+        <div class="relative z-10 w-full" vid="28">
+            <div class="mono text-[11px] text-[var(--irid-cyan)] mb-4 tracking-[0.5em]" vid="29">CORE_TALENT // ID_09912</div>
+            <h1 class="artist-name-big uppercase" vid="30">Eclipsa</h1>
+            <div class="mt-8 flex gap-4" vid="31">
+                <a href="#" class="w-10 h-10 border border-zinc-800 flex items-center justify-center rounded-full hover:border-[var(--irid-cyan)] hover:text-[var(--irid-cyan)] transition-all" vid="32"><i class="ph ph-instagram-logo text-xl" vid="33"></i></a>
+                <a href="#" class="w-10 h-10 border border-zinc-800 flex items-center justify-center rounded-full hover:border-[var(--irid-cyan)] hover:text-[var(--irid-cyan)] transition-all" vid="34"><i class="ph ph-twitter-logo text-xl" vid="35"></i></a>
+                <a href="#" class="w-10 h-10 border border-zinc-800 flex items-center justify-center rounded-full hover:border-[var(--irid-cyan)] hover:text-[var(--irid-cyan)] transition-all" vid="36"><i class="ph ph-youtube-logo text-xl" vid="37"></i></a>
+                <a href="#" class="w-10 h-10 border border-zinc-800 flex items-center justify-center rounded-full hover:border-[var(--irid-cyan)] hover:text-[var(--irid-cyan)] transition-all" vid="38"><i class="ph ph-spotify-logo text-xl" vid="39"></i></a>
+            </div>
+        </div>
+    </section>
+
+    
+    <main class="relative z-10 px-24 pb-48" vid="40">
+        
+        <div class="grid grid-cols-12 gap-20" vid="41">
+            
+            
+            <div class="col-span-12 lg:col-span-5" vid="42">
+                <section class="mb-20" vid="43">
+                    <div class="section-header" vid="44">
+                        <span class="hud-tag" vid="45">PROFILE_DATA</span>
+                        <h2 class="text-2xl font-black mt-2 uppercase tracking-tight" vid="46">The Blueprint</h2>
+                    </div>
+                    
+                    <div class="space-y-2" vid="47">
+                        <div class="profile-list-item" vid="48">
+                            <span class="mono text-[10px] text-zinc-500 uppercase" vid="49">Birthday</span>
+                            <span class="mono text-[11px] text-white" vid="50">1998.11.24</span>
+                        </div>
+                        <div class="profile-list-item" vid="51">
+                            <span class="mono text-[10px] text-zinc-500 uppercase" vid="52">Debut Date</span>
+                            <span class="mono text-[11px] text-white" vid="53">2021.05.12</span>
+                        </div>
+                        <div class="profile-list-item" vid="54">
+                            <span class="mono text-[10px] text-zinc-500 uppercase" vid="55">Nationality</span>
+                            <span class="mono text-[11px] text-white" vid="56">South Korea</span>
+                        </div>
+                        <div class="profile-list-item" vid="57">
+                            <span class="mono text-[10px] text-zinc-500 uppercase" vid="58">Main Label</span>
+                            <span class="mono text-[11px] text-[var(--irid-lime)]" vid="59">AEON_NEURAL_RECORDS</span>
+                        </div>
+                        <div class="profile-list-item" vid="60">
+                            <span class="mono text-[10px] text-zinc-500 uppercase" vid="61">Height</span>
+                            <span class="mono text-[11px] text-white" vid="62">172.5 cm</span>
+                        </div>
+                    </div>
+                </section>
+
+                <section vid="63">
+                    <div class="section-header" vid="64">
+                        <span class="hud-tag" vid="65">TRANSMISSION // INTRO</span>
+                        <h2 class="text-2xl font-black mt-2 uppercase tracking-tight" vid="66">Vision</h2>
+                    </div>
+                    <div class="bg-zinc-900/30 border border-zinc-800 p-8 rounded-2xl relative" vid="67">
+                        <div class="absolute top-4 right-6 mono text-[8px] text-zinc-600" vid="68">SOURCE: INTERVIEW_042</div>
+                        <p class="text-zinc-400 leading-relaxed text-lg" vid="69">
+                            "Music is the bridge between our physical reality and the digital frontier. With AEON_01, I'm exploring sounds that shouldn't exist, frequencies that resonate with our synthetic future. I don't just want to be a singer; I want to be the pulse of the new era."
+                        </p>
+                        <div class="mt-8 flex items-center gap-4" vid="70">
+                            <div class="w-12 h-[1px] bg-[var(--irid-pink)]" vid="71"></div>
+                            <span class="mono text-[10px] text-[var(--irid-pink)] uppercase tracking-widest" vid="72">ECLIPSA_OFFICIAL</span>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            
+            <div class="col-span-12 lg:col-span-7" vid="73">
+                <section vid="74">
+                    <div class="section-header flex justify-between items-end" vid="75">
+                        <div vid="76">
+                            <span class="hud-tag" vid="77">VISUAL_ARCHIVE</span>
+                            <h2 class="text-2xl font-black mt-2 uppercase tracking-tight" vid="78">Visuals</h2>
+                        </div>
+                        <div class="mono text-[9px] text-zinc-500" vid="79">COUNT: 06 / 244</div>
+                    </div>
+
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-4" vid="80">
+                        <div class="gallery-item rounded-xl" vid="81"><img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&amp;fit=crop&amp;w=600&amp;q=80" alt="G1" vid="82"></div>
+                        <div class="gallery-item rounded-xl" vid="83"><img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&amp;fit=crop&amp;w=600&amp;q=80" alt="G2" vid="84"></div>
+                        <div class="gallery-item rounded-xl" vid="85"><img src="https://images.unsplash.com/photo-1496449903678-68ddcb189a24?auto=format&amp;fit=crop&amp;w=600&amp;q=80" alt="G3" vid="86"></div>
+                        <div class="gallery-item rounded-xl" vid="87"><img src="https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?auto=format&amp;fit=crop&amp;w=600&amp;q=80" alt="G4" vid="88"></div>
+                        <div class="gallery-item rounded-xl" vid="89"><img src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?auto=format&amp;fit=crop&amp;w=600&amp;q=80" alt="G5" vid="90"></div>
+                        <div class="gallery-item rounded-xl" vid="91"><img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&amp;fit=crop&amp;w=600&amp;q=80" alt="G6" vid="92"></div>
+                    </div>
+                    
+                    <button class="w-full mt-6 py-4 border border-zinc-900 mono text-[10px] text-zinc-500 hover:text-white hover:border-zinc-700 transition-all rounded-xl uppercase tracking-widest" vid="93">
+                        Enter Extended Archive [+]
+                    </button>
+                </section>
+            </div>
+        </div>
+
+        
+        <section class="mt-32" vid="94">
+            <div class="section-header flex justify-between items-end" vid="95">
+                <div vid="96">
+                    <span class="hud-tag" vid="97">DIGITAL_RELEASES</span>
+                    <h2 class="text-3xl font-black mt-2 uppercase tracking-tight" vid="98">Discography</h2>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" vid="99">
+                
+                <div class="video-card rounded-2xl p-4" vid="100">
+                    <div class="thumbnail-container rounded-xl overflow-hidden" vid="101">
+                        <img src="https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?auto=format&amp;fit=crop&amp;w=800&amp;q=80" class="w-full h-full object-cover grayscale" alt="MV1" vid="102">
+                        <div class="play-overlay" vid="103"><i class="ph ph-play-fill text-4xl text-white" vid="104"></i></div>
+                    </div>
+                    <div class="mt-6" vid="105">
+                        <div class="flex justify-between items-start" vid="106">
+                            <h3 class="font-bold text-lg uppercase" vid="107">CYBER_PULSE (OFFICIAL MV)</h3>
+                            <span class="mono text-[9px] text-[var(--irid-cyan)]" vid="108">2024.01</span>
+                        </div>
+                        <div class="flex items-center gap-4 mt-3" vid="109">
+                            <div class="flex items-center gap-1 mono text-[10px] text-zinc-500" vid="110">
+                                <i class="ph ph-eye" vid="111"></i> 12.4M
+                            </div>
+                            <div class="flex items-center gap-1 mono text-[10px] text-zinc-500" vid="112">
+                                <i class="ph ph-clock" vid="113"></i> 03:42
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                
+                <div class="video-card rounded-2xl p-4" vid="114">
+                    <div class="thumbnail-container rounded-xl overflow-hidden" vid="115">
+                        <img src="https://images.unsplash.com/photo-1493225255756-d9584f8606e9?auto=format&amp;fit=crop&amp;w=800&amp;q=80" class="w-full h-full object-cover grayscale" alt="MV2" vid="116">
+                        <div class="play-overlay" vid="117"><i class="ph ph-play-fill text-4xl text-white" vid="118"></i></div>
+                    </div>
+                    <div class="mt-6" vid="119">
+                        <div class="flex justify-between items-start" vid="120">
+                            <h3 class="font-bold text-lg uppercase" vid="121">NEURAL_DREAM // LIVE</h3>
+                            <span class="mono text-[9px] text-[var(--irid-cyan)]" vid="122">2023.11</span>
+                        </div>
+                        <div class="flex items-center gap-4 mt-3" vid="123">
+                            <div class="flex items-center gap-1 mono text-[10px] text-zinc-500" vid="124">
+                                <i class="ph ph-eye" vid="125"></i> 8.1M
+                            </div>
+                            <div class="flex items-center gap-1 mono text-[10px] text-zinc-500" vid="126">
+                                <i class="ph ph-clock" vid="127"></i> 04:15
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                
+                <div class="video-card rounded-2xl p-4" vid="128">
+                    <div class="thumbnail-container rounded-xl overflow-hidden" vid="129">
+                        <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&amp;fit=crop&amp;w=800&amp;q=80" class="w-full h-full object-cover grayscale" alt="MV3" vid="130">
+                        <div class="play-overlay" vid="131"><i class="ph ph-play-fill text-4xl text-white" vid="132"></i></div>
+                    </div>
+                    <div class="mt-6" vid="133">
+                        <div class="flex justify-between items-start" vid="134">
+                            <h3 class="font-bold text-lg uppercase" vid="135">VOX_EX_MACHINA</h3>
+                            <span class="mono text-[9px] text-[var(--irid-cyan)]" vid="136">2023.06</span>
+                        </div>
+                        <div class="flex items-center gap-4 mt-3" vid="137">
+                            <div class="flex items-center gap-1 mono text-[10px] text-zinc-500" vid="138">
+                                <i class="ph ph-eye" vid="139"></i> 24.8M
+                            </div>
+                            <div class="flex items-center gap-1 mono text-[10px] text-zinc-500" vid="140">
+                                <i class="ph ph-clock" vid="141"></i> 03:12
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    
+    <footer class="p-20 text-center mono text-[10px] text-zinc-700" vid="142">
+        <div class="flex justify-center gap-8 mb-10" vid="143">
+            <span vid="144">SYSTEM_STATUS: <b class="text-[var(--irid-lime)]" vid="145">OPTIMAL</b></span>
+            <span vid="146">LOCATION: <b class="text-white" vid="147">SEOUL_S_01</b></span>
+            <span vid="148">ENCRYPTION: <b class="text-white" vid="149">AES-256</b></span>
+        </div>
+        © 2024 AEON ENTERTAINMENT GROUP. ALL NEURAL PATHWAYS RESERVED.
+    </footer>
+
+    
+    <div class="sticky-btn-container" vid="150">
+        <button class="campaign-btn" vid="151">
+            <i class="ph ph-lightning-fill text-xl" vid="152"></i>
+            Request campaign quote for Eclipsa
+        </button>
+    </div>
+
+    <script vid="153">
+        
+        const container = document.getElementById('particles');
+        for (let i = 0; i < 60; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.width = Math.random() * 2 + 'px';
+            particle.style.height = particle.style.width;
+            particle.style.left = Math.random() * 100 + 'vw';
+            particle.style.top = Math.random() * 100 + 'vh';
+            particle.style.animationDelay = Math.random() * 20 + 's';
+            particle.style.animationDuration = (Math.random() * 15 + 15) + 's';
+            container.appendChild(particle);
+        }
+
+        
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const heroImg = document.querySelector('.hero-img');
+            if (heroImg) {
+                heroImg.style.transform = `translateY(${scrolled * 0.3}px)`;
+            }
+        });
+    </script>
+
+</body></html>

@@ -1,0 +1,437 @@
+<html lang="en" vid="0"><head vid="1">
+    <meta charset="UTF-8" vid="2">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" vid="3">
+    <title vid="4">AEON_01 | META_MENU</title>
+    <script src="https://cdn.tailwindcss.com/3.4.17" vid="5"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" vid="6">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" vid="7">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;500;900&amp;family=Space+Mono&amp;display=swap" rel="stylesheet" vid="8">
+    <script src="https://unpkg.com/@phosphor-icons/web" vid="9"></script>
+    <style vid="10">
+        :root {
+            --irid-cyan: #00f3ff;
+            --irid-pink: #ff00e5;
+            --irid-lime: #d4ff00;
+            --glass: rgba(255, 255, 255, 0.03);
+            --border: rgba(255, 255, 255, 0.15);
+            --bg-void: #000000;
+        }
+
+        body {
+            background: var(--bg-void);
+            color: #fff;
+            font-family: 'Inter', sans-serif;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        .mono { font-family: 'Space Mono', monospace; }
+
+        
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .particle {
+            position: absolute;
+            background: #fff;
+            border-radius: 50%;
+            opacity: 0.3;
+            filter: blur(1px);
+            animation: float 20s infinite linear;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0) translateX(0); }
+            100% { transform: translateY(-100vh) translateX(50px); }
+        }
+
+        
+        .iridescent-bg {
+            background: linear-gradient(90deg, var(--irid-cyan), var(--irid-pink));
+        }
+
+        .logo-mark {
+            width: 24px;
+            height: 24px;
+            border: 2px solid #fff;
+            border-radius: 50%;
+            position: relative;
+        }
+
+        .logo-mark::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 16px;
+            height: 16px;
+            background: linear-gradient(45deg, var(--irid-cyan), var(--irid-pink), var(--irid-lime));
+            border-radius: 50%;
+            animation: rotate 4s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        
+        .menu-item {
+            font-size: 3.5rem;
+            font-weight: 900;
+            line-height: 1.1;
+            letter-spacing: -0.02em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.4);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            cursor: pointer;
+            position: relative;
+            width: fit-content;
+        }
+
+        .menu-item:hover {
+            color: #fff;
+            transform: translateX(20px);
+        }
+
+        .menu-item::before {
+            content: attr(data-index);
+            position: absolute;
+            left: -40px;
+            top: 10px;
+            font-size: 10px;
+            font-family: 'Space Mono', monospace;
+            color: var(--irid-cyan);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .menu-item:hover::before {
+            opacity: 1;
+        }
+
+        
+        .portal-frame {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16/10;
+            background: #111;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+            box-shadow: 0 0 50px rgba(0, 243, 255, 0.1);
+        }
+
+        .portal-glow {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border: 2px solid transparent;
+            background: linear-gradient(45deg, var(--irid-cyan), var(--irid-pink)) border-box;
+            -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: destination-out;
+            mask-composite: exclude;
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .sub-menu-item {
+            font-family: 'Space Mono', monospace;
+            font-size: 14px;
+            letter-spacing: 0.1em;
+            color: var(--irid-cyan);
+            margin-bottom: 8px;
+            cursor: pointer;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sub-menu-item:hover {
+            color: #fff;
+        }
+
+        .sub-menu-item::before {
+            content: '';
+            width: 0px;
+            height: 1px;
+            background: var(--irid-cyan);
+            transition: width 0.3s ease;
+        }
+
+        .sub-menu-item:hover::before {
+            width: 20px;
+        }
+
+        .visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .portal-video-placeholder {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: grayscale(1) contrast(1.2) brightness(0.8);
+            transition: all 0.5s ease;
+        }
+
+        .scanlines {
+            position: absolute;
+            inset: 0;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0, 0, 0, 0.1),
+                rgba(0, 0, 0, 0.1) 1px,
+                transparent 1px,
+                transparent 2px
+            );
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .hud-bracket {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border: 1px solid var(--irid-cyan);
+        }
+
+        .bracket-tl { top: 20px; left: 20px; border-right: 0; border-bottom: 0; }
+        .bracket-tr { top: 20px; right: 20px; border-left: 0; border-bottom: 0; }
+        .bracket-bl { bottom: 20px; left: 20px; border-right: 0; border-top: 0; }
+        .bracket-br { bottom: 20px; right: 20px; border-left: 0; border-top: 0; }
+
+        .campaign-btn {
+            background: linear-gradient(90deg, var(--irid-cyan), var(--irid-pink));
+            color: #000;
+            font-weight: 700;
+            padding: 12px 32px;
+            border-radius: 100px;
+            font-size: 13px;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+        }
+
+        .campaign-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.4);
+        }
+    </style>
+</head>
+<body class="flex flex-col" vid="11">
+
+    <div class="particles" id="particles" vid="12"></div>
+
+    
+    <header class="relative z-10 p-10 flex justify-between items-center" vid="13">
+        <div class="flex items-center gap-4" vid="14">
+            <div class="logo-mark" vid="15"></div>
+            <span class="font-black tracking-[0.4em] text-lg" vid="16">AEON_01</span>
+        </div>
+        
+        <div class="flex items-center gap-8" vid="17">
+            <div class="mono text-[10px] text-zinc-500 tracking-widest uppercase" vid="18">
+                System: <span class="text-[var(--irid-lime)]" vid="19">Authorized</span>
+            </div>
+            <button class="w-12 h-12 rounded-full border border-zinc-800 flex items-center justify-center hover:bg-white hover:text-black transition-all group" vid="20">
+                <i class="ph ph-x text-2xl group-hover:rotate-90 transition-transform duration-300" vid="21"></i>
+            </button>
+        </div>
+    </header>
+
+    
+    <main class="flex-1 relative z-10 px-24 grid grid-cols-2 items-center" vid="22">
+        
+        
+        <div class="flex gap-12 items-start" vid="23">
+            <nav class="flex flex-col gap-2" vid="24">
+                <div class="menu-item" data-index="01" data-target="artists" vid="25">Artists</div>
+                <div class="menu-item" data-index="02" data-target="company" vid="26">Company</div>
+                <div class="menu-item" data-index="03" data-target="studio" vid="27">Studio</div>
+                <div class="menu-item" data-index="04" data-target="business" vid="28">Business</div>
+                <div class="menu-item" data-index="05" data-target="investors" vid="29">Investors</div>
+                <div class="menu-item" data-index="06" data-target="news" vid="30">News</div>
+                <div class="menu-item" data-index="07" data-target="trust" vid="31">Trust</div>
+                <div class="menu-item" data-index="08" data-target="join" vid="32">Join Us</div>
+                <div class="menu-item" data-index="09" data-target="contact" vid="33">Contact</div>
+            </nav>
+
+            
+            <div id="sub-menu" class="mt-8 pt-4 border-l border-zinc-800 pl-8 min-w-[200px]" vid="34">
+                <div class="mono text-[10px] text-zinc-500 mb-6 tracking-widest uppercase opacity-60" vid="35">Directory // [Select]</div>
+                <div id="sub-menu-content" vid="36">
+                    
+                </div>
+            </div>
+        </div>
+
+        
+        <div class="pl-24" vid="37">
+            <div class="relative" vid="38">
+                <div class="portal-frame rounded-2xl" vid="39">
+                    <div class="portal-glow rounded-2xl" vid="40"></div>
+                    <div class="scanlines" vid="41"></div>
+                    
+                    <div class="hud-bracket bracket-tl" vid="42"></div>
+                    <div class="hud-bracket bracket-tr" vid="43"></div>
+                    <div class="hud-bracket bracket-bl" vid="44"></div>
+                    <div class="hud-bracket bracket-br" vid="45"></div>
+
+                    <div class="absolute top-4 left-6 mono text-[9px] text-[var(--irid-cyan)] flex items-center gap-2" vid="46">
+                        <span class="w-2 h-2 rounded-full bg-[var(--irid-cyan)] animate-pulse" vid="47"></span>
+                        LIVE_FEED_01.EXE
+                    </div>
+
+                    <img id="portal-img" src="https://images.unsplash.com/photo-1614850523296-d8c1af93d400?auto=format&amp;fit=crop&amp;w=1200&amp;q=80" class="portal-video-placeholder" alt="Portal View" vid="48">
+                </div>
+
+                
+                <div class="absolute -bottom-16 right-0 text-right mono text-[10px] text-zinc-500 leading-relaxed" vid="49">
+                    OBJECT_CLASS: <span class="text-white" vid="50">PREMIUM_TALENT</span><br vid="51">
+                    LOCAL_TIME: <span id="time-display" class="text-white" vid="52">12:45:08</span><br vid="53">
+                    COORDS: <span class="text-[var(--irid-lime)]" vid="54">37.5665° N, 126.9780° E</span>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    
+    <footer class="relative z-10 p-10 flex justify-between items-end" vid="55">
+        <div class="flex items-center gap-12" vid="56">
+            <button class="campaign-btn" vid="57">Get a campaign quote</button>
+            
+            <div class="flex gap-6 text-zinc-400" vid="58">
+                <a href="#" class="hover:text-[var(--irid-cyan)] transition-colors" vid="59"><i class="ph ph-instagram-logo text-xl" vid="60"></i></a>
+                <a href="#" class="hover:text-[var(--irid-cyan)] transition-colors" vid="61"><i class="ph ph-twitter-logo text-xl" vid="62"></i></a>
+                <a href="#" class="hover:text-[var(--irid-cyan)] transition-colors" vid="63"><i class="ph ph-youtube-logo text-xl" vid="64"></i></a>
+                <a href="#" class="hover:text-[var(--irid-cyan)] transition-colors" vid="65"><i class="ph ph-linkedin-logo text-xl" vid="66"></i></a>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-8" vid="67">
+            <div class="mono text-[11px] flex gap-4 text-zinc-500" vid="68">
+                <span class="cursor-pointer text-white" vid="69">EN</span>
+                <span class="text-zinc-800" vid="70">/</span>
+                <span class="cursor-pointer hover:text-white transition-colors" vid="71">KR</span>
+            </div>
+            <div class="mono text-[10px] text-zinc-600 border-l border-zinc-800 pl-8" vid="72">
+                © 2024 AEON ENTERTAINMENT GROUP.<br vid="73">
+                ALL NEURAL PATHWAYS RESERVED.
+            </div>
+        </div>
+    </footer>
+
+    <script vid="74">
+        
+        const container = document.getElementById('particles');
+        for (let i = 0; i < 50; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.width = Math.random() * 3 + 'px';
+            particle.style.height = particle.style.width;
+            particle.style.left = Math.random() * 100 + 'vw';
+            particle.style.top = Math.random() * 100 + 'vh';
+            particle.style.animationDelay = Math.random() * 20 + 's';
+            particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
+            container.appendChild(particle);
+        }
+
+        
+        function updateClock() {
+            const now = new Date();
+            const timeStr = now.getHours().toString().padStart(2, '0') + ':' + 
+                          now.getMinutes().toString().padStart(2, '0') + ':' + 
+                          now.getSeconds().toString().padStart(2, '0');
+            document.getElementById('time-display').innerText = timeStr;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        
+        const menuData = {
+            artists: {
+                subs: ['Singers', 'Models', 'Actors', 'Doctors', 'Virtual Idols'],
+                img: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=800&q=80'
+            },
+            company: {
+                subs: ['Vision', 'History', 'Team', 'Culture', 'Office'],
+                img: 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=800&q=80'
+            },
+            studio: {
+                subs: ['Production', 'Post-Production', 'XR Studio', 'Sound Design'],
+                img: 'https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&w=800&q=80'
+            },
+            business: {
+                subs: ['Global Network', 'IP Development', 'Brand Partnerships', 'Licensing'],
+                img: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=800&q=80'
+            },
+            investors: {
+                subs: ['Governance', 'IR Archive', 'Stock Info', 'Financials'],
+                img: 'https://images.unsplash.com/photo-1551288049-bbbda5366391?auto=format&fit=crop&w=800&q=80'
+            },
+            news: {
+                subs: ['Press Release', 'AEON_01 Social', 'Events', 'Media Kit'],
+                img: 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'
+            },
+            trust: {
+                subs: ['Ethics', 'Safety', 'Security', 'Privacy Policy'],
+                img: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=800&q=80'
+            },
+            join: {
+                subs: ['Careers', 'Audition', 'Internship', 'FAQ'],
+                img: 'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=800&q=80'
+            },
+            contact: {
+                subs: ['Location Map', 'Direct Inquiry', 'Partnerships'],
+                img: 'https://images.unsplash.com/photo-1523966211575-eb4a01e7dd51?auto=format&fit=crop&w=800&q=80'
+            }
+        };
+
+        const menuItems = document.querySelectorAll('.menu-item');
+        const subMenuContent = document.getElementById('sub-menu-content');
+        const portalImg = document.getElementById('portal-img');
+
+        menuItems.forEach(item => {
+            item.addEventListener('mouseenter', () => {
+                const target = item.getAttribute('data-target');
+                const data = menuData[target];
+                
+                
+                subMenuContent.innerHTML = '';
+                data.subs.forEach((sub, index) => {
+                    const div = document.createElement('div');
+                    div.className = 'sub-menu-item';
+                    div.innerText = sub;
+                    subMenuContent.appendChild(div);
+                    setTimeout(() => div.classList.add('visible'), index * 50);
+                });
+
+                
+                portalImg.style.opacity = '0';
+                setTimeout(() => {
+                    portalImg.src = data.img;
+                    portalImg.style.opacity = '1';
+                }, 200);
+            });
+        });
+
+        
+        menuItems[0].dispatchEvent(new Event('mouseenter'));
+
+    </script>
+
+</body></html>

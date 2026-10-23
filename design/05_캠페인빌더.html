@@ -1,0 +1,718 @@
+<html lang="en" vid="0"><head vid="1">
+    <meta charset="UTF-8" vid="2">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" vid="3">
+    <title vid="4">AEON_01 | CAMPAIGN_QUOTE_BUILDER</title>
+    <script src="https://cdn.tailwindcss.com/3.4.17" vid="5"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" vid="6">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" vid="7">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;500;700;900&amp;family=Space+Mono&amp;display=swap" rel="stylesheet" vid="8">
+    <script src="https://unpkg.com/@phosphor-icons/web" vid="9"></script>
+    <style vid="10">
+        :root {
+            --irid-cyan: #00f3ff;
+            --irid-pink: #ff00e5;
+            --irid-lime: #d4ff00;
+            --glass: rgba(255, 255, 255, 0.03);
+            --border: rgba(255, 255, 255, 0.1);
+            --bg-void: #000000;
+        }
+
+        body {
+            background: var(--bg-void);
+            color: #fff;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            width: 100%;
+            height: 100vh;
+        }
+
+        .mono { font-family: 'Space Mono', monospace; }
+
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--irid-cyan); }
+
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .particle {
+            position: absolute;
+            background: #fff;
+            border-radius: 50%;
+            opacity: 0.15;
+            filter: blur(1px);
+            animation: float 30s infinite linear;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0) translateX(0); }
+            100% { transform: translateY(-100vh) translateX(40px); }
+        }
+
+        .logo-mark {
+            width: 20px;
+            height: 20px;
+            border: 1.5px solid #fff;
+            border-radius: 50%;
+            position: relative;
+        }
+
+        .logo-mark::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 13px;
+            height: 13px;
+            background: linear-gradient(45deg, var(--irid-cyan), var(--irid-pink), var(--irid-lime));
+            border-radius: 50%;
+            animation: rotate 4s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .step-item {
+            position: relative;
+            flex: 1;
+            padding-bottom: 20px;
+            cursor: pointer;
+        }
+
+        .step-line {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.05);
+            transition: all 0.4s ease;
+        }
+
+        .step-item.active .step-line {
+            background: linear-gradient(90deg, var(--irid-cyan), var(--irid-pink));
+            box-shadow: 0 0 10px var(--irid-cyan);
+        }
+
+        .step-item.completed .step-line {
+            background: var(--irid-cyan);
+        }
+
+        .step-label {
+            font-family: 'Space Mono', monospace;
+            font-size: 9px;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.3);
+            transition: color 0.3s ease;
+        }
+
+        .step-item.active .step-label {
+            color: var(--irid-cyan);
+        }
+
+        .form-container {
+            min-height: 500px;
+        }
+
+        .artist-selectable {
+            aspect-ratio: 3/4;
+            background: #0a0a0a;
+            border: 1px solid var(--border);
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .artist-selectable.selected {
+            border-color: var(--irid-cyan);
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.15);
+        }
+
+        .artist-selectable.selected::after {
+            content: '\e026';
+            font-family: "Phosphor";
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: var(--irid-cyan);
+            color: #000;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: bold;
+            z-index: 10;
+        }
+
+        .artist-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: grayscale(1);
+            transition: filter 0.3s ease;
+        }
+
+        .artist-selectable.selected .artist-img,
+        .artist-selectable:hover .artist-img {
+            filter: grayscale(0);
+        }
+
+        .usage-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border);
+            padding: 24px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .usage-card:hover, .usage-card.active {
+            border-color: var(--irid-pink);
+            background: rgba(255, 0, 229, 0.05);
+        }
+
+        .chip {
+            padding: 8px 20px;
+            border: 1px solid var(--border);
+            border-radius: 100px;
+            font-family: 'Space Mono', monospace;
+            font-size: 11px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: rgba(255,255,255,0.5);
+        }
+
+        .chip.active {
+            background: var(--irid-cyan);
+            color: #000;
+            border-color: var(--irid-cyan);
+            font-weight: 700;
+        }
+
+        .summary-panel {
+            background: rgba(255,255,255,0.02);
+            border-left: 1px solid var(--border);
+            backdrop-filter: blur(20px);
+        }
+
+        .input-field {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 12px 16px;
+            width: 100%;
+            color: #fff;
+            font-family: 'Inter', sans-serif;
+            transition: border-color 0.3s ease;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: var(--irid-cyan);
+        }
+
+        .campaign-btn {
+            background: linear-gradient(90deg, var(--irid-cyan), var(--irid-pink));
+            color: #000;
+            font-weight: 700;
+            padding: 16px 32px;
+            border-radius: 100px;
+            font-size: 13px;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+        }
+
+        .campaign-btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 30px rgba(0, 243, 255, 0.4);
+        }
+
+        .prev-btn {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: rgba(255,255,255,0.6);
+            padding: 16px 32px;
+            border-radius: 100px;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            transition: all 0.3s ease;
+        }
+
+        .prev-btn:hover {
+            border-color: #fff;
+            color: #fff;
+        }
+
+        .scanlines {
+            position: absolute;
+            inset: 0;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0, 0, 0, 0.05),
+                rgba(0, 0, 0, 0.05) 1px,
+                transparent 1px,
+                transparent 2px
+            );
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        .hud-tag {
+            font-family: 'Space Mono', monospace;
+            font-size: 9px;
+            color: var(--irid-cyan);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        .price-range {
+            font-size: 2.5rem;
+            font-weight: 900;
+            letter-spacing: -0.05em;
+            background: linear-gradient(to right, var(--irid-cyan), var(--irid-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+</head>
+<body class="flex flex-col" vid="11">
+
+    <div class="particles" id="particles" vid="12"></div>
+
+    
+    <header class="relative z-20 p-10 flex justify-between items-center" vid="13">
+        <div class="flex items-center gap-4" vid="14">
+            <div class="logo-mark" vid="15"></div>
+            <span class="font-black tracking-[0.4em] text-sm" vid="16">AEON_01</span>
+        </div>
+        <div class="flex items-center gap-10" vid="17">
+            <div class="mono text-[10px] text-zinc-500 uppercase tracking-widest" vid="18">PROTOCOL: <span class="text-[var(--irid-lime)]" vid="19">QUOTE_GENERATION_V4.0</span></div>
+            <button class="w-10 h-10 border border-zinc-800 rounded-full flex items-center justify-center text-white hover:bg-white hover:text-black transition-all" vid="20" onclick="window.history.back()">
+                <i class="ph ph-x text-xl" vid="21"></i>
+            </button>
+        </div>
+    </header>
+
+    <main class="flex-1 flex relative z-10" vid="22">
+        
+        <div class="flex-1 px-24 py-10 overflow-y-auto" vid="23">
+            
+            <div class="flex gap-4 mb-20" vid="24">
+                <div class="step-item active" data-step="1" vid="25">
+                    <div class="step-label" vid="26">01 Talent</div>
+                    <div class="step-line" vid="27"></div>
+                </div>
+                <div class="step-item" data-step="2" vid="28">
+                    <div class="step-label" vid="29">02 Usage</div>
+                    <div class="step-line" vid="30"></div>
+                </div>
+                <div class="step-item" data-step="3" vid="31">
+                    <div class="step-label" vid="32">03 Region</div>
+                    <div class="step-line" vid="33"></div>
+                </div>
+                <div class="step-item" data-step="4" vid="34">
+                    <div class="step-label" vid="35">04 Lang</div>
+                    <div class="step-line" vid="36"></div>
+                </div>
+                <div class="step-item" data-step="5" vid="37">
+                    <div class="step-label" vid="38">05 Contact</div>
+                    <div class="step-line" vid="39"></div>
+                </div>
+            </div>
+
+            
+            <div id="form-content" class="form-container" vid="40">
+                
+                
+                <section id="step-1" class="step-section" vid="41">
+                    <div class="mb-10" vid="42">
+                        <span class="hud-tag" vid="43">SELECTION_PHASE</span>
+                        <h2 class="text-4xl font-black uppercase mt-2" vid="44">Select Artists</h2>
+                        <p class="text-zinc-500 mt-2" vid="45">Multiple selections allowed. Neural matching algorithm active.</p>
+                    </div>
+
+                    <div class="grid grid-cols-2 lg:grid-cols-4 gap-6" vid="46">
+                        <div class="artist-selectable selected rounded-xl" data-name="Eclipsa" data-price="45000" vid="47">
+                            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&amp;fit=crop&amp;w=600&amp;q=80" alt="Eclipsa" class="artist-img" vid="48">
+                            <div class="absolute bottom-4 left-4 z-10" vid="49">
+                                <div class="font-black text-xl uppercase" vid="50">Eclipsa</div>
+                                <div class="mono text-[9px] text-[var(--irid-cyan)]" vid="51">Singer</div>
+                            </div>
+                        </div>
+                        <div class="artist-selectable rounded-xl" data-name="Kairos" data-price="38000" vid="52">
+                            <img src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&amp;fit=crop&amp;w=600&amp;q=80" alt="Kairos" class="artist-img" vid="53">
+                            <div class="absolute bottom-4 left-4 z-10" vid="54">
+                                <div class="font-black text-xl uppercase" vid="55">Kairos</div>
+                                <div class="mono text-[9px] text-[var(--irid-cyan)]" vid="56">Singer</div>
+                            </div>
+                        </div>
+                        <div class="artist-selectable rounded-xl" data-name="Nova" data-price="42000" vid="57">
+                            <img src="https://images.unsplash.com/photo-1529139572765-39730b0ef1e1?auto=format&amp;fit=crop&amp;w=600&amp;q=80" alt="Nova" class="artist-img" vid="58">
+                            <div class="absolute bottom-4 left-4 z-10" vid="59">
+                                <div class="font-black text-xl uppercase" vid="60">Nova</div>
+                                <div class="mono text-[9px] text-[var(--irid-cyan)]" vid="61">Singer</div>
+                            </div>
+                        </div>
+                        <div class="artist-selectable rounded-xl" data-name="Void_Walker" data-price="55000" vid="62">
+                            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&amp;fit=crop&amp;w=600&amp;q=80" alt="Void_Walker" class="artist-img" vid="63">
+                            <div class="absolute bottom-4 left-4 z-10" vid="64">
+                                <div class="font-black text-xl uppercase" vid="65">Void_Walker</div>
+                                <div class="mono text-[9px] text-[var(--irid-cyan)]" vid="66">Singer</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                
+                <section id="step-2" class="step-section hidden" vid="67">
+                    <div class="mb-10" vid="68">
+                        <span class="hud-tag" vid="69">LICENSE_PARAMS</span>
+                        <h2 class="text-4xl font-black uppercase mt-2" vid="70">Usage Category</h2>
+                        <p class="text-zinc-500 mt-2" vid="71">Define how the content will be deployed across neural networks.</p>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-6" vid="72">
+                        <div class="usage-card" data-usage="Digital Ads" vid="73">
+                            <i class="ph ph-megaphone text-4xl mb-4 text-[var(--irid-cyan)]" vid="74"></i>
+                            <h3 class="font-bold text-xl uppercase" vid="75">Digital Ads</h3>
+                            <p class="text-zinc-500 text-sm mt-2" vid="76">Global web, apps, and streaming platforms.</p>
+                        </div>
+                        <div class="usage-card" data-usage="TV &amp; Video" vid="77">
+                            <i class="ph ph-television text-4xl mb-4 text-[var(--irid-pink)]" vid="78"></i>
+                            <h3 class="font-bold text-xl uppercase" vid="79">TV &amp; Video</h3>
+                            <p class="text-zinc-500 text-sm mt-2" vid="80">Broadcast, cinema, and long-form video productions.</p>
+                        </div>
+                        <div class="usage-card" data-usage="Social Media" vid="81">
+                            <i class="ph ph-share-network text-4xl mb-4 text-[var(--irid-lime)]" vid="82"></i>
+                            <h3 class="font-bold text-xl uppercase" vid="83">Social Media</h3>
+                            <p class="text-zinc-500 text-sm mt-2" vid="84">Influencer campaigns and branded content loops.</p>
+                        </div>
+                        <div class="usage-card" data-usage="Offline / OOH" vid="85">
+                            <i class="ph ph-image text-4xl mb-4 text-white" vid="86"></i>
+                            <h3 class="font-bold text-xl uppercase" vid="87">Offline / OOH</h3>
+                            <p class="text-zinc-500 text-sm mt-2" vid="88">Physical billboards, transit ads, and print media.</p>
+                        </div>
+                    </div>
+                </section>
+
+                
+                <section id="step-3" class="step-section hidden" vid="89">
+                    <div class="mb-10" vid="90">
+                        <span class="hud-tag" vid="91">TEMPORAL_GEOGRAPHIC_SYNC</span>
+                        <h2 class="text-4xl font-black uppercase mt-2" vid="92">Period &amp; Region</h2>
+                    </div>
+
+                    <div class="space-y-12" vid="93">
+                        <div vid="94">
+                            <label class="mono text-[10px] text-zinc-500 uppercase block mb-4" vid="95">Campaign Duration</label>
+                            <div class="flex items-center gap-6" vid="96">
+                                <div class="flex-1" vid="97">
+                                    <input type="date" class="input-field" vid="98">
+                                </div>
+                                <div class="mono text-zinc-700" vid="99">TO</div>
+                                <div class="flex-1" vid="100">
+                                    <input type="date" class="input-field" vid="101">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div vid="102">
+                            <label class="mono text-[10px] text-zinc-500 uppercase block mb-4" vid="103">Geographic Scope</label>
+                            <div class="flex flex-wrap gap-4" vid="104">
+                                <div class="chip active" data-region="Worldwide" vid="105">Worldwide</div>
+                                <div class="chip" data-region="South Korea" vid="106">South Korea</div>
+                                <div class="chip" data-region="North America" vid="107">North America</div>
+                                <div class="chip" data-region="Europe" vid="108">Europe</div>
+                                <div class="chip" data-region="Asia-Pacific" vid="109">Asia-Pacific</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                
+                <section id="step-4" class="step-section hidden" vid="110">
+                    <div class="mb-10" vid="111">
+                        <span class="hud-tag" vid="112">LINGUISTIC_MAPPING</span>
+                        <h2 class="text-4xl font-black uppercase mt-2" vid="113">Languages</h2>
+                        <p class="text-zinc-500 mt-2" vid="114">Select all languages required for the campaign delivery.</p>
+                    </div>
+
+                    <div class="flex flex-wrap gap-4" vid="115">
+                        <div class="chip active" data-lang="English" vid="116">English</div>
+                        <div class="chip active" data-lang="Korean" vid="117">Korean</div>
+                        <div class="chip" data-lang="Japanese" vid="118">Japanese</div>
+                        <div class="chip" data-lang="Chinese" vid="119">Chinese (Mandarin)</div>
+                        <div class="chip" data-lang="Spanish" vid="120">Spanish</div>
+                        <div class="chip" data-lang="French" vid="121">French</div>
+                        <div class="chip" data-lang="German" vid="122">German</div>
+                        <div class="chip" data-lang="Thai" vid="123">Thai</div>
+                        <div class="chip" data-lang="Vietnamese" vid="124">Vietnamese</div>
+                    </div>
+                </section>
+
+                
+                <section id="step-5" class="step-section hidden" vid="125">
+                    <div class="mb-10" vid="126">
+                        <span class="hud-tag" vid="127">IDENTITY_VERIFICATION</span>
+                        <h2 class="text-4xl font-black uppercase mt-2" vid="128">Company Info</h2>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-8" vid="129">
+                        <div class="col-span-2" vid="130">
+                            <label class="mono text-[10px] text-zinc-500 uppercase block mb-2" vid="131">Company Legal Name</label>
+                            <input type="text" class="input-field" placeholder="e.g. CYBERDYN SYSTEMS" vid="132">
+                        </div>
+                        <div vid="133">
+                            <label class="mono text-[10px] text-zinc-500 uppercase block mb-2" vid="134">Contact Person</label>
+                            <input type="text" class="input-field" placeholder="Full Name" vid="135">
+                        </div>
+                        <div vid="136">
+                            <label class="mono text-[10px] text-zinc-500 uppercase block mb-2" vid="137">Work Email</label>
+                            <input type="email" class="input-field" placeholder="name@company.com" vid="138">
+                        </div>
+                        <div class="col-span-2" vid="139">
+                            <label class="mono text-[10px] text-zinc-500 uppercase block mb-2" vid="140">Project Brief (Neural Descriptor)</label>
+                            <textarea class="input-field h-32" placeholder="Tell us about your campaign goals..." vid="141"></textarea>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+
+            
+            <div class="mt-16 pt-10 border-t border-zinc-900 flex justify-between items-center" vid="142">
+                <button id="prev-btn" class="prev-btn opacity-0 pointer-events-none" vid="143">
+                    <i class="ph ph-arrow-left inline-block mr-2" vid="144"></i> Previous
+                </button>
+                <button id="next-btn" class="campaign-btn" vid="145">
+                    Continue <i class="ph ph-arrow-right inline-block ml-2" vid="146"></i>
+                </button>
+            </div>
+        </div>
+
+        
+        <aside class="w-[450px] summary-panel p-16 flex flex-col" vid="147">
+            <div class="flex-1" vid="148">
+                <div class="flex justify-between items-end mb-10" vid="149">
+                    <div vid="150">
+                        <span class="hud-tag" vid="151">SUMMARY_LOG</span>
+                        <h3 class="text-2xl font-black uppercase mt-1" vid="152">Neural Quote</h3>
+                    </div>
+                    <div class="mono text-[10px] text-zinc-600" vid="153">REQ_ID: 88219</div>
+                </div>
+
+                <div class="space-y-8" vid="154">
+                    <div vid="155">
+                        <label class="mono text-[10px] text-zinc-500 uppercase block mb-4" vid="156">Selected Talent</label>
+                        <div id="summary-talent" class="space-y-3" vid="157">
+                            <div class="flex items-center justify-between group" vid="158">
+                                <div class="flex items-center gap-3" vid="159">
+                                    <div class="w-10 h-10 rounded bg-zinc-800 overflow-hidden" vid="160">
+                                        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&amp;fit=crop&amp;w=100&amp;q=80" class="w-full h-full object-cover" vid="161">
+                                    </div>
+                                    <span class="font-bold uppercase text-sm" vid="162">Eclipsa</span>
+                                </div>
+                                <span class="mono text-[10px] text-zinc-500" vid="163">$45,000+</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div vid="164">
+                        <label class="mono text-[10px] text-zinc-500 uppercase block mb-2" vid="165">Usage &amp; Parameters</label>
+                        <div class="space-y-2" vid="166">
+                            <div class="flex justify-between text-xs" vid="167">
+                                <span class="text-zinc-500" vid="168">Usage</span>
+                                <span id="summary-usage" class="text-white uppercase font-bold" vid="169">-</span>
+                            </div>
+                            <div class="flex justify-between text-xs" vid="170">
+                                <span class="text-zinc-500" vid="171">Region</span>
+                                <span id="summary-region" class="text-white uppercase font-bold" vid="172">Worldwide</span>
+                            </div>
+                            <div class="flex justify-between text-xs" vid="173">
+                                <span class="text-zinc-500" vid="174">Langs</span>
+                                <span id="summary-langs" class="text-white uppercase font-bold" vid="175">EN, KR</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-auto border-t border-zinc-800 pt-10" vid="176">
+                <div class="flex justify-between items-start mb-6" vid="177">
+                    <div vid="178">
+                        <span class="hud-tag" vid="179">ESTIMATED_COST</span>
+                        <div class="price-range mt-1" id="total-price" vid="180">$45,000+</div>
+                    </div>
+                    <div class="text-right" vid="181">
+                        <div class="mono text-[9px] text-[var(--irid-lime)]" vid="182">READY_FOR_SUBMISSION</div>
+                        <div class="mono text-[9px] text-zinc-500" vid="183">Price range subject to change</div>
+                    </div>
+                </div>
+                <button id="submit-btn" class="campaign-btn w-full hidden" vid="184">Finalize Request</button>
+            </div>
+        </aside>
+    </main>
+
+    <script vid="185">
+        
+        const container = document.getElementById('particles');
+        for (let i = 0; i < 40; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.width = Math.random() * 2 + 'px';
+            particle.style.height = particle.style.width;
+            particle.style.left = Math.random() * 100 + 'vw';
+            particle.style.top = Math.random() * 100 + 'vh';
+            particle.style.animationDelay = Math.random() * 20 + 's';
+            particle.style.animationDuration = (Math.random() * 10 + 15) + 's';
+            container.appendChild(particle);
+        }
+
+        
+        let currentStep = 1;
+        const totalSteps = 5;
+        const nextBtn = document.getElementById('next-btn');
+        const prevBtn = document.getElementById('prev-btn');
+        const submitBtn = document.getElementById('submit-btn');
+
+        function updateStep() {
+            
+            document.querySelectorAll('.step-section').forEach(s => s.classList.add('hidden'));
+            document.getElementById(`step-${currentStep}`).classList.remove('hidden');
+
+            
+            document.querySelectorAll('.step-item').forEach(item => {
+                const stepNum = parseInt(item.getAttribute('data-step'));
+                item.classList.remove('active', 'completed');
+                if (stepNum === currentStep) item.classList.add('active');
+                if (stepNum < currentStep) item.classList.add('completed');
+            });
+
+            
+            if (currentStep === 1) {
+                prevBtn.classList.add('opacity-0', 'pointer-events-none');
+            } else {
+                prevBtn.classList.remove('opacity-0', 'pointer-events-none');
+            }
+
+            if (currentStep === totalSteps) {
+                nextBtn.classList.add('hidden');
+                submitBtn.classList.remove('hidden');
+            } else {
+                nextBtn.classList.remove('hidden');
+                submitBtn.classList.add('hidden');
+            }
+        }
+
+        nextBtn.addEventListener('click', () => {
+            if (currentStep < totalSteps) {
+                currentStep++;
+                updateStep();
+            }
+        });
+
+        prevBtn.addEventListener('click', () => {
+            if (currentStep > 1) {
+                currentStep--;
+                updateStep();
+            }
+        });
+
+        
+        const artists = document.querySelectorAll('.artist-selectable');
+        const talentSummary = document.getElementById('summary-talent');
+        const priceDisplay = document.getElementById('total-price');
+
+        artists.forEach(card => {
+            card.addEventListener('click', () => {
+                card.classList.toggle('selected');
+                updateTalentSummary();
+            });
+        });
+
+        function updateTalentSummary() {
+            const selected = document.querySelectorAll('.artist-selectable.selected');
+            talentSummary.innerHTML = '';
+            let total = 0;
+
+            selected.forEach(card => {
+                const name = card.getAttribute('data-name');
+                const price = parseInt(card.getAttribute('data-price'));
+                const img = card.querySelector('img').src;
+                total += price;
+
+                const div = document.createElement('div');
+                div.className = 'flex items-center justify-between';
+                div.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded bg-zinc-800 overflow-hidden">
+                            <img src="${img}" class="w-full h-full object-cover">
+                        </div>
+                        <span class="font-bold uppercase text-sm">${name}</span>
+                    </div>
+                    <span class="mono text-[10px] text-zinc-500">$${price.toLocaleString()}+</span>
+                `;
+                talentSummary.appendChild(div);
+            });
+
+            priceDisplay.innerText = `$${total.toLocaleString()}+`;
+        }
+
+        
+        const usageCards = document.querySelectorAll('.usage-card');
+        const usageSummary = document.getElementById('summary-usage');
+
+        usageCards.forEach(card => {
+            card.addEventListener('click', () => {
+                usageCards.forEach(c => c.classList.remove('active'));
+                card.classList.add('active');
+                usageSummary.innerText = card.getAttribute('data-usage');
+            });
+        });
+
+        
+        const chips = document.querySelectorAll('.chip');
+        chips.forEach(chip => {
+            chip.addEventListener('click', () => {
+                const isRegion = chip.hasAttribute('data-region');
+                
+                if (isRegion) {
+                    document.querySelectorAll('[data-region]').forEach(c => c.classList.remove('active'));
+                    chip.classList.add('active');
+                    document.getElementById('summary-region').innerText = chip.innerText;
+                } else {
+                    chip.classList.toggle('active');
+                    const selectedLangs = Array.from(document.querySelectorAll('[data-lang].active'))
+                                             .map(c => c.innerText.substring(0, 2).toUpperCase());
+                    document.getElementById('summary-langs').innerText = selectedLangs.join(', ');
+                }
+            });
+        });
+
+        
+        submitBtn.addEventListener('click', () => {
+            alert('PROTOCOL_INITIATED: Quote request has been transmitted to AEON_01 Central Core.');
+        });
+
+    </script>
+
+</body></html>

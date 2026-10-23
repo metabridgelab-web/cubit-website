@@ -1,0 +1,511 @@
+<html lang="en" vid="0"><head vid="1">
+    <meta charset="UTF-8" vid="2">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" vid="3">
+    <title vid="4">AEON_01 | ARTISTS ROSTER</title>
+    <script src="https://cdn.tailwindcss.com/3.4.17" vid="5"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" vid="6">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" vid="7">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;500;700;900&amp;family=Space+Mono&amp;display=swap" rel="stylesheet" vid="8">
+    <script src="https://unpkg.com/@phosphor-icons/web" vid="9"></script>
+    <style vid="10">
+        :root {
+            --irid-cyan: #00f3ff;
+            --irid-pink: #ff00e5;
+            --irid-lime: #d4ff00;
+            --glass: rgba(255, 255, 255, 0.03);
+            --border: rgba(255, 255, 255, 0.1);
+            --bg-void: #000000;
+        }
+
+        body {
+            background: var(--bg-void);
+            color: #fff;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            height: 100vh;
+        }
+
+        .mono { font-family: 'Space Mono', monospace; }
+
+        
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--irid-cyan); }
+
+        
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .particle {
+            position: absolute;
+            background: #fff;
+            border-radius: 50%;
+            opacity: 0.2;
+            filter: blur(1px);
+            animation: float 25s infinite linear;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0) translateX(0); }
+            100% { transform: translateY(-100vh) translateX(30px); }
+        }
+
+        
+        .nav-item {
+            font-size: 0.75rem;
+            font-weight: 500;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.4);
+            transition: all 0.3s ease;
+            position: relative;
+            padding: 12px 0;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            color: #fff;
+        }
+
+        .nav-item.active::before {
+            content: '';
+            position: absolute;
+            left: -32px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 4px;
+            background: var(--irid-cyan);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--irid-cyan);
+        }
+
+        
+        .logo-mark {
+            width: 20px;
+            height: 20px;
+            border: 1.5px solid #fff;
+            border-radius: 50%;
+            position: relative;
+        }
+
+        .logo-mark::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 13px;
+            height: 13px;
+            background: linear-gradient(45deg, var(--irid-cyan), var(--irid-pink), var(--irid-lime));
+            border-radius: 50%;
+            animation: rotate 4s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        
+        .artist-card {
+            position: relative;
+            aspect-ratio: 3/4;
+            background: #0a0a0a;
+            border: 1px solid var(--border);
+            overflow: hidden;
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            cursor: pointer;
+        }
+
+        .artist-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: grayscale(1) brightness(0.7);
+            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .artist-card:hover {
+            border-color: rgba(255, 255, 255, 0.3);
+            transform: translateY(-5px);
+        }
+
+        .artist-card:hover .artist-img {
+            filter: grayscale(0) brightness(1);
+            transform: scale(1.05);
+        }
+
+        .artist-info {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 24px;
+            background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 100%);
+            z-index: 2;
+        }
+
+        .artist-name {
+            font-size: 1.5rem;
+            font-weight: 900;
+            letter-spacing: -0.02em;
+            text-transform: uppercase;
+            transition: transform 0.3s ease;
+        }
+
+        .artist-cat-label {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-family: 'Space Mono', monospace;
+            font-size: 9px;
+            letter-spacing: 0.1em;
+            color: var(--irid-cyan);
+            text-transform: uppercase;
+            opacity: 0;
+            transform: translateX(10px);
+            transition: all 0.3s ease;
+            background: rgba(0,0,0,0.4);
+            padding: 4px 8px;
+            backdrop-filter: blur(4px);
+            border-left: 1px solid var(--irid-cyan);
+        }
+
+        .artist-card:hover .artist-cat-label {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        
+        .tab {
+            font-family: 'Space Mono', monospace;
+            font-size: 11px;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.4);
+            padding: 8px 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .tab:hover, .tab.active {
+            color: #fff;
+        }
+
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 16px;
+            right: 16px;
+            height: 1px;
+            background: linear-gradient(90deg, var(--irid-cyan), var(--irid-pink));
+        }
+
+        
+        .page-title {
+            font-size: 4rem;
+            font-weight: 900;
+            letter-spacing: -0.04em;
+            line-height: 1;
+            background: linear-gradient(to bottom, #fff, rgba(255,255,255,0.4));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .filter-dropdown {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 8px 16px;
+            font-family: 'Space Mono', monospace;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--irid-cyan);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-dropdown:hover {
+            background: rgba(255,255,255,0.06);
+            border-color: rgba(255,255,255,0.2);
+        }
+
+        .campaign-btn {
+            background: linear-gradient(90deg, var(--irid-cyan), var(--irid-pink));
+            color: #000;
+            font-weight: 700;
+            padding: 10px 24px;
+            border-radius: 100px;
+            font-size: 11px;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+        }
+
+        .campaign-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.4);
+        }
+
+        
+        .hud-border {
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            border: 1px solid var(--irid-cyan);
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body class="flex" vid="11">
+
+    <div class="particles" id="particles" vid="12"></div>
+
+    
+    <aside class="w-72 h-screen border-r border-zinc-900 flex flex-col p-10 relative z-20 bg-black/40 backdrop-blur-xl" vid="13">
+        <div class="flex items-center gap-4 mb-20" vid="14">
+            <div class="logo-mark" vid="15"></div>
+            <span class="font-black tracking-[0.4em] text-sm" vid="16">AEON_01</span>
+        </div>
+
+        <nav class="flex flex-col flex-1" vid="17">
+            <a href="#" class="nav-item active" vid="18">Artists</a>
+            <a href="#" class="nav-item" vid="19">Company</a>
+            <a href="#" class="nav-item" vid="20">Studio</a>
+            <a href="#" class="nav-item" vid="21">Business</a>
+            <a href="#" class="nav-item" vid="22">Investors</a>
+            <a href="#" class="nav-item" vid="23">News</a>
+            <a href="#" class="nav-item" vid="24">Trust</a>
+            <a href="#" class="nav-item" vid="25">Join Us</a>
+            <a href="#" class="nav-item" vid="26">Contact</a>
+        </nav>
+
+        <div class="mt-auto" vid="27">
+            <div class="mono text-[9px] text-zinc-500 mb-6 uppercase leading-relaxed" vid="28">
+                System: <span class="text-[var(--irid-lime)]" vid="29">Authorized</span><br vid="30">
+                Ver: 4.0.8_STABLE
+            </div>
+            <button class="campaign-btn w-full" vid="31">Campaign Quote</button>
+        </div>
+    </aside>
+
+    
+    <main class="flex-1 h-screen overflow-y-auto relative z-10 px-16 pt-12 pb-24" vid="32">
+        
+        
+        <div class="flex justify-between items-start mb-16" vid="33">
+            <div vid="34">
+                <div class="mono text-[10px] text-[var(--irid-cyan)] mb-2 tracking-widest" vid="35">DIRECTORY // ACCESSING_TALENT_DATABASE</div>
+                <h1 class="page-title uppercase" vid="36">Artists</h1>
+            </div>
+            <div class="text-right mono text-[9px] text-zinc-500 space-y-1" vid="37">
+                <div vid="38">LOCAL_TIME: <span id="time-display" class="text-white" vid="39">14:22:04</span></div>
+                <div vid="40">COORDS: <span class="text-[var(--irid-lime)]" vid="41">37.5665° N, 126.9780° E</span></div>
+                <div class="flex items-center justify-end gap-2 mt-4" vid="42">
+                    <span class="text-zinc-600" vid="43">FILTER BY:</span>
+                    <div class="filter-dropdown" vid="44">
+                        Label: All
+                        <i class="ph ph-caret-down" vid="45"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        
+        <div class="flex gap-4 border-b border-zinc-900 mb-12" vid="46">
+            <div class="tab active" vid="47">Singers</div>
+            <div class="tab" vid="48">Models</div>
+            <div class="tab" vid="49">Actors</div>
+            <div class="tab" vid="50">Doctors</div>
+            <div class="tab" vid="51">Virtual Idols</div>
+        </div>
+
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" vid="52">
+            
+            
+            <div class="artist-card rounded-lg" vid="53">
+                <div class="artist-cat-label" vid="54">Singer</div>
+                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&amp;fit=crop&amp;w=600&amp;q=80" alt="Eclipsa" class="artist-img" vid="55">
+                <div class="artist-info" vid="56">
+                    <div class="artist-name" vid="57">Eclipsa</div>
+                </div>
+            </div>
+
+            
+            <div class="artist-card rounded-lg" vid="58">
+                <div class="artist-cat-label" vid="59">Singer</div>
+                <img src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&amp;fit=crop&amp;w=600&amp;q=80" alt="Kairos" class="artist-img" vid="60">
+                <div class="artist-info" vid="61">
+                    <div class="artist-name" vid="62">Kairos</div>
+                </div>
+            </div>
+
+            
+            <div class="artist-card rounded-lg" vid="63">
+                <div class="artist-cat-label" vid="64">Singer</div>
+                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&amp;fit=crop&amp;w=600&amp;q=80" alt="Void_Walker" class="artist-img" vid="65">
+                <div class="artist-info" vid="66">
+                    <div class="artist-name" vid="67">Void_Walker</div>
+                </div>
+            </div>
+
+            
+            <div class="artist-card rounded-lg" vid="68">
+                <div class="artist-cat-label" vid="69">Singer</div>
+                <img src="https://images.unsplash.com/photo-1529139572765-39730b0ef1e1?auto=format&amp;fit=crop&amp;w=600&amp;q=80" alt="Nova" class="artist-img" vid="70">
+                <div class="artist-info" vid="71">
+                    <div class="artist-name" vid="72">Nova</div>
+                </div>
+            </div>
+
+            
+            <div class="artist-card rounded-lg" vid="73">
+                <div class="artist-cat-label" vid="74">Singer</div>
+                <img src="https://images.unsplash.com/photo-1531123897727-8f129e16fd3c?auto=format&amp;fit=crop&amp;w=600&amp;q=80" alt="Siren" class="artist-img" vid="75">
+                <div class="artist-info" vid="76">
+                    <div class="artist-name" vid="77">Siren</div>
+                </div>
+            </div>
+
+            
+            <div class="artist-card rounded-lg" vid="78">
+                <div class="artist-cat-label" vid="79">Singer</div>
+                <img src="https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?auto=format&amp;fit=crop&amp;w=600&amp;q=80" alt="Luna" class="artist-img" vid="80">
+                <div class="artist-info" vid="81">
+                    <div class="artist-name" vid="82">Luna</div>
+                </div>
+            </div>
+
+            
+            <div class="artist-card rounded-lg" vid="83">
+                <div class="artist-cat-label" vid="84">Singer</div>
+                <img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&amp;fit=crop&amp;w=600&amp;q=80" alt="Aeon" class="artist-img" vid="85">
+                <div class="artist-info" vid="86">
+                    <div class="artist-name" vid="87">Aeon</div>
+                </div>
+            </div>
+
+            
+            <div class="artist-card rounded-lg" vid="88">
+                <div class="artist-cat-label" vid="89">Singer</div>
+                <img src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?auto=format&amp;fit=crop&amp;w=600&amp;q=80" alt="Xeno" class="artist-img" vid="90">
+                <div class="artist-info" vid="91">
+                    <div class="artist-name" vid="92">Xeno</div>
+                </div>
+            </div>
+
+            
+            <div class="artist-card rounded-lg" vid="93">
+                <div class="artist-cat-label" vid="94">Singer</div>
+                <img src="https://images.unsplash.com/photo-1520333789090-1afc82db536a?auto=format&amp;fit=crop&amp;w=600&amp;q=80" alt="Iris" class="artist-img" vid="95">
+                <div class="artist-info" vid="96">
+                    <div class="artist-name" vid="97">Iris</div>
+                </div>
+            </div>
+
+            
+            <div class="artist-card rounded-lg" vid="98">
+                <div class="artist-cat-label" vid="99">Singer</div>
+                <img src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&amp;fit=crop&amp;w=600&amp;q=80" alt="Ghost" class="artist-img" vid="100">
+                <div class="artist-info" vid="101">
+                    <div class="artist-name" vid="102">Ghost</div>
+                </div>
+            </div>
+
+            
+            <div class="artist-card rounded-lg" vid="103">
+                <div class="artist-cat-label" vid="104">Singer</div>
+                <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&amp;fit=crop&amp;w=600&amp;q=80" alt="Echo" class="artist-img" vid="105">
+                <div class="artist-info" vid="106">
+                    <div class="artist-name" vid="107">Echo</div>
+                </div>
+            </div>
+
+            
+            <div class="artist-card rounded-lg" vid="108">
+                <div class="artist-cat-label" vid="109">Singer</div>
+                <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&amp;fit=crop&amp;w=600&amp;q=80" alt="Vector" class="artist-img" vid="110">
+                <div class="artist-info" vid="111">
+                    <div class="artist-name" vid="112">Vector</div>
+                </div>
+            </div>
+
+        </div>
+
+        
+        <div class="mt-20 flex justify-between items-center border-t border-zinc-900 pt-8" vid="113">
+            <div class="mono text-[10px] text-zinc-600" vid="114">
+                DISPLAYING: 12 / 148 ENTRIES
+            </div>
+            <div class="flex items-center gap-6" vid="115">
+                <div class="flex gap-2" vid="116">
+                    <div class="w-8 h-8 flex items-center justify-center border border-zinc-800 text-white rounded cursor-pointer hover:bg-white hover:text-black transition-all" vid="117">1</div>
+                    <div class="w-8 h-8 flex items-center justify-center border border-zinc-900 text-zinc-500 rounded cursor-pointer hover:border-zinc-700 transition-all" vid="118">2</div>
+                    <div class="w-8 h-8 flex items-center justify-center border border-zinc-900 text-zinc-500 rounded cursor-pointer hover:border-zinc-700 transition-all" vid="119">3</div>
+                    <div class="w-8 h-8 flex items-center justify-center border border-zinc-900 text-zinc-500 rounded" vid="120">...</div>
+                    <div class="w-8 h-8 flex items-center justify-center border border-zinc-900 text-zinc-500 rounded cursor-pointer hover:border-zinc-700 transition-all" vid="121">12</div>
+                </div>
+                <div class="flex gap-3" vid="122">
+                    <button class="w-10 h-10 border border-zinc-800 flex items-center justify-center rounded-full hover:bg-[var(--irid-cyan)] hover:border-[var(--irid-cyan)] hover:text-black transition-all" vid="123">
+                        <i class="ph ph-caret-left" vid="124"></i>
+                    </button>
+                    <button class="w-10 h-10 border border-zinc-800 flex items-center justify-center rounded-full hover:bg-[var(--irid-cyan)] hover:border-[var(--irid-cyan)] hover:text-black transition-all" vid="125">
+                        <i class="ph ph-caret-right" vid="126"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script vid="127">
+        
+        const container = document.getElementById('particles');
+        for (let i = 0; i < 40; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.width = Math.random() * 2 + 'px';
+            particle.style.height = particle.style.width;
+            particle.style.left = Math.random() * 100 + 'vw';
+            particle.style.top = Math.random() * 100 + 'vh';
+            particle.style.animationDelay = Math.random() * 15 + 's';
+            particle.style.animationDuration = (Math.random() * 10 + 15) + 's';
+            container.appendChild(particle);
+        }
+
+        
+        function updateClock() {
+            const now = new Date();
+            const timeStr = now.getHours().toString().padStart(2, '0') + ':' + 
+                          now.getMinutes().toString().padStart(2, '0') + ':' + 
+                          now.getSeconds().toString().padStart(2, '0');
+            const display = document.getElementById('time-display');
+            if(display) display.innerText = timeStr;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        
+        const tabs = document.querySelectorAll('.tab');
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+            });
+        });
+    </script>
+
+</body></html>

@@ -1,0 +1,534 @@
+<html lang="en" vid="0"><head vid="1">
+    <meta charset="UTF-8" vid="2">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" vid="3">
+    <title vid="4">AEON_01 | NEWS_ARCHIVE: GLOBAL FEED</title>
+    <script src="https://cdn.tailwindcss.com/3.4.17" vid="5"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" vid="6">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" vid="7">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;500;700;900&amp;family=Space+Mono&amp;display=swap" rel="stylesheet" vid="8">
+    <script src="https://unpkg.com/@phosphor-icons/web" vid="9"></script>
+    <style vid="10">
+        :root {
+            --irid-cyan: #00f3ff;
+            --irid-pink: #ff00e5;
+            --irid-lime: #d4ff00;
+            --glass: rgba(255, 255, 255, 0.03);
+            --border: rgba(255, 255, 255, 0.1);
+            --bg-void: #000000;
+        }
+
+        body {
+            background: var(--bg-void);
+            color: #fff;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        .mono { font-family: 'Space Mono', monospace; }
+
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--irid-cyan); }
+
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .particle {
+            position: absolute;
+            background: #fff;
+            border-radius: 50%;
+            opacity: 0.15;
+            filter: blur(1px);
+            animation: float 25s infinite linear;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0) translateX(0); }
+            100% { transform: translateY(-100vh) translateX(30px); }
+        }
+
+        .logo-mark {
+            width: 20px;
+            height: 20px;
+            border: 1.5px solid #fff;
+            border-radius: 50%;
+            position: relative;
+        }
+
+        .logo-mark::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 13px;
+            height: 13px;
+            background: linear-gradient(45deg, var(--irid-cyan), var(--irid-pink), var(--irid-lime));
+            border-radius: 50%;
+            animation: rotate 4s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .nav-item {
+            font-size: 0.75rem;
+            font-weight: 500;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.4);
+            transition: all 0.3s ease;
+            position: relative;
+            padding: 12px 0;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            color: #fff;
+        }
+
+        .nav-item.active::before {
+            content: '';
+            position: absolute;
+            left: -32px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 4px;
+            background: var(--irid-cyan);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--irid-cyan);
+        }
+
+        .campaign-btn {
+            background: linear-gradient(90deg, var(--irid-cyan), var(--irid-pink));
+            color: #000;
+            font-weight: 700;
+            padding: 10px 24px;
+            border-radius: 100px;
+            font-size: 11px;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+        }
+
+        .campaign-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.4);
+        }
+
+        .page-title {
+            font-size: 4rem;
+            font-weight: 900;
+            letter-spacing: -0.04em;
+            line-height: 1;
+            background: linear-gradient(to bottom, #fff, rgba(255,255,255,0.4));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hud-tag {
+            font-family: 'Space Mono', monospace;
+            font-size: 9px;
+            color: var(--irid-cyan);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        .filter-tab {
+            font-family: 'Space Mono', monospace;
+            font-size: 11px;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.4);
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            border-bottom: 2px solid transparent;
+        }
+
+        .filter-tab:hover, .filter-tab.active {
+            color: #fff;
+        }
+
+        .filter-tab.active {
+            border-color: var(--irid-cyan);
+        }
+
+        .search-container {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            border-radius: 100px;
+            padding: 8px 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .search-container:focus-within {
+            border-color: var(--irid-cyan);
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .news-list-item {
+            display: flex;
+            gap: 40px;
+            padding: 32px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.4s ease;
+        }
+
+        .news-list-item:hover {
+            transform: translateX(10px);
+        }
+
+        .news-thumbnail {
+            width: 240px;
+            aspect-ratio: 16/9;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            flex-shrink: 0;
+        }
+
+        .news-thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: grayscale(1);
+            transition: all 0.5s ease;
+        }
+
+        .news-list-item:hover .news-thumbnail img {
+            filter: grayscale(0);
+            transform: scale(1.05);
+        }
+
+        .category-badge {
+            font-family: 'Space Mono', monospace;
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            padding: 2px 8px;
+            border-left: 2px solid;
+            background: rgba(255,255,255,0.03);
+        }
+
+        .category-music { border-color: var(--irid-cyan); color: var(--irid-cyan); }
+        .category-campaign { border-color: var(--irid-pink); color: var(--irid-pink); }
+        .category-press { border-color: white; color: white; }
+        .category-notice { border-color: var(--irid-lime); color: var(--irid-lime); }
+
+        .pinned-tag {
+            background: linear-gradient(90deg, var(--irid-cyan), var(--irid-pink));
+            color: #000;
+            font-weight: 700;
+            padding: 2px 10px;
+            border-radius: 4px;
+            font-size: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-right: 12px;
+        }
+
+        .pinned-section {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 48px;
+        }
+
+        .scanlines {
+            position: absolute;
+            inset: 0;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0, 0, 0, 0.05),
+                rgba(0, 0, 0, 0.05) 1px,
+                transparent 1px,
+                transparent 2px
+            );
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        .section-header {
+            border-left: 2px solid var(--irid-cyan);
+            padding-left: 20px;
+        }
+
+        .pagination-item {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--border);
+            border-radius: 50%;
+            font-family: 'Space Mono', monospace;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .pagination-item:hover, .pagination-item.active {
+            background: white;
+            color: black;
+            border-color: white;
+        }
+    </style>
+</head>
+<body class="flex" vid="11">
+
+    <div class="particles" id="particles" vid="12"></div>
+
+    
+    <aside class="w-72 h-screen border-r border-zinc-900 flex flex-col p-10 relative z-20 bg-black/40 backdrop-blur-xl shrink-0" vid="13">
+        <div class="flex items-center gap-4 mb-20" vid="14">
+            <div class="logo-mark" vid="15"></div>
+            <span class="font-black tracking-[0.4em] text-sm" vid="16">AEON_01</span>
+        </div>
+
+        <nav class="flex flex-col flex-1" vid="17">
+            <a href="#" class="nav-item" vid="18">Artists</a>
+            <a href="#" class="nav-item" vid="19">Company</a>
+            <a href="#" class="nav-item" vid="20">Studio</a>
+            <a href="#" class="nav-item" vid="21">Business</a>
+            <a href="#" class="nav-item" vid="22">Investors</a>
+            <a href="#" class="nav-item active" vid="23">News</a>
+            <a href="#" class="nav-item" vid="24">Trust</a>
+            <a href="#" class="nav-item" vid="25">Join Us</a>
+            <a href="#" class="nav-item" vid="26">Contact</a>
+        </nav>
+
+        <div class="mt-auto" vid="27">
+            <div class="mono text-[9px] text-zinc-500 mb-6 uppercase leading-relaxed" vid="28">
+                SYSTEM: <span class="text-[var(--irid-lime)]" vid="29">AUTHORIZED</span><br vid="30">
+                VER: 4.0.8_STABLE
+            </div>
+            <button class="campaign-btn w-full" vid="31">Campaign Quote</button>
+        </div>
+    </aside>
+
+    
+    <main class="flex-1 h-screen overflow-y-auto relative z-10 px-16 pt-12 pb-32" vid="32">
+        
+        <div class="flex justify-between items-start mb-16" vid="33">
+            <div vid="34">
+                <div class="mono text-[10px] text-[var(--irid-cyan)] mb-2 tracking-widest uppercase" vid="35">DATABASE_FEED // GLOBAL_ARCHIVE</div>
+                <h1 class="page-title uppercase" vid="36">News</h1>
+            </div>
+            <div class="text-right mono text-[9px] text-zinc-500 space-y-1" vid="37">
+                <div vid="38">DATA_FEED: <span class="text-[var(--irid-lime)]" vid="39">SYNCHRONIZED</span></div>
+                <div vid="40">LOCAL_TIME: <span id="time-display" class="text-white" vid="41">10:16:21</span></div>
+                <div vid="42">NODES: <span class="text-white" vid="43">GLOBAL_01_SECURE</span></div>
+            </div>
+        </div>
+
+        
+        <div class="flex flex-col md:flex-row justify-between items-center border-b border-zinc-900 mb-12 gap-6" vid="44">
+            <nav class="flex overflow-x-auto" vid="45">
+                <div class="filter-tab active" vid="46">All</div>
+                <div class="filter-tab" vid="47">Music</div>
+                <div class="filter-tab" vid="48">Campaign</div>
+                <div class="filter-tab" vid="49">Press</div>
+                <div class="filter-tab" vid="50">Notice</div>
+            </nav>
+            <div class="search-container w-full md:w-80" vid="51">
+                <i class="ph ph-magnifying-glass text-zinc-500" vid="52"></i>
+                <input type="text" placeholder="Search archive..." class="bg-transparent border-none outline-none w-full text-xs mono text-white placeholder:text-zinc-600" vid="53">
+            </div>
+        </div>
+
+        
+        <section class="pinned-section" vid="54">
+            <div class="flex items-center gap-4 mb-8" vid="55">
+                <span class="hud-tag" vid="56">PRIORITY_TRANSMISSIONS</span>
+                <div class="flex-1 h-[1px] bg-zinc-900" vid="57"></div>
+            </div>
+
+            <div class="space-y-6" vid="58">
+                
+                <div class="flex items-center group cursor-pointer" vid="59">
+                    <span class="pinned-tag" vid="60">Pinned</span>
+                    <span class="category-badge category-notice mr-6" vid="61">Notice</span>
+                    <h3 class="text-lg font-bold group-hover:text-[var(--irid-cyan)] transition-colors" vid="62">Update on AEON_01 Global Neural Network Infrastructure (v4.1.0)</h3>
+                    <span class="mono text-[10px] text-zinc-600 ml-auto" vid="63">2024.03.20</span>
+                </div>
+                
+                <div class="flex items-center group cursor-pointer" vid="64">
+                    <span class="pinned-tag" vid="65">Pinned</span>
+                    <span class="category-badge category-campaign mr-6" vid="66">Campaign</span>
+                    <h3 class="text-lg font-bold group-hover:text-[var(--irid-pink)] transition-colors" vid="67">Official Statement regarding "The Genesis Project" Collaboration</h3>
+                    <span class="mono text-[10px] text-zinc-600 ml-auto" vid="68">2024.03.15</span>
+                </div>
+            </div>
+        </section>
+
+        
+        <div class="section-header mb-8" vid="69">
+            <span class="hud-tag" vid="70">LATEST_FEED</span>
+            <h2 class="text-2xl font-black uppercase mt-1" vid="71">Archive Entries</h2>
+        </div>
+
+        <div class="news-list" vid="72">
+            
+            <div class="news-list-item" vid="73">
+                <div class="news-thumbnail" vid="74">
+                    <img src="https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?auto=format&amp;fit=crop&amp;w=600&amp;q=80" alt="News 1" vid="75">
+                </div>
+                <div class="flex-1 flex flex-col justify-center" vid="76">
+                    <div class="flex items-center gap-4 mb-3" vid="77">
+                        <span class="category-badge category-music" vid="78">Music</span>
+                        <span class="mono text-[10px] text-zinc-500" vid="79">TRANS_ID: #88291</span>
+                    </div>
+                    <h3 class="text-2xl font-black uppercase mb-4 hover:text-[var(--irid-cyan)] cursor-pointer transition-colors" vid="80">Eclipsa's "Cyber Pulse" breaks global streaming records within 24 hours</h3>
+                    <p class="text-zinc-500 text-sm leading-relaxed max-w-2xl mb-6" vid="81">
+                        The latest single from AEON's flagship artist has redefined the digital pop landscape, achieving over 50 million streams across all neural networks...
+                    </p>
+                    <span class="mono text-[10px] text-zinc-600" vid="82">MARCH 22, 2024</span>
+                </div>
+            </div>
+
+            
+            <div class="news-list-item" vid="83">
+                <div class="news-thumbnail" vid="84">
+                    <img src="https://images.unsplash.com/photo-1493225255756-d9584f8606e9?auto=format&amp;fit=crop&amp;w=600&amp;q=80" alt="News 2" vid="85">
+                </div>
+                <div class="flex-1 flex flex-col justify-center" vid="86">
+                    <div class="flex items-center gap-4 mb-3" vid="87">
+                        <span class="category-badge category-campaign" vid="88">Campaign</span>
+                        <span class="mono text-[10px] text-zinc-500" vid="89">TRANS_ID: #88285</span>
+                    </div>
+                    <h3 class="text-2xl font-black uppercase mb-4 hover:text-[var(--irid-pink)] cursor-pointer transition-colors" vid="90">AEON_WEAR // Season 04 "Digital Nomad" Collection Preview</h3>
+                    <p class="text-zinc-500 text-sm leading-relaxed max-w-2xl mb-6" vid="91">
+                        Witness the future of techwear. Integrated bio-sensors and adaptive fabric tech define the new seasonal drop launching next month...
+                    </p>
+                    <span class="mono text-[10px] text-zinc-600" vid="92">MARCH 18, 2024</span>
+                </div>
+            </div>
+
+            
+            <div class="news-list-item" vid="93">
+                <div class="news-thumbnail" vid="94">
+                    <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&amp;fit=crop&amp;w=600&amp;q=80" alt="News 3" vid="95">
+                </div>
+                <div class="flex-1 flex flex-col justify-center" vid="96">
+                    <div class="flex items-center gap-4 mb-3" vid="97">
+                        <span class="category-badge category-press" vid="98">Press</span>
+                        <span class="mono text-[10px] text-zinc-500" vid="99">TRANS_ID: #88270</span>
+                    </div>
+                    <h3 class="text-2xl font-black uppercase mb-4 hover:text-white cursor-pointer transition-colors" vid="100">AEON ENTERTAINMENT announces new XR Studio opening in Neo-Seoul</h3>
+                    <p class="text-zinc-500 text-sm leading-relaxed max-w-2xl mb-6" vid="101">
+                        Expanding our global creative footprint, the new XR Studio will feature state-of-the-art volumetric capture and real-time rendering arrays...
+                    </p>
+                    <span class="mono text-[10px] text-zinc-600" vid="102">MARCH 12, 2024</span>
+                </div>
+            </div>
+
+            
+            <div class="news-list-item" vid="103">
+                <div class="news-thumbnail" vid="104">
+                    <img src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?auto=format&amp;fit=crop&amp;w=600&amp;q=80" alt="News 4" vid="105">
+                </div>
+                <div class="flex-1 flex flex-col justify-center" vid="106">
+                    <div class="flex items-center gap-4 mb-3" vid="107">
+                        <span class="category-badge category-music" vid="108">Music</span>
+                        <span class="mono text-[10px] text-zinc-500" vid="109">TRANS_ID: #88265</span>
+                    </div>
+                    <h3 class="text-2xl font-black uppercase mb-4 hover:text-[var(--irid-cyan)] cursor-pointer transition-colors" vid="110">VOID_SQUAD: "Shadow Protocol" World Tour Dates Confirmed</h3>
+                    <p class="text-zinc-500 text-sm leading-relaxed max-w-2xl mb-6" vid="111">
+                        The underground collective prepares for an immersive 12-city tour utilizing holographic projection and spatial audio tech...
+                    </p>
+                    <span class="mono text-[10px] text-zinc-600" vid="112">MARCH 05, 2024</span>
+                </div>
+            </div>
+
+            
+            <div class="news-list-item" vid="113">
+                <div class="news-thumbnail" vid="114">
+                    <img src="https://images.unsplash.com/photo-1558591710-4b4a1ae0f04d?auto=format&amp;fit=crop&amp;w=600&amp;q=80" alt="News 5" vid="115">
+                </div>
+                <div class="flex-1 flex flex-col justify-center" vid="116">
+                    <div class="flex items-center gap-4 mb-3" vid="117">
+                        <span class="category-badge category-notice" vid="118">Notice</span>
+                        <span class="mono text-[10px] text-zinc-500" vid="119">TRANS_ID: #88250</span>
+                    </div>
+                    <h3 class="text-2xl font-black uppercase mb-4 hover:text-[var(--irid-lime)] cursor-pointer transition-colors" vid="120">Investor Portal: Q1 Earnings Report Transmission Schedule</h3>
+                    <p class="text-zinc-500 text-sm leading-relaxed max-w-2xl mb-6" vid="121">
+                        Official financial disclosure schedule for AEON Entertainment Group's first quarter performance metrics and strategic growth targets...
+                    </p>
+                    <span class="mono text-[10px] text-zinc-600" vid="122">FEBRUARY 28, 2024</span>
+                </div>
+            </div>
+        </div>
+
+        
+        <div class="mt-24 flex justify-center items-center gap-4" vid="123">
+            <button class="w-10 h-10 border border-zinc-800 rounded-full flex items-center justify-center text-zinc-500 hover:border-white hover:text-white transition-all" vid="124">
+                <i class="ph ph-caret-left text-lg" vid="125"></i>
+            </button>
+            <div class="pagination-item active" vid="126">1</div>
+            <div class="pagination-item" vid="127">2</div>
+            <div class="pagination-item" vid="128">3</div>
+            <div class="mono text-zinc-800" vid="129">...</div>
+            <div class="pagination-item" vid="130">14</div>
+            <button class="w-10 h-10 border border-zinc-800 rounded-full flex items-center justify-center text-zinc-500 hover:border-white hover:text-white transition-all" vid="131">
+                <i class="ph ph-caret-right text-lg" vid="132"></i>
+            </button>
+        </div>
+
+    </main>
+
+    <script vid="133">
+        
+        const container = document.getElementById('particles');
+        for (let i = 0; i < 40; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.width = Math.random() * 2 + 'px';
+            particle.style.height = particle.style.width;
+            particle.style.left = Math.random() * 100 + 'vw';
+            particle.style.top = Math.random() * 100 + 'vh';
+            particle.style.animationDelay = Math.random() * 15 + 's';
+            particle.style.animationDuration = (Math.random() * 10 + 15) + 's';
+            container.appendChild(particle);
+        }
+
+        
+        function updateClock() {
+            const now = new Date();
+            const timeStr = now.getHours().toString().padStart(2, '0') + ':' + 
+                          now.getMinutes().toString().padStart(2, '0') + ':' + 
+                          now.getSeconds().toString().padStart(2, '0');
+            const display = document.getElementById('time-display');
+            if(display) display.innerText = timeStr;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        
+        const tabs = document.querySelectorAll('.filter-tab');
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+            });
+        });
+    </script>
+
+
+</body></html>
