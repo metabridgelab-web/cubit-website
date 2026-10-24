@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 
-import { PageView, pageViewMetadata } from '@/components/skeleton/PageView'
+import { PageView, pageViewMetadata } from '@/components/pages/PageView'
 import { resolveLocale, type LangParams } from '@/lib/page'
 
 type Params = LangParams & { slug: string }

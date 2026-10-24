@@ -1961,6 +1961,8 @@ export interface UiLabel {
     notFound: string;
     empty: string;
     all: string;
+    originalNotice: string;
+    openMap: string;
   };
   home: {
     newRelease: string;
@@ -1977,6 +1979,10 @@ export interface UiLabel {
     step4: string;
     brandsTitle: string;
     viewCases: string;
+    works: string;
+    client: string;
+    talent: string;
+    similar: string;
   };
   artist: {
     profile: string;
@@ -2258,6 +2264,8 @@ export interface UiLabelsSelect<T extends boolean = true> {
         notFound?: T;
         empty?: T;
         all?: T;
+        originalNotice?: T;
+        openMap?: T;
       };
   home?:
     | T
@@ -2278,6 +2286,10 @@ export interface UiLabelsSelect<T extends boolean = true> {
         step4?: T;
         brandsTitle?: T;
         viewCases?: T;
+        works?: T;
+        client?: T;
+        talent?: T;
+        similar?: T;
       };
   artist?:
     | T

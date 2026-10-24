@@ -1,12 +1,13 @@
-import { ArrowRight, ArrowUpRight, Play, PushPin } from '@phosphor-icons/react/dist/ssr'
+import { ArrowRight, Play, PushPin } from '@phosphor-icons/react/dist/ssr'
 import Link from 'next/link'
 import type { ReactNode } from 'react'
 
 import type { LocaleCode } from '@/constants/locales'
 import { localePath } from '@/i18n'
 import type { getBusinessSettings, getNewReleases, getUiLabels } from '@/lib/data'
-import { mediaUrl, youtubeId } from '@/lib/page'
+import { youtubeId } from '@/lib/page'
 import { ArtistTile } from '@/components/artists/ArtistTile'
+import { BrandsRow, BuilderBar, ServiceGrid, ViewCasesLink } from '@/components/business/Parts'
 import type { Artist, ArtistCategory, Post } from '@/payload-types'
 
 // 홈 첫 화면 아래 섹션들. 디자인 파일에 없던 부분이라 design/03·08의 부품(HUD 라벨, 유리 카드, 무지개빛 버튼)으로 맞춰 만들었다.
@@ -101,56 +102,15 @@ export function ArtistsSection({ index, locale, labels, artists, categories }: {
 
 // BUSINESS (수익화 필수): 세 가지 방법 · 캠페인 빌더 바 · 함께한 브랜드
 export function BusinessSection({ index, locale, labels, business }: { index: number; locale: LocaleCode; labels: Labels; business: Awaited<ReturnType<typeof getBusinessSettings>> }) {
-  const steps = [labels.business.step1, labels.business.step2, labels.business.step3, labels.business.step4]
   return (
     <Wrap id="business">
       <SectionHeading index={index} eyebrow={business.eyebrow ?? 'For brands'} title={business.headline ?? ''} />
-      <ol className="grid gap-5 md:grid-cols-3">
-        {(business.services ?? []).map((service, i) => (
-          <li key={service.id} className="glass group relative flex flex-col rounded-2xl p-8 transition-colors hover:border-cyan/50">
-            <span className="font-mono text-xs text-white/40">{String(i + 1).padStart(2, '0')}</span>
-            <h3 className="mt-6 mb-3 text-2xl font-black tracking-[-0.01em]">{service.title}</h3>
-            <p className="flex-1 text-sm leading-relaxed text-white/60">{service.description}</p>
-            {service.url ? (
-              <Link href={localePath(locale, service.url)} className="mt-8 inline-flex items-center gap-2 font-mono text-[11px] tracking-[0.15em] text-cyan uppercase">
-                {labels.common.readMore} <ArrowRight size={12} aria-hidden className="rtl:rotate-180" />
-              </Link>
-            ) : null}
-          </li>
-        ))}
-      </ol>
-
-      <div className="mt-6 flex flex-col gap-6 rounded-2xl border border-lime/60 p-6 md:p-8 lg:flex-row lg:items-center">
-        <ol className="grid flex-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {steps.map((step, i) => (
-            <li key={step} className="flex items-baseline gap-3 text-sm">
-              <span className="font-mono text-lime">{i + 1}</span>
-              <span>{step}</span>
-            </li>
-          ))}
-        </ol>
-        <Link href={localePath(locale, '/business/campaign')} className="btn-irid shrink-0">
-          {business.builderCtaLabel} <ArrowUpRight size={16} aria-hidden />
-        </Link>
+      <ServiceGrid locale={locale} labels={labels} business={business} />
+      <div className="mt-6">
+        <BuilderBar locale={locale} labels={labels} business={business} />
       </div>
-
-      <div className="mt-10 flex flex-wrap items-center gap-x-10 gap-y-6">
-        {business.brands?.length ? <p className="hud-label">{labels.business.brandsTitle}</p> : null}
-        <ul className="flex flex-wrap items-center gap-x-10 gap-y-6">
-          {(business.brands ?? []).map((brand) => {
-            const logo = mediaUrl(brand.logo, 'thumbnail')
-            const content = logo ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={logo} alt={brand.name} className="h-8 w-auto opacity-60 grayscale transition hover:opacity-100 hover:grayscale-0" />
-            ) : (
-              <span className="text-white/60">{brand.name}</span>
-            )
-            return <li key={brand.id}>{brand.url ? <a href={brand.url} target="_blank" rel="noopener noreferrer">{content}</a> : content}</li>
-          })}
-        </ul>
-        <Link href={localePath(locale, '/business/works')} className="ms-auto inline-flex items-center gap-2 font-mono text-[11px] tracking-[0.15em] text-white/70 uppercase hover:text-cyan">
-          {labels.business.viewCases} <ArrowRight size={12} aria-hidden className="rtl:rotate-180" />
-        </Link>
+      <div className="mt-10">
+        <BrandsRow labels={labels} business={business} action={<ViewCasesLink locale={locale} label={labels.business.viewCases} />} />
       </div>
     </Wrap>
   )

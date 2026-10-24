@@ -1,4 +1,5 @@
-// 시험용 아티스트 4명과 게시글 4개 (화면 확인용). 주소가 sample- 로 시작한다.
+// 시험용 아티스트 4명 · 게시글 4개 · 작업 사례 1개 (화면 확인용). 주소가 sample- 로 시작한다.
+// 이미 있는 항목은 건너뛰므로 여러 번 실행해도 된다.
 // 넣기: npm run samples -- add <사진 폴더>   지우기: npm run samples -- remove
 import fs from 'fs'
 import path from 'path'
@@ -20,7 +21,12 @@ const paragraph = (text: string) => ({
 })
 
 if (step === 'add') {
+  const exists = async (collection: 'artists' | 'posts' | 'case-studies', slug: string) =>
+    (await payload.find({ collection, where: { slug: { equals: slug } }, depth: 0, limit: 1, draft: true })).totalDocs > 0
   const upload = async (file: string) => {
+    // 같은 이름 파일이 있으면 -1 같은 꼬리가 붙어 저장되므로 앞부분으로 찾는다
+    const found = (await payload.find({ collection: 'media', where: { filename: { like: `sample-${path.parse(file).name}` } }, sort: 'createdAt', limit: 1 })).docs[0]
+    if (found) return found
     const data = fs.readFileSync(path.join(dir, file))
     return payload.create({ collection: 'media', data: { alt: file }, file: { data, mimetype: 'image/jpeg', name: `sample-${file}`, size: data.length } })
   }
@@ -33,6 +39,7 @@ if (step === 'add') {
     { name: 'SEO', slug: 'sample-seo', cats: ['experts'], photo: 3, nationality: 'Korea', extra: [{ label: 'Specialty', value: 'Dermatology' }] },
   ]
   for (const s of samples) {
+    if (await exists('artists', s.slug)) continue
     await payload.create({
       collection: 'artists',
       locale: 'en',
@@ -76,6 +83,7 @@ if (step === 'add') {
     { slug: 'sample-impersonation-alert', board: 'notice', category: 'Impersonation Alert', title: 'Beware of fake accounts and fake auditions', excerpt: 'CUBIT only recruits through its official channels.', thumb: null, artists: [], pinned: true, date: '2026-10-22' },
   ]
   for (const p of posts) {
+    if (await exists('posts', p.slug)) continue
     await payload.create({
       collection: 'posts',
       locale: 'en',
@@ -97,9 +105,34 @@ if (step === 'add') {
     })
     console.log(`CHECK added post ${p.slug}`)
   }
+
+  // 시험용 작업 사례
+  if (!(await exists('case-studies', 'sample-neon-summer'))) {
+    const aria = (await payload.find({ collection: 'artists', where: { slug: { equals: 'sample-aria' } }, depth: 0 })).docs[0]
+    await payload.create({
+      collection: 'case-studies',
+      locale: 'en',
+      draft: false,
+      data: {
+        title: 'Neon Summer Campaign',
+        slug: 'sample-neon-summer',
+        generateSlug: false,
+        brandName: 'Sample Brand',
+        date: '2026-08-01T00:00:00.000Z',
+        thumbnail: photos[4].id,
+        talents: [luna?.id, aria?.id].filter(Boolean) as number[],
+        summary: 'A sample case study to preview the layout: a summer campaign across digital, social, and outdoor media.',
+        content: { root: { type: 'root', version: 1, direction: 'ltr', format: '', indent: 0, children: [paragraph('This is sample text to preview the case study page. Describe the brief, what the talent did, and the results.'), paragraph('Replace it with a real campaign story.')] } },
+        gallery: [photos[0].id, photos[1].id, photos[5].id],
+        _status: 'published',
+      },
+    })
+    console.log('CHECK added case study sample-neon-summer')
+  }
 }
 
 if (step === 'remove') {
+  await payload.delete({ collection: 'case-studies', where: { slug: { like: 'sample-' } } })
   await payload.delete({ collection: 'posts', where: { slug: { like: 'sample-' } } })
   await payload.delete({ collection: 'artists', where: { slug: { like: 'sample-' } } })
   await payload.delete({ collection: 'media', where: { filename: { like: 'sample-' } } })

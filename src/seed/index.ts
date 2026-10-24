@@ -1,4 +1,4 @@
-// 기본 데이터 넣기: 아티스트 카테고리 · 게시판과 분류 · 메뉴.
+// 기본 데이터 넣기: 아티스트 카테고리 · 게시판과 분류 · 메뉴 · 시작용 소개 페이지.
 // 영어 원문과 한국어 번역을 함께 넣는다. 여러 번 실행해도 이미 있는 항목은 갱신만 한다.
 // 실행: npm run seed
 import { getPayload, type Where } from 'payload'
@@ -171,6 +171,90 @@ await payload.updateGlobal({
   },
 })
 payload.logger.info('갱신: 메뉴')
+
+// 시작용 소개 페이지 (COMPANY · BUSINESS · 정책). 없을 때만 만들고, 관리자 화면에서 고친 내용은 덮어쓰지 않는다.
+// [Replace …] 표시가 있는 글은 실제 내용으로 바꿔야 한다. 정책 문서는 법률 검토 후 게시할 본문으로 교체한다.
+const text = (value: string) => ({ type: 'text', version: 1, text: value, format: 0, detail: 0, mode: 'normal', style: '' })
+const richText = (...paragraphs: string[]) => ({
+  root: {
+    type: 'root',
+    version: 1,
+    direction: 'ltr' as const,
+    format: '' as const,
+    indent: 0,
+    children: paragraphs.map((value) => ({ type: 'paragraph', version: 1, direction: 'ltr' as const, format: '' as const, indent: 0, textFormat: 0, children: [text(value)] })),
+  },
+})
+
+const LEGAL_NOTE = 'This policy is being prepared. The final text will be published here after legal review.'
+const starterPages: { slug: string; section: 'company' | 'business' | 'legal'; title: string; intro: string; reviewRequired?: boolean; layout: Record<string, unknown>[] }[] = [
+  {
+    slug: 'about',
+    section: 'company',
+    title: 'About CUBIT',
+    intro: 'CUBIT ENTERTAINMENT is a global entertainment company. Every artist on our roster is an AI talent.',
+    layout: [
+      { blockType: 'text', heading: 'Who we are', body: richText('[Replace with the company introduction.]') },
+      { blockType: 'text', heading: 'Our family', body: richText('CUBITER · VIONA · ANIMA-X · EXIMAX · EXORA · CUBIT ENTERTAINMENT', '[Replace with a short introduction of each company.]') },
+      { blockType: 'cta', text: 'Work with our artists on your next campaign.', label: 'Start a campaign', url: '/business/campaign' },
+    ],
+  },
+  {
+    slug: 'history',
+    section: 'company',
+    title: 'History',
+    intro: 'Milestones of CUBIT ENTERTAINMENT.',
+    layout: [{ blockType: 'timeline', items: [{ year: '20XX', text: '[Replace with a company milestone.]' }, { year: '20XX', text: '[Replace with a company milestone.]' }] }],
+  },
+  {
+    slug: 'location',
+    section: 'company',
+    title: 'Location',
+    intro: 'Visit or contact our offices.',
+    layout: [{ blockType: 'location', offices: [{ name: 'Head Office', address: '[Replace with the office address.]' }] }],
+  },
+  {
+    slug: 'licensing',
+    section: 'business',
+    title: 'Talent Licensing',
+    intro: 'Feature our AI talent in ads, video, and social right away. Usage rights are set by purpose, period, and region, so contracts move fast.',
+    layout: [
+      { blockType: 'text', heading: 'How it works', body: richText('Choose the talent, tell us where and how long the content will run, and we prepare the usage terms and a quote.', '[Replace with details of the licensing process.]') },
+      { blockType: 'cta', text: 'Tell us about your campaign and get a quote.', label: 'Open the campaign builder', url: '/business/campaign' },
+    ],
+  },
+  {
+    slug: 'custom',
+    section: 'business',
+    title: 'Brand-Exclusive AI Talent',
+    intro: 'We create an AI talent made only for your brand, from story and look to voice. From short campaigns to long-term IP.',
+    layout: [
+      { blockType: 'text', heading: 'What we build', body: richText('[Replace with details of the custom talent service: process, timeline, and what the brand receives.]') },
+      { blockType: 'cta', text: 'Talk to us about a talent made for your brand.', label: 'Contact us', url: '/contact' },
+    ],
+  },
+  { slug: 'privacy', section: 'legal', title: 'Privacy Policy', intro: LEGAL_NOTE, reviewRequired: true, layout: [] },
+  { slug: 'cookies', section: 'legal', title: 'Cookie Policy', intro: LEGAL_NOTE, reviewRequired: true, layout: [] },
+  { slug: 'terms', section: 'legal', title: 'Terms of Use', intro: LEGAL_NOTE, reviewRequired: true, layout: [] },
+]
+
+const legalIds: number[] = []
+for (const page of starterPages) {
+  const where: Where = { and: [{ slug: { equals: page.slug } }, { section: { equals: page.section } }] }
+  let doc = (await payload.find({ collection: 'pages', where, depth: 0, limit: 1, draft: true })).docs[0]
+  if (!doc) {
+    doc = await payload.create({ collection: 'pages', locale: 'en', draft: false, depth: 0, data: { ...page, generateSlug: false, _status: 'published' } as never })
+    payload.logger.info(`추가: 페이지 /${page.slug}`)
+  }
+  if (page.section === 'legal') legalIds.push(doc.id)
+}
+
+// 하단 정책 링크가 비어 있으면 정책 페이지 세 개를 연결한다
+const settings = await payload.findGlobal({ slug: 'site-settings', depth: 0 })
+if (!settings.policyLinks?.length) {
+  await payload.updateGlobal({ slug: 'site-settings', locale: 'en', depth: 0, data: { policyLinks: legalIds } })
+  payload.logger.info('갱신: 하단 정책 링크')
+}
 
 // 사이트 고정 문구와 비즈니스 문구를 한 번 저장해서 기본값(영어)이 자동 번역되게 한다
 await payload.updateGlobal({ slug: 'ui-labels', locale: 'en', data: {} })

@@ -1,33 +1,39 @@
 import type { Metadata } from 'next'
-import Link from 'next/link'
 
-import { localePath } from '@/i18n'
-import { getCaseStudies } from '@/lib/data'
-import { mediaUrl, pageMetadata, resolveLocale, type LangParams } from '@/lib/page'
+import { BuilderBar, WorkCard } from '@/components/business/Parts'
+import { PageHeader, PageShell } from '@/components/site/Hud'
+import { getBusinessSettings, getCaseStudies, getUiLabels } from '@/lib/data'
+import { pageMetadata, resolveLocale, type LangParams } from '@/lib/page'
 
 export async function generateMetadata({ params }: { params: Promise<LangParams> }): Promise<Metadata> {
-  return pageMetadata(await resolveLocale(params), '/business/works', { title: 'Case Studies' })
+  const locale = await resolveLocale(params)
+  const labels = await getUiLabels(locale)
+  return pageMetadata(locale, '/business/works', { title: labels.business.works })
 }
 
-// 작업 사례 목록. 디자인 적용 전 임시 모양.
+// 작업 사례 목록: 카드 격자 + 맨 아래 캠페인 빌더 바
 export default async function WorksPage({ params }: { params: Promise<LangParams> }) {
   const locale = await resolveLocale(params)
-  const works = await getCaseStudies(locale)
+  const [works, labels, business] = await Promise.all([getCaseStudies(locale, 60), getUiLabels(locale), getBusinessSettings(locale)])
   return (
-    <ul>
-      {works.map((work) => {
-        const thumb = mediaUrl(work.thumbnail, 'card')
-        return (
-          <li key={work.id}>
-            <Link href={localePath(locale, `/business/works/${work.slug}`)}>
-              {thumb ? <img src={thumb} alt="" width={240} loading="lazy" /> : null}
-              <span>
-                {work.brandName} — {work.title}
-              </span>
-            </Link>
-          </li>
-        )
-      })}
-    </ul>
+    <PageShell>
+      <PageHeader eyebrow="Business // Case_Archive" title={labels.business.works} aside={<p>ENTRIES: {String(works.length).padStart(3, '0')}</p>} />
+
+      {works.length ? (
+        <ul className="grid gap-x-8 gap-y-14 sm:grid-cols-2 lg:grid-cols-3">
+          {works.map((work) => (
+            <li key={work.id}>
+              <WorkCard locale={locale} work={work} />
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="glass rounded-2xl p-12 text-center font-mono text-sm tracking-[0.15em] text-white/50 uppercase">{labels.common.empty}</p>
+      )}
+
+      <div className="mt-24">
+        <BuilderBar locale={locale} labels={labels} business={business} />
+      </div>
+    </PageShell>
   )
 }

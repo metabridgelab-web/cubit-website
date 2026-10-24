@@ -23,6 +23,8 @@ export const UI_LABELS = {
       notFound: 'The page you are looking for does not exist.',
       empty: 'Coming soon',
       all: 'All',
+      originalNotice: 'This document is shown in English until its translation has been reviewed.',
+      openMap: 'Open map',
     },
   },
   home: {
@@ -45,6 +47,10 @@ export const UI_LABELS = {
       step4: 'Languages',
       brandsTitle: "Brands we've worked with",
       viewCases: 'View case studies',
+      works: 'Case Studies',
+      client: 'Client',
+      talent: 'Talent',
+      similar: 'Plan a similar campaign',
     },
   },
   artist: {

@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 
-import { PageView, pageViewMetadata } from '@/components/skeleton/PageView'
+import { PageView, pageViewMetadata } from '@/components/pages/PageView'
 import { resolveLocale, type LangParams } from '@/lib/page'
 
 // /about = 관리자 화면 "페이지"에서 주소가 about 이고 섹션이 COMPANY인 페이지
