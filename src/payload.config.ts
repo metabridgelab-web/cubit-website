@@ -41,6 +41,16 @@ export default buildConfig({
     },
     meta: {
       titleSuffix: ' · CUBIT 관리자',
+      icons: [{ rel: 'icon', type: 'image/png', url: '/brand/cubit-logo.png' }],
+    },
+    // 사이트와 같은 어두운 화면으로 고정 (색은 app/(payload)/custom.scss)
+    theme: 'dark',
+    components: {
+      graphics: {
+        Logo: '/components/admin/Graphics#Logo',
+        Icon: '/components/admin/Graphics#Icon',
+      },
+      beforeDashboard: ['/components/admin/Dashboard#Dashboard'],
     },
   },
   // 관리자 화면 언어: 한국어 기본, 필요하면 영어로 바꿀 수 있다

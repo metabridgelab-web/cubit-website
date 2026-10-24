@@ -1,0 +1,321 @@
+// 관리자 화면을 사이트(design/) 느낌으로: 검은 바탕 · 시안 강조 · 시안→핑크 무지개빛 저장 버튼 · Inter / Space Mono 글꼴.
+// Payload 기본 스타일 위에 덮어쓴다. 관리자는 어두운 화면으로 고정(payload.config.ts의 admin.theme).
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&family=Space+Mono&display=swap');
+
+$cyan: #00f3ff;
+$pink: #ff00e5;
+$lime: #d4ff00;
+
+:root {
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
+  --font-mono: 'Space Mono', 'SF Mono', Menlo, Consolas, monospace;
+
+  // 강조색(링크 · 선택 · 저장 완료 알림)을 시안 계열로
+  --color-success-50: #e6feff;
+  --color-success-100: #ccfdff;
+  --color-success-150: #b3fbff;
+  --color-success-200: #99faff;
+  --color-success-250: #80f9ff;
+  --color-success-300: #66f8ff;
+  --color-success-350: #4df6ff;
+  --color-success-400: #33f5ff;
+  --color-success-450: #1af4ff;
+  --color-success-500: #{$cyan};
+  --color-success-550: #00dbe6;
+  --color-success-600: #00c2cc;
+  --color-success-650: #00aab3;
+  --color-success-700: #009299;
+  --color-success-750: #007a80;
+  --color-success-800: #006166;
+  --color-success-850: #00494d;
+  --color-success-900: #003133;
+  --color-success-950: #00181a;
+}
+
+// 바탕을 사이트처럼 더 깊은 검정으로
+html[data-theme='dark'] {
+  --theme-bg: #000;
+  --theme-elevation-0: #000;
+  --theme-elevation-50: #0b0b0b;
+  --theme-elevation-100: #141414;
+  --theme-elevation-150: #222;
+  --theme-elevation-200: #2e2e2e;
+  --theme-border-color: rgb(255 255 255 / 0.1);
+  --theme-input-bg: #0b0b0b;
+}
+
+// 저장 · 게시 같은 주 버튼: 사이트의 btn-irid
+.btn--style-primary:not(:disabled):not(.btn--disabled) {
+  background: linear-gradient(90deg, $cyan, $pink) !important;
+  color: #000 !important;
+  border: 0 !important;
+  font-weight: 700;
+
+  &:hover,
+  &:focus-visible {
+    box-shadow: 0 0 20px rgb(0 243 255 / 0.4);
+  }
+}
+
+// 왼쪽 메뉴: 현재 위치를 시안 점으로
+.nav__link.active,
+.nav__link[aria-current='page'] {
+  color: #fff;
+
+  &::before {
+    background: $cyan !important;
+    box-shadow: 0 0 10px $cyan;
+  }
+}
+
+.nav-group__toggle {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+// ── 로고 ──────────────────────────────────────────
+
+.cubit-logo {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+
+  img {
+    width: 72px;
+    height: 72px;
+  }
+
+  &__name {
+    margin: 0;
+    font-weight: 900;
+    font-size: 15px;
+    letter-spacing: 0.35em;
+    color: #fff;
+  }
+
+  &__sub {
+    margin: 4px 0 0;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: $cyan;
+  }
+}
+
+.cubit-icon {
+  display: block;
+  width: 28px;
+  height: 28px;
+}
+
+// ── 첫 화면 ───────────────────────────────────────
+
+.cubit-dash {
+  margin-bottom: 8px;
+
+  a {
+    text-decoration: none;
+  }
+
+  &__hero {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 32px;
+    margin-bottom: 40px;
+    overflow: hidden;
+    border: 1px solid rgb(255 255 255 / 0.1);
+    border-radius: 16px;
+    background:
+      linear-gradient(90deg, rgb(0 243 255 / 0.08), rgb(255 0 229 / 0.08)),
+      repeating-linear-gradient(0deg, rgb(255 255 255 / 0.02) 0 1px, transparent 1px 3px);
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 0 24px auto;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, $cyan, $pink, transparent);
+    }
+  }
+
+  &__eyebrow {
+    margin: 0 0 8px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: $cyan;
+  }
+
+  &__title {
+    margin: 0;
+    font-size: clamp(28px, 4vw, 40px);
+    font-weight: 900;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+  }
+
+  &__lead {
+    margin: 10px 0 0;
+    color: rgb(255 255 255 / 0.6);
+  }
+
+  &__site {
+    flex-shrink: 0;
+    padding: 12px 24px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, $cyan, $pink);
+    color: #000 !important;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    transition: box-shadow 0.3s;
+
+    &:hover {
+      box-shadow: 0 0 20px rgb(0 243 255 / 0.4);
+    }
+  }
+
+  &__heading {
+    margin: 0 0 16px;
+    padding-inline-start: 12px;
+    border-inline-start: 2px solid $cyan;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: rgb(255 255 255 / 0.7);
+  }
+
+  &__stats,
+  &__shortcuts {
+    display: grid;
+    gap: 16px;
+    margin: 0 0 40px;
+    padding: 0;
+    list-style: none;
+  }
+
+  &__stats {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  }
+
+  &__shortcuts {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  }
+}
+
+.cubit-stat {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 24px;
+  border: 1px solid rgb(255 255 255 / 0.1);
+  border-radius: 16px;
+  background: rgb(255 255 255 / 0.02);
+  color: #fff;
+  transition:
+    border-color 0.3s,
+    transform 0.3s;
+
+  &:hover {
+    transform: translateY(-2px);
+  }
+
+  &__count {
+    font-family: var(--font-mono);
+    font-size: 40px;
+    line-height: 1;
+  }
+
+  &__label {
+    margin-top: 12px;
+    font-weight: 700;
+  }
+
+  &__hint {
+    margin-top: 4px;
+    font-size: 12px;
+    color: rgb(255 255 255 / 0.45);
+  }
+
+  &--cyan {
+    .cubit-stat__count {
+      color: $cyan;
+    }
+    &:hover {
+      border-color: $cyan;
+    }
+  }
+
+  &--pink {
+    .cubit-stat__count {
+      color: $pink;
+    }
+    &:hover {
+      border-color: $pink;
+    }
+  }
+
+  &--lime {
+    .cubit-stat__count {
+      color: $lime;
+    }
+    &:hover {
+      border-color: $lime;
+    }
+  }
+}
+
+.cubit-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 20px;
+  overflow: hidden;
+  border: 1px solid rgb(255 255 255 / 0.1);
+  border-radius: 14px;
+  background: rgb(255 255 255 / 0.02);
+  color: #fff;
+  transition:
+    border-color 0.3s,
+    background 0.3s;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, $cyan, transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  &:hover {
+    border-color: rgb(255 255 255 / 0.25);
+    background: rgb(255 255 255 / 0.04);
+
+    &::before {
+      opacity: 1;
+    }
+  }
+
+  &__label {
+    font-weight: 700;
+
+    span {
+      color: $cyan;
+    }
+  }
+
+  &__text {
+    margin-top: 6px;
+    font-size: 12px;
+    color: rgb(255 255 255 / 0.5);
+  }
+}
