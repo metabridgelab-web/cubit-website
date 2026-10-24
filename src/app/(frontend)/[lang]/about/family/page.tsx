@@ -7,7 +7,7 @@ import { PageHeader, PageShell } from '@/components/site/Hud'
 import type { LocaleCode } from '@/constants/locales'
 import { localePath } from '@/i18n'
 import { getFamily, getUiLabels } from '@/lib/data'
-import { mediaUrl, pageMetadata, resolveLocale, youtubeId, type LangParams } from '@/lib/page'
+import { mediaUrl, pageMetadata, resolveLocale, streamSource, youtubeId, type LangParams } from '@/lib/page'
 import type { Artist, Family } from '@/payload-types'
 
 export async function generateMetadata({ params }: { params: Promise<LangParams> }): Promise<Metadata> {
@@ -25,8 +25,9 @@ type Labels = Awaited<ReturnType<typeof getUiLabels>>
 function FamilyCard({ entry, locale, labels }: { entry: Family; locale: LocaleCode; labels: Labels }) {
   const Icon = KIND_ICON[entry.kind]
   const logo = mediaUrl(entry.logo, 'thumbnail')
-  const poster = mediaUrl(entry.poster, 'card')
-  const film = { src: mediaUrl(entry.film), youtubeId: youtubeId(entry.youtubeUrl), title: entry.name }
+  const stream = streamSource(entry.streamId)
+  const poster = mediaUrl(entry.poster, 'card') ?? stream?.thumbnail
+  const film = { src: mediaUrl(entry.film) ?? stream?.hls, youtubeId: youtubeId(entry.youtubeUrl), title: entry.name }
   const hasFilm = Boolean(film.src || film.youtubeId)
   const artists = (entry.artists ?? []).filter((a): a is Artist => typeof a === 'object')
 

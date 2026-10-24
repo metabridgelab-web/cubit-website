@@ -6,7 +6,7 @@ import { CompareSlider, FilmButton } from '@/components/media/Interactive'
 import { HudHeading, PageHeader, PageShell } from '@/components/site/Hud'
 import { localePath } from '@/i18n'
 import { getStudioItems, getUiLabels } from '@/lib/data'
-import { mediaUrl, pageMetadata, resolveLocale, youtubeId, type LangParams } from '@/lib/page'
+import { mediaUrl, pageMetadata, resolveLocale, streamSource, youtubeId, type LangParams } from '@/lib/page'
 
 export async function generateMetadata({ params }: { params: Promise<LangParams> }): Promise<Metadata> {
   const locale = await resolveLocale(params)
@@ -33,8 +33,9 @@ export default async function StudioPage({ params }: { params: Promise<LangParam
         {process.length ? (
           <ol className="grid grid-cols-1 gap-6 md:grid-cols-3">
             {process.map((step, index) => {
-              const poster = mediaUrl(step.image, 'card')
-              const film = { src: mediaUrl(step.video), youtubeId: youtubeId(step.youtubeUrl), title: step.title }
+              const stream = streamSource(step.streamId)
+              const poster = mediaUrl(step.image, 'card') ?? stream?.thumbnail
+              const film = { src: mediaUrl(step.video) ?? stream?.hls, youtubeId: youtubeId(step.youtubeUrl), title: step.title }
               const thumb = (
                 <span className="relative block aspect-video overflow-hidden rounded-xl border border-white/5 bg-[#111]">
                   {poster ? (

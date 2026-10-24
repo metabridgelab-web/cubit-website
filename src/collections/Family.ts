@@ -1,7 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
 import { anyone, canEditContent, canUpdateContent } from '../access'
-import { youtubeUrlField } from '../fields'
+import { streamIdField, youtubeUrlField } from '../fields'
 
 export const FAMILY_KINDS = [
   { label: '레이블', value: 'label' },
@@ -72,6 +72,7 @@ export const Family: CollectionConfig = {
         },
       ],
     },
+    streamIdField({ admin: { description: '영상 파일 대신 Cloudflare Stream 영상을 쓰려면 ID(32자리)를 붙여넣으세요. 고화질 영상에 추천합니다.' } }),
     youtubeUrlField({ admin: { description: '영상 파일 대신 YouTube 영상을 쓰려면 주소를 붙여넣으세요.' } }),
     { name: 'website', label: '공식 사이트 주소', type: 'text', admin: { placeholder: 'https://' } },
     { name: 'hidden', label: '숨기기', type: 'checkbox', defaultValue: false, admin: { position: 'sidebar' } },

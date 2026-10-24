@@ -4,6 +4,7 @@ import { ArrowsLeftRight, Check, Copy, Play } from '@phosphor-icons/react'
 import { useCallback, useState, type ReactNode } from 'react'
 
 import { Viewer } from '@/components/artists/MediaViewer'
+import { SmartVideo } from '@/components/media/Video'
 
 // 화면 안에서 손으로 다루는 작은 부품들 (STUDIO · 계열사 · INVESTORS에서 같이 쓴다)
 
@@ -33,7 +34,7 @@ export function FilmButton({ film, closeLabel, label, className, children }: { f
                 className="h-full w-full"
               />
             ) : film.src ? (
-              <video src={film.src} controls autoPlay playsInline className="h-full w-full" />
+              <SmartVideo src={film.src} controls autoPlay playsInline className="h-full w-full" />
             ) : null}
           </div>
           <p className="mt-4 font-mono text-xs tracking-[0.15em] text-white/60 uppercase">{film.title}</p>

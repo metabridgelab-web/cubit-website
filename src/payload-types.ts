@@ -226,9 +226,13 @@ export interface HomeSlide {
    * 화면 가운데 크게 보이는 이름. 비우면 아티스트 이름이 나옵니다. 예: 계열사 소개 영상이면 "VIONA"
    */
   headline?: string | null;
-  videoSource: 'file' | 'youtube';
+  videoSource: 'file' | 'youtube' | 'stream';
   videoFile?: (number | null) | Media;
   youtubeUrl?: string | null;
+  /**
+   * Cloudflare 대시보드 → Stream에 영상을 올린 뒤, 영상의 ID(32자리)를 복사해 붙여넣으세요.
+   */
+  streamId?: string | null;
   /**
    * 영상이 뜨기 전에 먼저 보이는 이미지
    */
@@ -778,6 +782,10 @@ export interface Page {
           }
         | {
             youtubeUrl?: string | null;
+            /**
+             * Cloudflare 대시보드 → Stream에 영상을 올린 뒤, 영상의 ID(32자리)를 복사해 붙여넣으세요.
+             */
+            streamId?: string | null;
             file?: (number | null) | Media;
             caption?: string | null;
             id?: string | null;
@@ -884,6 +892,10 @@ export interface Family {
   film?: (number | null) | Media;
   poster?: (number | null) | Media;
   /**
+   * 영상 파일 대신 Cloudflare Stream 영상을 쓰려면 ID(32자리)를 붙여넣으세요. 고화질 영상에 추천합니다.
+   */
+  streamId?: string | null;
+  /**
    * 영상 파일 대신 YouTube 영상을 쓰려면 주소를 붙여넣으세요.
    */
   youtubeUrl?: string | null;
@@ -934,6 +946,10 @@ export interface StudioItem {
    * 메이킹 · 비하인드 영상. 카드를 누르면 재생됩니다.
    */
   video?: (number | null) | Media;
+  /**
+   * 영상 파일 대신 Cloudflare Stream 영상 ID(32자리)를 쓸 수 있습니다.
+   */
+  streamId?: string | null;
   /**
    * 영상 파일 대신 YouTube 영상을 쓰려면 주소를 붙여넣으세요.
    */
@@ -1471,6 +1487,7 @@ export interface HomeSlidesSelect<T extends boolean = true> {
   videoSource?: T;
   videoFile?: T;
   youtubeUrl?: T;
+  streamId?: T;
   poster?: T;
   mvUrl?: T;
   active?: T;
@@ -1700,6 +1717,7 @@ export interface PagesSelect<T extends boolean = true> {
           | T
           | {
               youtubeUrl?: T;
+              streamId?: T;
               file?: T;
               caption?: T;
               id?: T;
@@ -1777,6 +1795,7 @@ export interface FamilySelect<T extends boolean = true> {
   artists?: T;
   film?: T;
   poster?: T;
+  streamId?: T;
   youtubeUrl?: T;
   website?: T;
   hidden?: T;
@@ -1805,6 +1824,7 @@ export interface StudioItemsSelect<T extends boolean = true> {
   description?: T;
   image?: T;
   video?: T;
+  streamId?: T;
   youtubeUrl?: T;
   before?: T;
   after?: T;

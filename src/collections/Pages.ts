@@ -1,7 +1,7 @@
 import { slugField, type Block, type CollectionConfig } from 'payload'
 
 import { canEditContent, canUpdateContent, publishedOrLoggedIn } from '../access'
-import { linkFields, youtubeUrlField } from '../fields'
+import { linkFields, streamIdField, youtubeUrlField } from '../fields'
 
 // 소개 페이지용 블록: 글 · 사진 · 영상 · 연혁 · 오시는 길 · 버튼을 원하는 순서로 쌓는다
 const TextBlock: Block = {
@@ -27,6 +27,7 @@ const VideoBlock: Block = {
   labels: { singular: '영상', plural: '영상' },
   fields: [
     youtubeUrlField(),
+    { ...streamIdField(), label: '또는 Cloudflare Stream 영상 ID' },
     { name: 'file', label: '또는 영상 파일', type: 'upload', relationTo: 'media' },
     { name: 'caption', label: '설명', type: 'text', localized: true },
   ],

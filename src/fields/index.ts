@@ -15,6 +15,27 @@ export const youtubeUrlField = (overrides: { required?: boolean; admin?: TextFie
   admin: { placeholder: 'https://www.youtube.com/watch?v=...', ...overrides.admin },
 })
 
+const STREAM_ID = /^[a-f0-9]{32}$/
+
+// Cloudflare Stream 영상 ID 칸. 대시보드에서 영상을 올리면 나오는 32자리 ID를 붙여넣는다.
+// requiredWhen: 같은 묶음의 다른 칸 값에 따라 꼭 넣어야 할 때 (예: 영상 방식이 Stream일 때)
+export const streamIdField = (
+  overrides: { requiredWhen?: (siblingData: Record<string, unknown>) => boolean; admin?: TextField['admin'] } = {},
+): TextField => ({
+  name: 'streamId',
+  label: 'Cloudflare Stream 영상 ID',
+  type: 'text',
+  validate: (value: string | null | undefined, { siblingData }: { siblingData: Record<string, unknown> }) => {
+    if (!value) return overrides.requiredWhen?.(siblingData ?? {}) ? 'Stream 영상 ID를 넣어 주세요.' : true
+    return STREAM_ID.test(value.trim()) || 'Cloudflare Stream의 영상 ID(영문·숫자 32자리)를 붙여넣어 주세요.'
+  },
+  admin: {
+    placeholder: '예: 5d5bc37ffcf54c9b82e996823bffbb81',
+    description: 'Cloudflare 대시보드 → Stream에 영상을 올린 뒤, 영상의 ID(32자리)를 복사해 붙여넣으세요.',
+    ...overrides.admin,
+  },
+})
+
 // 사이드바의 노출 순서 칸 (숫자가 작을수록 앞에 나온다)
 export const sortOrderField: Field = {
   name: 'sortOrder',

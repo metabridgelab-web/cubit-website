@@ -1,4 +1,3 @@
-import { sqliteAdapter } from '@payloadcms/db-sqlite'
 import { resendAdapter } from '@payloadcms/email-resend'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { en } from '@payloadcms/translations/languages/en'
@@ -28,6 +27,7 @@ import { Users } from './collections/Users'
 import { DEFAULT_LOCALE, LOCALES } from './constants/locales'
 import { globals } from './globals'
 import { notifyTask } from './inbox'
+import { database, storagePlugins } from './infrastructure'
 import { translationPlugin } from './translation/plugin'
 
 const filename = fileURLToPath(import.meta.url)
@@ -90,13 +90,10 @@ export default buildConfig({
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),
   },
-  db: sqliteAdapter({
-    client: {
-      url: process.env.DATABASE_URL || '',
-    },
-  }),
+  // 개발: SQLite 파일 · 운영: Neon Postgres (src/infrastructure.ts)
+  db: database(),
   sharp,
-  // 올리는 파일 하나의 최대 크기 (문의 첨부 50MB). 큰 영상은 Cloudflare 연결 후 저장소로 바로 올린다.
+  // 올리는 파일 하나의 최대 크기 (문의 첨부 50MB). 운영에서는 브라우저가 R2 저장소로 바로 올린다.
   upload: { limits: { fileSize: 50 * 1024 * 1024 } },
   // 메일: RESEND_API_KEY가 있으면 Resend로 실제 발송, 없으면 개발 서버 화면(콘솔)에만 찍힌다
   email: process.env.RESEND_API_KEY
@@ -127,5 +124,5 @@ export default buildConfig({
     deleteJobOnComplete: false,
     enableConcurrencyControl: true,
   },
-  plugins: [translationPlugin({ exclude: ['users', 'glossary'] })],
+  plugins: [translationPlugin({ exclude: ['users', 'glossary'] }), ...storagePlugins()],
 })

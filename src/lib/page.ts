@@ -39,6 +39,16 @@ export const pageMetadata = async (
 export const youtubeId = (url: string | null | undefined) =>
   url?.match(/(?:v=|youtu\.be\/|shorts\/|embed\/)([\w-]{6,})/)?.[1] ?? null
 
+// Cloudflare Stream 영상 주소 (화질 자동 조절 · 대표 이미지). CF_STREAM_CUSTOMER_CODE가 있어야 한다.
+// 고객 코드는 Cloudflare 대시보드 → Stream 화면의 영상 주소 "customer-XXXX.cloudflarestream.com"의 XXXX 부분.
+export const streamSource = (id: string | null | undefined) => {
+  const code = process.env.CF_STREAM_CUSTOMER_CODE
+  const uid = id?.trim()
+  if (!code || !uid) return null
+  const base = `https://customer-${code}.cloudflarestream.com/${uid}`
+  return { hls: `${base}/manifest/video.m3u8`, thumbnail: `${base}/thumbnails/thumbnail.jpg?time=1s&height=1080` }
+}
+
 export const mediaUrl = (media: unknown, size?: 'thumbnail' | 'card' | 'large' | 'hero') => {
   if (!media || typeof media !== 'object') return null
   const m = media as { url?: string | null; sizes?: Record<string, { url?: string | null } | undefined> }

@@ -26,6 +26,42 @@ const ACCEPT = ['application/pdf', 'image/jpeg', 'image/png', 'video/mp4', 'vide
 const MAX_FILES = 5
 const MAX_BYTES = 50 * 1024 * 1024
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+// 비공개 저장소(R2)의 업로드 허가 주소. src/infrastructure.ts에서 두 번째로 등록한 저장소라 끝에 -1이 붙는다.
+const SIGNED_UPLOAD_URL = '/api/storage-s3-generate-signed-url-1'
+
+// 첨부 파일 한 개를 올리고 번호를 돌려준다.
+// 운영(R2 연결): 허가 받은 주소로 브라우저가 저장소에 바로 올린 뒤 기록만 서버에 남긴다 (큰 파일도 Vercel 제한에 걸리지 않음).
+// 개발(R2 없음): 허가 주소가 없으면(404) 파일을 서버로 보낸다.
+async function uploadAttachment(file: File): Promise<number> {
+  const signed = await fetch(SIGNED_UPLOAD_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ collectionSlug: 'attachments', filename: file.name, filesize: file.size, mimeType: file.type }),
+  })
+  const body = new FormData()
+  if (signed.ok) {
+    const { clientUploadContext, filename, headers, url } = await signed.json()
+    const put = await fetch(url, { method: 'PUT', body: file, headers })
+    if (!put.ok) throw new Error(`upload failed: ${put.status}`)
+    body.append(
+      'file',
+      JSON.stringify({
+        clientUploadContext: { prefix: clientUploadContext.prefix, signedReceipt: clientUploadContext.signedReceipt },
+        collectionSlug: 'attachments',
+        filename: filename || file.name,
+        mimeType: file.type,
+        size: file.size,
+      }),
+    )
+  } else if (signed.status === 404) {
+    body.append('file', file)
+  } else {
+    throw signed
+  }
+  const response = await fetch('/api/attachments', { method: 'POST', body })
+  if (!response.ok) throw response
+  return (await response.json()).doc.id
+}
 
 // 문의 양식 (design/09_CONTACT): 유형 · 연락처 · 내용 · 첨부 파일 → 문의함으로 접수.
 // 사칭 신고와 지원서도 같은 문의함으로 들어간다 (유형만 다름).
@@ -68,13 +104,7 @@ export function ContactForm({ locale, labels, privacyHref, mode = 'contact', pos
     try {
       // 1) 첨부 파일을 비공개 보관함에 올린다
       const attachments: number[] = []
-      for (const file of files) {
-        const body = new FormData()
-        body.append('file', file)
-        const response = await fetch('/api/attachments', { method: 'POST', body })
-        if (!response.ok) throw response
-        attachments.push((await response.json()).doc.id)
-      }
+      for (const file of files) attachments.push(await uploadAttachment(file))
       // 2) 문의를 접수한다
       const response = await fetch(`/api/inquiries?locale=${locale}`, {
         method: 'POST',

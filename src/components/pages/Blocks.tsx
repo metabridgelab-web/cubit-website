@@ -6,7 +6,8 @@ import { Gallery } from '@/components/artists/MediaViewer'
 import { HudHeading } from '@/components/site/Hud'
 import type { LocaleCode } from '@/constants/locales'
 import { localePath } from '@/i18n'
-import { mediaUrl, youtubeId } from '@/lib/page'
+import { SmartVideo } from '@/components/media/Video'
+import { mediaUrl, streamSource, youtubeId } from '@/lib/page'
 import type { Page } from '@/payload-types'
 
 type Labels = { close: string; viewAllPhotos: string; openMap: string }
@@ -53,7 +54,7 @@ export function Blocks({ blocks, locale, labels }: { blocks: Page['layout']; loc
 
           case 'video': {
             const id = youtubeId(block.youtubeUrl)
-            const file = mediaUrl(block.file)
+            const file = streamSource(block.streamId)?.hls ?? mediaUrl(block.file)
             return (
               <figure key={block.id}>
                 <div className="relative aspect-video overflow-hidden rounded-2xl border border-line bg-[#0a0a0a]">
@@ -67,7 +68,7 @@ export function Blocks({ blocks, locale, labels }: { blocks: Page['layout']; loc
                       className="h-full w-full"
                     />
                   ) : file ? (
-                    <video src={file} controls playsInline preload="metadata" className="h-full w-full object-cover" />
+                    <SmartVideo src={file} controls playsInline preload="metadata" className="h-full w-full object-cover" />
                   ) : null}
                 </div>
                 {block.caption ? <figcaption className="hud-label mt-4">{block.caption}</figcaption> : null}

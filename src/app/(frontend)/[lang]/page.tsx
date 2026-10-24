@@ -13,7 +13,7 @@ import {
   getPosts,
   getUiLabels,
 } from '@/lib/data'
-import { mediaUrl, resolveLocale, youtubeId, type LangParams } from '@/lib/page'
+import { mediaUrl, resolveLocale, streamSource, youtubeId, type LangParams } from '@/lib/page'
 
 // 홈: 화면 전체 영상 슬라이드 + 관리자 화면 "홈 화면 설정" 순서대로 섹션
 export default async function HomePage({ params }: { params: Promise<LangParams> }) {
@@ -36,7 +36,8 @@ export default async function HomePage({ params }: { params: Promise<LangParams>
 
   const heroSlides: HeroSlide[] = slides.map((slide) => {
     const artistName = typeof slide.artist === 'object' && slide.artist ? slide.artist.name : ''
-    const file = slide.videoSource === 'file' ? mediaUrl(slide.videoFile) : null
+    const stream = slide.videoSource === 'stream' ? streamSource(slide.streamId) : null
+    const file = slide.videoSource === 'file' ? mediaUrl(slide.videoFile) : (stream?.hls ?? null)
     const yt = slide.videoSource === 'youtube' ? youtubeId(slide.youtubeUrl) : null
     return {
       id: String(slide.id),
@@ -44,7 +45,7 @@ export default async function HomePage({ params }: { params: Promise<LangParams>
       title: slide.title,
       releaseDate: slide.releaseDate ?? null,
       video: file ? { type: 'file', src: file } : yt ? { type: 'youtube', id: yt } : null,
-      poster: mediaUrl(slide.poster, 'hero'),
+      poster: mediaUrl(slide.poster, 'hero') ?? stream?.thumbnail ?? null,
       mvUrl: slide.mvUrl ?? null,
     }
   })

@@ -3,6 +3,7 @@
 import { ArrowLeft, ArrowRight, ArrowUpRight, CaretDown, SpeakerHigh, SpeakerSlash } from '@phosphor-icons/react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
+import { useVideoSource } from '@/components/media/Video'
 import { fitHeadline } from '@/lib/fit'
 
 export type HeroSlide = {
@@ -10,6 +11,7 @@ export type HeroSlide = {
   headline: string
   title: string
   releaseDate: string | null
+  // file: 직접 올린 mp4 또는 Cloudflare Stream(.m3u8) · youtube: YouTube 영상
   video: { type: 'file'; src: string } | { type: 'youtube'; id: string } | null
   poster: string | null
   mvUrl: string | null
@@ -41,6 +43,8 @@ export function HeroSlider({ slides, autoAdvanceSeconds, labels }: { slides: Her
     const timer = setTimeout(() => go(1), autoAdvanceSeconds * 1000)
     return () => clearTimeout(timer)
   }, [index, muted, count, slide, go, autoAdvanceSeconds])
+
+  useVideoSource(videoRef, slide?.video?.type === 'file' ? slide.video.src : null)
 
   useEffect(() => {
     const video = videoRef.current
@@ -87,7 +91,6 @@ export function HeroSlider({ slides, autoAdvanceSeconds, labels }: { slides: Her
           <video
             ref={videoRef}
             key={slide.id}
-            src={slide.video.src}
             poster={slide.poster ?? undefined}
             autoPlay
             muted

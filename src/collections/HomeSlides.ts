@@ -1,7 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
 import { anyone, canEditContent, canUpdateContent } from '../access'
-import { youtubeUrlField } from '../fields'
+import { streamIdField, youtubeUrlField } from '../fields'
 
 // 홈 첫 화면의 전체 화면 영상 슬라이드. 목록에서 끌어서 순서를 바꾼다.
 export const HomeSlides: CollectionConfig = {
@@ -61,6 +61,7 @@ export const HomeSlides: CollectionConfig = {
       options: [
         { label: '짧은 영상 파일 직접 올리기 (추천)', value: 'file' },
         { label: 'YouTube 영상 그대로 넣기', value: 'youtube' },
+        { label: 'Cloudflare Stream 영상 (고화질 · 긴 영상, 인터넷 속도에 맞춰 화질 자동 조절)', value: 'stream' },
       ],
     },
     {
@@ -75,6 +76,10 @@ export const HomeSlides: CollectionConfig = {
     },
     youtubeUrlField({
       admin: { condition: (_, siblingData) => siblingData?.videoSource === 'youtube' },
+    }),
+    streamIdField({
+      requiredWhen: (siblingData) => siblingData.videoSource === 'stream',
+      admin: { condition: (_, siblingData) => siblingData?.videoSource === 'stream' },
     }),
     {
       name: 'poster',

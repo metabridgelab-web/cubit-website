@@ -1,7 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
 import { anyone, canEditContent, canUpdateContent } from '../access'
-import { youtubeUrlField } from '../fields'
+import { streamIdField, youtubeUrlField } from '../fields'
 
 const image = { type: 'upload', relationTo: 'media', filterOptions: { mimeType: { contains: 'image' } } } as const
 
@@ -57,6 +57,7 @@ export const StudioItems: CollectionConfig = {
       filterOptions: { mimeType: { contains: 'video' } },
       admin: { condition: (_, siblingData) => siblingData?.kind === 'process', description: '메이킹 · 비하인드 영상. 카드를 누르면 재생됩니다.' },
     },
+    streamIdField({ admin: { condition: (_, siblingData) => siblingData?.kind === 'process', description: '영상 파일 대신 Cloudflare Stream 영상 ID(32자리)를 쓸 수 있습니다.' } }),
     youtubeUrlField({ admin: { condition: (_, siblingData) => siblingData?.kind === 'process', description: '영상 파일 대신 YouTube 영상을 쓰려면 주소를 붙여넣으세요.' } }),
     {
       type: 'row',
