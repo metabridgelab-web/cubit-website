@@ -149,6 +149,7 @@ export interface Config {
     'ui-labels-investors': UiLabelsInvestor;
     'ui-labels-trust': UiLabelsTrust;
     'ui-labels-join': UiLabelsJoin;
+    'ui-labels-cookie': UiLabelsCookie;
     'ui-labels-news': UiLabelsNew;
     'ui-labels-forms': UiLabelsForm;
   };
@@ -169,6 +170,7 @@ export interface Config {
     'ui-labels-investors': UiLabelsInvestorsSelect<false> | UiLabelsInvestorsSelect<true>;
     'ui-labels-trust': UiLabelsTrustSelect<false> | UiLabelsTrustSelect<true>;
     'ui-labels-join': UiLabelsJoinSelect<false> | UiLabelsJoinSelect<true>;
+    'ui-labels-cookie': UiLabelsCookieSelect<false> | UiLabelsCookieSelect<true>;
     'ui-labels-news': UiLabelsNewsSelect<false> | UiLabelsNewsSelect<true>;
     'ui-labels-forms': UiLabelsFormsSelect<false> | UiLabelsFormsSelect<true>;
   };
@@ -2180,6 +2182,9 @@ export interface SiteSetting {
    * 개인정보처리방침 · 쿠키 정책 등 "정책" 섹션 페이지를 고르세요.
    */
   policyLinks?: (number | Page)[] | null;
+  /**
+   * 비우면 "사이트 고정 문구 · 쿠키 동의"의 기본 문구가 나옵니다.
+   */
   cookieBannerText?: string | null;
   /**
    * 영어 원문을 저장하면 자동 번역됩니다. 다시 번역하려면 상태를 "다시 번역"으로 바꾸고 저장하세요.
@@ -3017,6 +3022,44 @@ export interface UiLabelsJoin {
  * 버튼·제목처럼 화면 곳곳에 쓰이는 짧은 글입니다. 영어로 고치고 저장하면 자동 번역됩니다.
  *
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ui-labels-cookie".
+ */
+export interface UiLabelsCookie {
+  id: number;
+  title: string;
+  text: string;
+  accept: string;
+  essential: string;
+  policy: string;
+  settings: string;
+  /**
+   * 영어 원문을 저장하면 자동 번역됩니다. 다시 번역하려면 상태를 "다시 번역"으로 바꾸고 저장하세요.
+   */
+  translationStatus?:
+    | {
+        locale: 'en' | 'ko' | 'zh' | 'ja' | 'es' | 'fr' | 'pt' | 'ru' | 'ar' | 'hi' | 'bn' | 'id';
+        status: 'pending' | 'auto' | 'reviewed' | 'outdated' | 'failed';
+        updatedAt?: string | null;
+        note?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  translationMeta?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * 버튼·제목처럼 화면 곳곳에 쓰이는 짧은 글입니다. 영어로 고치고 저장하면 자동 번역됩니다.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "ui-labels-news".
  */
 export interface UiLabelsNew {
@@ -3710,6 +3753,31 @@ export interface UiLabelsJoinSelect<T extends boolean = true> {
   sendApplication?: T;
   noOpenings?: T;
   notice?: T;
+  translationStatus?:
+    | T
+    | {
+        locale?: T;
+        status?: T;
+        updatedAt?: T;
+        note?: T;
+        id?: T;
+      };
+  translationMeta?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ui-labels-cookie_select".
+ */
+export interface UiLabelsCookieSelect<T extends boolean = true> {
+  title?: T;
+  text?: T;
+  accept?: T;
+  essential?: T;
+  policy?: T;
+  settings?: T;
   translationStatus?:
     | T
     | {

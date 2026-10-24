@@ -256,6 +256,17 @@ export const UI_LABELS = {
       notice: 'We recruit only through this website and our official channels. Any other recruitment, audition, or fee request using our name is impersonation.',
     },
   },
+  cookie: {
+    label: '쿠키 동의',
+    items: {
+      title: 'Cookies',
+      text: 'We use essential cookies to run this site, such as remembering your language. With your consent, we may also use optional cookies to understand how the site is used.',
+      accept: 'Accept all',
+      essential: 'Essential only',
+      policy: 'Cookie Policy',
+      settings: 'Cookie settings',
+    },
+  },
   news: {
     label: '뉴스',
     items: {
