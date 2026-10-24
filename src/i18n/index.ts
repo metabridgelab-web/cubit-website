@@ -14,6 +14,10 @@ export const localePath = (locale: LocaleCode, path = '/') => {
   return clean === '/' ? `/${locale}` : `/${locale}${clean}`
 }
 
+// 검색엔진 노출: 실제 도메인(cubitenter.com)으로 옮긴 뒤 Vercel 환경 변수 ALLOW_INDEXING=true 를 넣어야 켜진다.
+// 그 전(임시 vercel.app 주소 · 개발)에는 검색에 뜨지 않게 막는다.
+export const allowIndexing = () => process.env.ALLOW_INDEXING === 'true'
+
 export const SITE_URL = (process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000').replace(/\/$/, '')
 
 // 검색엔진용 언어별 주소(hreflang). 같은 페이지의 12개 언어 주소와 기본(x-default) 주소를 알려준다.

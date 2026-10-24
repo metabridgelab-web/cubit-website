@@ -3,7 +3,7 @@ import type { ReactNode } from 'react'
 
 import { SiteFooter } from '@/components/site/SiteFooter'
 import { SiteHeader } from '@/components/site/SiteHeader'
-import { textDirection } from '@/i18n'
+import { allowIndexing, textDirection } from '@/i18n'
 import { getSiteSettings } from '@/lib/data'
 import { pageMetadata, resolveLocale, type LangParams } from '@/lib/page'
 
@@ -19,6 +19,8 @@ export async function generateMetadata({ params }: { params: Promise<LangParams>
     ...(await pageMetadata(locale, '/')),
     title: { default: settings.siteName, template: `%s | ${settings.siteName}` },
     icons: { icon: '/brand/cubit-logo.png' },
+    // 오픈 전에는 페이지마다 "검색에 넣지 말 것" 표시도 단다
+    ...(allowIndexing() ? {} : { robots: { index: false, follow: false } }),
   }
 }
 
