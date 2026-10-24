@@ -75,6 +75,10 @@ export interface Config {
     posts: Post;
     'case-studies': CaseStudy;
     pages: Page;
+    family: Family;
+    'studio-items': StudioItem;
+    openings: Opening;
+    disclosures: Disclosure;
     'quote-requests': QuoteRequest;
     inquiries: Inquiry;
     attachments: Attachment;
@@ -102,6 +106,10 @@ export interface Config {
     posts: PostsSelect<false> | PostsSelect<true>;
     'case-studies': CaseStudiesSelect<false> | CaseStudiesSelect<true>;
     pages: PagesSelect<false> | PagesSelect<true>;
+    family: FamilySelect<false> | FamilySelect<true>;
+    'studio-items': StudioItemsSelect<false> | StudioItemsSelect<true>;
+    openings: OpeningsSelect<false> | OpeningsSelect<true>;
+    disclosures: DisclosuresSelect<false> | DisclosuresSelect<true>;
     'quote-requests': QuoteRequestsSelect<false> | QuoteRequestsSelect<true>;
     inquiries: InquiriesSelect<false> | InquiriesSelect<true>;
     attachments: AttachmentsSelect<false> | AttachmentsSelect<true>;
@@ -129,14 +137,40 @@ export interface Config {
     navigation: Navigation;
     'home-settings': HomeSetting;
     'business-settings': BusinessSetting;
-    'ui-labels': UiLabel;
+    investors: Investor;
+    'ui-labels-common': UiLabelsCommon;
+    'ui-labels-home': UiLabelsHome;
+    'ui-labels-business': UiLabelsBusiness;
+    'ui-labels-artist': UiLabelsArtist;
+    'ui-labels-campaign': UiLabelsCampaign;
+    'ui-labels-contact': UiLabelsContact;
+    'ui-labels-family': UiLabelsFamily;
+    'ui-labels-studio': UiLabelsStudio;
+    'ui-labels-investors': UiLabelsInvestor;
+    'ui-labels-trust': UiLabelsTrust;
+    'ui-labels-join': UiLabelsJoin;
+    'ui-labels-news': UiLabelsNew;
+    'ui-labels-forms': UiLabelsForm;
   };
   globalsSelect: {
     'site-settings': SiteSettingsSelect<false> | SiteSettingsSelect<true>;
     navigation: NavigationSelect<false> | NavigationSelect<true>;
     'home-settings': HomeSettingsSelect<false> | HomeSettingsSelect<true>;
     'business-settings': BusinessSettingsSelect<false> | BusinessSettingsSelect<true>;
-    'ui-labels': UiLabelsSelect<false> | UiLabelsSelect<true>;
+    investors: InvestorsSelect<false> | InvestorsSelect<true>;
+    'ui-labels-common': UiLabelsCommonSelect<false> | UiLabelsCommonSelect<true>;
+    'ui-labels-home': UiLabelsHomeSelect<false> | UiLabelsHomeSelect<true>;
+    'ui-labels-business': UiLabelsBusinessSelect<false> | UiLabelsBusinessSelect<true>;
+    'ui-labels-artist': UiLabelsArtistSelect<false> | UiLabelsArtistSelect<true>;
+    'ui-labels-campaign': UiLabelsCampaignSelect<false> | UiLabelsCampaignSelect<true>;
+    'ui-labels-contact': UiLabelsContactSelect<false> | UiLabelsContactSelect<true>;
+    'ui-labels-family': UiLabelsFamilySelect<false> | UiLabelsFamilySelect<true>;
+    'ui-labels-studio': UiLabelsStudioSelect<false> | UiLabelsStudioSelect<true>;
+    'ui-labels-investors': UiLabelsInvestorsSelect<false> | UiLabelsInvestorsSelect<true>;
+    'ui-labels-trust': UiLabelsTrustSelect<false> | UiLabelsTrustSelect<true>;
+    'ui-labels-join': UiLabelsJoinSelect<false> | UiLabelsJoinSelect<true>;
+    'ui-labels-news': UiLabelsNewsSelect<false> | UiLabelsNewsSelect<true>;
+    'ui-labels-forms': UiLabelsFormsSelect<false> | UiLabelsFormsSelect<true>;
   };
   locale: 'en' | 'ko' | 'zh' | 'ja' | 'es' | 'fr' | 'pt' | 'ru' | 'ar' | 'hi' | 'bn' | 'id';
   widgets: {
@@ -825,6 +859,227 @@ export interface Page {
   _status?: ('draft' | 'published') | null;
 }
 /**
+ * 레이블 · 브랜드 · 계열사 카드를 만듭니다. 목록에서 끌어서 순서를 바꿀 수 있습니다.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "family".
+ */
+export interface Family {
+  id: number;
+  _order?: string | null;
+  name: string;
+  kind: 'label' | 'brand' | 'affiliate';
+  logo?: (number | null) | Media;
+  /**
+   * 카드 아래 작게 보이는 한 줄. 예: Music label · Fashion brand · Distribution partner
+   */
+  tagline?: string | null;
+  description?: string | null;
+  /**
+   * 레이블이면 소속 아티스트를 고르세요. 카드에 얼굴이 작게 보입니다.
+   */
+  artists?: (number | Artist)[] | null;
+  film?: (number | null) | Media;
+  poster?: (number | null) | Media;
+  /**
+   * 영상 파일 대신 YouTube 영상을 쓰려면 주소를 붙여넣으세요.
+   */
+  youtubeUrl?: string | null;
+  website?: string | null;
+  hidden?: boolean | null;
+  /**
+   * 영어 원문을 저장하면 자동 번역됩니다. 다시 번역하려면 상태를 "다시 번역"으로 바꾸고 저장하세요.
+   */
+  translationStatus?:
+    | {
+        locale: 'en' | 'ko' | 'zh' | 'ja' | 'es' | 'fr' | 'pt' | 'ru' | 'ar' | 'hi' | 'bn' | 'id';
+        status: 'pending' | 'auto' | 'reviewed' | 'outdated' | 'failed';
+        updatedAt?: string | null;
+        note?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  translationMeta?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * 제작 과정 단계, 작업 전후 비교, 보유 기술을 하나씩 추가합니다. 같은 구분끼리 목록 순서대로 보입니다.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "studio-items".
+ */
+export interface StudioItem {
+  id: number;
+  _order?: string | null;
+  kind: 'process' | 'comparison' | 'technology';
+  /**
+   * 제목 위에 작게 보이는 장식용 영문 표시. 예: NEURAL_MOCAP · 비우면 표시하지 않습니다.
+   */
+  tag?: string | null;
+  title: string;
+  description?: string | null;
+  image?: (number | null) | Media;
+  /**
+   * 메이킹 · 비하인드 영상. 카드를 누르면 재생됩니다.
+   */
+  video?: (number | null) | Media;
+  /**
+   * 영상 파일 대신 YouTube 영상을 쓰려면 주소를 붙여넣으세요.
+   */
+  youtubeUrl?: string | null;
+  before?: (number | null) | Media;
+  after?: (number | null) | Media;
+  beforeLabel?: string | null;
+  afterLabel?: string | null;
+  hidden?: boolean | null;
+  /**
+   * 영어 원문을 저장하면 자동 번역됩니다. 다시 번역하려면 상태를 "다시 번역"으로 바꾸고 저장하세요.
+   */
+  translationStatus?:
+    | {
+        locale: 'en' | 'ko' | 'zh' | 'ja' | 'es' | 'fr' | 'pt' | 'ru' | 'ar' | 'hi' | 'bn' | 'id';
+        status: 'pending' | 'auto' | 'reviewed' | 'outdated' | 'failed';
+        updatedAt?: string | null;
+        note?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  translationMeta?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * 모집 분야나 채용 공고를 추가합니다. 지원서는 "문의함"에 "지원" 유형으로 들어옵니다.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "openings".
+ */
+export interface Opening {
+  id: number;
+  _order?: string | null;
+  kind: 'creator' | 'career';
+  status: 'open' | 'closed';
+  /**
+   * 예: Voice Actor · Motion Performer · Composer
+   */
+  title: string;
+  location?: string | null;
+  employment?: string | null;
+  deadline?: string | null;
+  summary?: string | null;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * 외부 채용 사이트로 받으려면 주소를 넣으세요. 비우면 이 사이트의 지원 양식으로 받습니다.
+   */
+  applyUrl?: string | null;
+  /**
+   * 영어 원문을 저장하면 자동 번역됩니다. 다시 번역하려면 상태를 "다시 번역"으로 바꾸고 저장하세요.
+   */
+  translationStatus?:
+    | {
+        locale: 'en' | 'ko' | 'zh' | 'ja' | 'es' | 'fr' | 'pt' | 'ru' | 'ar' | 'hi' | 'bn' | 'id';
+        status: 'pending' | 'auto' | 'reviewed' | 'outdated' | 'failed';
+        updatedAt?: string | null;
+        note?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  translationMeta?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * 토큰 발행 · 배분 · 락업 해제 · 파트너십 공지를 날짜별로 남깁니다. 지우지 말고 고쳐 주세요 (수정 이력이 남습니다).
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "disclosures".
+ */
+export interface Disclosure {
+  id: number;
+  title: string;
+  date: string;
+  category: 'issuance' | 'allocation' | 'unlock' | 'partnership' | 'other';
+  body?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  file?: (number | null) | Media;
+  /**
+   * 영어 원문을 저장하면 자동 번역됩니다. 다시 번역하려면 상태를 "다시 번역"으로 바꾸고 저장하세요.
+   */
+  translationStatus?:
+    | {
+        locale: 'en' | 'ko' | 'zh' | 'ja' | 'es' | 'fr' | 'pt' | 'ru' | 'ar' | 'hi' | 'bn' | 'id';
+        status: 'pending' | 'auto' | 'reviewed' | 'outdated' | 'failed';
+        updatedAt?: string | null;
+        note?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  translationMeta?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
  * 캠페인 빌더로 들어온 견적 요청입니다. 상태를 바꿔 가며 진행 상황을 관리하세요.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -898,13 +1153,18 @@ export interface User {
  */
 export interface Inquiry {
   id: number;
-  type: 'partnership' | 'press' | 'investment' | 'other';
-  companyName: string;
+  type: 'partnership' | 'press' | 'investment' | 'other' | 'report' | 'application';
+  /**
+   * 사칭 신고 · 지원서는 비어 있을 수 있습니다.
+   */
+  companyName?: string | null;
   contactName: string;
   email: string;
   phone?: string | null;
   message?: string | null;
   privacyConsent: boolean;
+  position?: string | null;
+  reportedUrl?: string | null;
   attachments?: (number | Attachment)[] | null;
   /**
    * 요청자가 사이트를 보던 언어. 접수 확인 메일이 이 언어로 갑니다.
@@ -1109,6 +1369,22 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'pages';
         value: number | Page;
+      } | null)
+    | ({
+        relationTo: 'family';
+        value: number | Family;
+      } | null)
+    | ({
+        relationTo: 'studio-items';
+        value: number | StudioItem;
+      } | null)
+    | ({
+        relationTo: 'openings';
+        value: number | Opening;
+      } | null)
+    | ({
+        relationTo: 'disclosures';
+        value: number | Disclosure;
       } | null)
     | ({
         relationTo: 'quote-requests';
@@ -1487,6 +1763,119 @@ export interface PagesSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "family_select".
+ */
+export interface FamilySelect<T extends boolean = true> {
+  _order?: T;
+  name?: T;
+  kind?: T;
+  logo?: T;
+  tagline?: T;
+  description?: T;
+  artists?: T;
+  film?: T;
+  poster?: T;
+  youtubeUrl?: T;
+  website?: T;
+  hidden?: T;
+  translationStatus?:
+    | T
+    | {
+        locale?: T;
+        status?: T;
+        updatedAt?: T;
+        note?: T;
+        id?: T;
+      };
+  translationMeta?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "studio-items_select".
+ */
+export interface StudioItemsSelect<T extends boolean = true> {
+  _order?: T;
+  kind?: T;
+  tag?: T;
+  title?: T;
+  description?: T;
+  image?: T;
+  video?: T;
+  youtubeUrl?: T;
+  before?: T;
+  after?: T;
+  beforeLabel?: T;
+  afterLabel?: T;
+  hidden?: T;
+  translationStatus?:
+    | T
+    | {
+        locale?: T;
+        status?: T;
+        updatedAt?: T;
+        note?: T;
+        id?: T;
+      };
+  translationMeta?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "openings_select".
+ */
+export interface OpeningsSelect<T extends boolean = true> {
+  _order?: T;
+  kind?: T;
+  status?: T;
+  title?: T;
+  location?: T;
+  employment?: T;
+  deadline?: T;
+  summary?: T;
+  description?: T;
+  applyUrl?: T;
+  translationStatus?:
+    | T
+    | {
+        locale?: T;
+        status?: T;
+        updatedAt?: T;
+        note?: T;
+        id?: T;
+      };
+  translationMeta?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "disclosures_select".
+ */
+export interface DisclosuresSelect<T extends boolean = true> {
+  title?: T;
+  date?: T;
+  category?: T;
+  body?: T;
+  file?: T;
+  translationStatus?:
+    | T
+    | {
+        locale?: T;
+        status?: T;
+        updatedAt?: T;
+        note?: T;
+        id?: T;
+      };
+  translationMeta?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "quote-requests_select".
  */
 export interface QuoteRequestsSelect<T extends boolean = true> {
@@ -1524,6 +1913,8 @@ export interface InquiriesSelect<T extends boolean = true> {
   phone?: T;
   message?: T;
   privacyConsent?: T;
+  position?: T;
+  reportedUrl?: T;
   attachments?: T;
   submittedLocale?: T;
   website?: T;
@@ -1750,8 +2141,17 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
  */
 export interface SiteSetting {
   id: number;
+  /**
+   * 왼쪽 위 홈 버튼에 이 글자가 표시됩니다.
+   */
   siteName: string;
+  /**
+   * 보관용입니다. 지금 사이트 상단에는 로고 없이 사이트 이름 글자만 표시됩니다.
+   */
   logo?: (number | null) | Media;
+  /**
+   * 보관용입니다. 지금 사이트 상단에는 쓰이지 않습니다.
+   */
   logoDark?: (number | null) | Media;
   /**
    * 체크를 끈 언어는 사이트에서 숨겨지고 자동 번역도 하지 않습니다. 영어는 끌 수 없습니다.
@@ -1938,151 +2338,733 @@ export interface BusinessSetting {
   createdAt?: string | null;
 }
 /**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "investors".
+ */
+export interface Investor {
+  id: number;
+  /**
+   * 켜면 INVESTORS 메뉴와 페이지가 방문자에게 보입니다. 가상자산 전문 법률 검토를 마친 뒤에 켜세요.
+   */
+  visible?: boolean | null;
+  intro?: string | null;
+  /**
+   * 예: 팬 투표 · 굿즈 · 콘텐츠 이용. 수익 보장이나 가격 전망 표현은 쓰지 마세요.
+   */
+  utilities?:
+    | {
+        title: string;
+        description?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  tokenName?: string | null;
+  symbol?: string | null;
+  totalSupply?: string | null;
+  network?: string | null;
+  /**
+   * 상장 일정 · 거래소가 확정되기 전에는 "Listing planned"로 두세요.
+   */
+  listingStatus?: string | null;
+  /**
+   * 원형 그래프로 보입니다. 비율 합계가 100이 되게 넣으세요.
+   */
+  allocation?:
+    | {
+        label: string;
+        percent: number;
+        id?: string | null;
+      }[]
+    | null;
+  vesting?:
+    | {
+        category: string;
+        tgeUnlock?: string | null;
+        cliff?: string | null;
+        vestingPeriod?: string | null;
+        amount?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * 언어별 PDF와 버전을 올립니다. 새 버전을 올려도 이전 버전은 지우지 말고 남겨 두세요 (버전 기록).
+   */
+  whitepapers?:
+    | {
+        language: 'en' | 'ko' | 'zh' | 'ja' | 'es' | 'fr' | 'pt' | 'ru' | 'ar' | 'hi' | 'bn' | 'id';
+        version: string;
+        date?: string | null;
+        file: number | Media;
+        id?: string | null;
+      }[]
+    | null;
+  roadmap?:
+    | {
+        period: string;
+        status: 'done' | 'in-progress' | 'planned';
+        title: string;
+        description?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  audits?:
+    | {
+        auditor: string;
+        date?: string | null;
+        report?: (number | null) | Media;
+        scope?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  contracts?:
+    | {
+        label: string;
+        network?: string | null;
+        address: string;
+        id?: string | null;
+      }[]
+    | null;
+  wallets?:
+    | {
+        label: string;
+        network?: string | null;
+        address: string;
+        id?: string | null;
+      }[]
+    | null;
+  securityAlert?: string | null;
+  /**
+   * 초안입니다. 법률 검토를 거친 문구로 바꿔 주세요. 빈 줄로 문단을 나눕니다.
+   */
+  riskNotice?: string | null;
+  /**
+   * 법률 검토 결과 이용을 제한해야 하는 국가가 있으면 적어 주세요.
+   */
+  restrictedRegions?: string | null;
+  /**
+   * 영어 원문을 저장하면 자동 번역됩니다. 다시 번역하려면 상태를 "다시 번역"으로 바꾸고 저장하세요.
+   */
+  translationStatus?:
+    | {
+        locale: 'en' | 'ko' | 'zh' | 'ja' | 'es' | 'fr' | 'pt' | 'ru' | 'ar' | 'hi' | 'bn' | 'id';
+        status: 'pending' | 'auto' | 'reviewed' | 'outdated' | 'failed';
+        updatedAt?: string | null;
+        note?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  translationMeta?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
  * 버튼·제목처럼 화면 곳곳에 쓰이는 짧은 글입니다. 영어로 고치고 저장하면 자동 번역됩니다.
  *
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "ui-labels".
+ * via the `definition` "ui-labels-common".
  */
-export interface UiLabel {
+export interface UiLabelsCommon {
   id: number;
-  common: {
-    viewAll: string;
-    readMore: string;
-    back: string;
-    menu: string;
-    close: string;
-    language: string;
-    prev: string;
-    next: string;
-    soundOn: string;
-    soundOff: string;
-    watchMv: string;
-    getQuote: string;
-    notFound: string;
-    empty: string;
-    all: string;
-    originalNotice: string;
-    openMap: string;
-  };
-  home: {
-    newRelease: string;
-    artists: string;
-    news: string;
-    notice: string;
-    scrollDown: string;
-    pinned: string;
-  };
-  business: {
-    step1: string;
-    step2: string;
-    step3: string;
-    step4: string;
-    brandsTitle: string;
-    viewCases: string;
-    works: string;
-    client: string;
-    talent: string;
-    similar: string;
-  };
-  artist: {
-    profile: string;
-    introduction: string;
-    gallery: string;
-    musicVideos: string;
-    birthday: string;
-    debut: string;
-    nationality: string;
-    quoteWithArtist: string;
-    relatedNews: string;
-    entries: string;
-    viewAllPhotos: string;
-    notice: string;
-  };
-  campaign: {
-    eyebrow: string;
-    title: string;
-    step1: string;
-    step2: string;
-    step3: string;
-    step4: string;
-    step5: string;
-    talentTitle: string;
-    talentHint: string;
-    usageTitle: string;
-    usageHint: string;
-    usageDigital: string;
-    usageDigitalDesc: string;
-    usageVideo: string;
-    usageVideoDesc: string;
-    usageSocial: string;
-    usageSocialDesc: string;
-    usageOoh: string;
-    usageOohDesc: string;
-    periodTitle: string;
-    duration: string;
-    to: string;
-    scope: string;
-    regionWorldwide: string;
-    regionKr: string;
-    regionNa: string;
-    regionEu: string;
-    regionApac: string;
-    regionOther: string;
-    languagesTitle: string;
-    languagesHint: string;
-    contactTitle: string;
-    company: string;
-    contactName: string;
-    email: string;
-    phone: string;
-    brief: string;
-    briefPlaceholder: string;
-    previous: string;
-    continue: string;
-    submit: string;
-    summary: string;
-    selectedTalent: string;
-    pickTalent: string;
-    pickUsage: string;
-    fillContact: string;
-    doneTitle: string;
-  };
-  contact: {
-    eyebrow: string;
-    title: string;
-    fastTitle: string;
-    fastText: string;
-    fastButton: string;
-    formTitle: string;
-    type: string;
-    typePartnership: string;
-    typePress: string;
-    typeInvestment: string;
-    typeOther: string;
-    name: string;
-    message: string;
-    attach: string;
-    attachHint: string;
-    send: string;
-    office: string;
-    channels: string;
-  };
-  news: {
-    eyebrow: string;
-    priority: string;
-    archive: string;
-    search: string;
-    more: string;
-  };
-  forms: {
-    submit: string;
-    sending: string;
-    success: string;
-    required: string;
-    privacyConsent: string;
-    tooMany: string;
-    error: string;
-  };
+  viewAll: string;
+  readMore: string;
+  back: string;
+  menu: string;
+  close: string;
+  language: string;
+  prev: string;
+  next: string;
+  soundOn: string;
+  soundOff: string;
+  watchMv: string;
+  getQuote: string;
+  notFound: string;
+  empty: string;
+  all: string;
+  originalNotice: string;
+  openMap: string;
+  /**
+   * 영어 원문을 저장하면 자동 번역됩니다. 다시 번역하려면 상태를 "다시 번역"으로 바꾸고 저장하세요.
+   */
+  translationStatus?:
+    | {
+        locale: 'en' | 'ko' | 'zh' | 'ja' | 'es' | 'fr' | 'pt' | 'ru' | 'ar' | 'hi' | 'bn' | 'id';
+        status: 'pending' | 'auto' | 'reviewed' | 'outdated' | 'failed';
+        updatedAt?: string | null;
+        note?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  translationMeta?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * 버튼·제목처럼 화면 곳곳에 쓰이는 짧은 글입니다. 영어로 고치고 저장하면 자동 번역됩니다.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ui-labels-home".
+ */
+export interface UiLabelsHome {
+  id: number;
+  newRelease: string;
+  artists: string;
+  news: string;
+  notice: string;
+  scrollDown: string;
+  pinned: string;
+  /**
+   * 영어 원문을 저장하면 자동 번역됩니다. 다시 번역하려면 상태를 "다시 번역"으로 바꾸고 저장하세요.
+   */
+  translationStatus?:
+    | {
+        locale: 'en' | 'ko' | 'zh' | 'ja' | 'es' | 'fr' | 'pt' | 'ru' | 'ar' | 'hi' | 'bn' | 'id';
+        status: 'pending' | 'auto' | 'reviewed' | 'outdated' | 'failed';
+        updatedAt?: string | null;
+        note?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  translationMeta?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * 버튼·제목처럼 화면 곳곳에 쓰이는 짧은 글입니다. 영어로 고치고 저장하면 자동 번역됩니다.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ui-labels-business".
+ */
+export interface UiLabelsBusiness {
+  id: number;
+  step1: string;
+  step2: string;
+  step3: string;
+  step4: string;
+  brandsTitle: string;
+  viewCases: string;
+  works: string;
+  client: string;
+  talent: string;
+  similar: string;
+  /**
+   * 영어 원문을 저장하면 자동 번역됩니다. 다시 번역하려면 상태를 "다시 번역"으로 바꾸고 저장하세요.
+   */
+  translationStatus?:
+    | {
+        locale: 'en' | 'ko' | 'zh' | 'ja' | 'es' | 'fr' | 'pt' | 'ru' | 'ar' | 'hi' | 'bn' | 'id';
+        status: 'pending' | 'auto' | 'reviewed' | 'outdated' | 'failed';
+        updatedAt?: string | null;
+        note?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  translationMeta?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * 버튼·제목처럼 화면 곳곳에 쓰이는 짧은 글입니다. 영어로 고치고 저장하면 자동 번역됩니다.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ui-labels-artist".
+ */
+export interface UiLabelsArtist {
+  id: number;
+  profile: string;
+  introduction: string;
+  gallery: string;
+  musicVideos: string;
+  birthday: string;
+  debut: string;
+  nationality: string;
+  quoteWithArtist: string;
+  relatedNews: string;
+  entries: string;
+  viewAllPhotos: string;
+  notice: string;
+  /**
+   * 영어 원문을 저장하면 자동 번역됩니다. 다시 번역하려면 상태를 "다시 번역"으로 바꾸고 저장하세요.
+   */
+  translationStatus?:
+    | {
+        locale: 'en' | 'ko' | 'zh' | 'ja' | 'es' | 'fr' | 'pt' | 'ru' | 'ar' | 'hi' | 'bn' | 'id';
+        status: 'pending' | 'auto' | 'reviewed' | 'outdated' | 'failed';
+        updatedAt?: string | null;
+        note?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  translationMeta?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * 버튼·제목처럼 화면 곳곳에 쓰이는 짧은 글입니다. 영어로 고치고 저장하면 자동 번역됩니다.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ui-labels-campaign".
+ */
+export interface UiLabelsCampaign {
+  id: number;
+  eyebrow: string;
+  title: string;
+  step1: string;
+  step2: string;
+  step3: string;
+  step4: string;
+  step5: string;
+  talentTitle: string;
+  talentHint: string;
+  usageTitle: string;
+  usageHint: string;
+  usageDigital: string;
+  usageDigitalDesc: string;
+  usageVideo: string;
+  usageVideoDesc: string;
+  usageSocial: string;
+  usageSocialDesc: string;
+  usageOoh: string;
+  usageOohDesc: string;
+  periodTitle: string;
+  duration: string;
+  to: string;
+  scope: string;
+  regionWorldwide: string;
+  regionKr: string;
+  regionNa: string;
+  regionEu: string;
+  regionApac: string;
+  regionOther: string;
+  languagesTitle: string;
+  languagesHint: string;
+  contactTitle: string;
+  company: string;
+  contactName: string;
+  email: string;
+  phone: string;
+  brief: string;
+  briefPlaceholder: string;
+  previous: string;
+  continue: string;
+  submit: string;
+  summary: string;
+  selectedTalent: string;
+  pickTalent: string;
+  pickUsage: string;
+  fillContact: string;
+  doneTitle: string;
+  /**
+   * 영어 원문을 저장하면 자동 번역됩니다. 다시 번역하려면 상태를 "다시 번역"으로 바꾸고 저장하세요.
+   */
+  translationStatus?:
+    | {
+        locale: 'en' | 'ko' | 'zh' | 'ja' | 'es' | 'fr' | 'pt' | 'ru' | 'ar' | 'hi' | 'bn' | 'id';
+        status: 'pending' | 'auto' | 'reviewed' | 'outdated' | 'failed';
+        updatedAt?: string | null;
+        note?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  translationMeta?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * 버튼·제목처럼 화면 곳곳에 쓰이는 짧은 글입니다. 영어로 고치고 저장하면 자동 번역됩니다.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ui-labels-contact".
+ */
+export interface UiLabelsContact {
+  id: number;
+  eyebrow: string;
+  title: string;
+  fastTitle: string;
+  fastText: string;
+  fastButton: string;
+  formTitle: string;
+  type: string;
+  typePartnership: string;
+  typePress: string;
+  typeInvestment: string;
+  typeOther: string;
+  typeReport: string;
+  typeApplication: string;
+  name: string;
+  message: string;
+  attach: string;
+  attachHint: string;
+  send: string;
+  office: string;
+  channels: string;
+  /**
+   * 영어 원문을 저장하면 자동 번역됩니다. 다시 번역하려면 상태를 "다시 번역"으로 바꾸고 저장하세요.
+   */
+  translationStatus?:
+    | {
+        locale: 'en' | 'ko' | 'zh' | 'ja' | 'es' | 'fr' | 'pt' | 'ru' | 'ar' | 'hi' | 'bn' | 'id';
+        status: 'pending' | 'auto' | 'reviewed' | 'outdated' | 'failed';
+        updatedAt?: string | null;
+        note?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  translationMeta?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * 버튼·제목처럼 화면 곳곳에 쓰이는 짧은 글입니다. 영어로 고치고 저장하면 자동 번역됩니다.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ui-labels-family".
+ */
+export interface UiLabelsFamily {
+  id: number;
+  title: string;
+  labels: string;
+  brands: string;
+  affiliates: string;
+  visit: string;
+  watchFilm: string;
+  /**
+   * 영어 원문을 저장하면 자동 번역됩니다. 다시 번역하려면 상태를 "다시 번역"으로 바꾸고 저장하세요.
+   */
+  translationStatus?:
+    | {
+        locale: 'en' | 'ko' | 'zh' | 'ja' | 'es' | 'fr' | 'pt' | 'ru' | 'ar' | 'hi' | 'bn' | 'id';
+        status: 'pending' | 'auto' | 'reviewed' | 'outdated' | 'failed';
+        updatedAt?: string | null;
+        note?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  translationMeta?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * 버튼·제목처럼 화면 곳곳에 쓰이는 짧은 글입니다. 영어로 고치고 저장하면 자동 번역됩니다.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ui-labels-studio".
+ */
+export interface UiLabelsStudio {
+  id: number;
+  title: string;
+  intro: string;
+  process: string;
+  showcase: string;
+  phase: string;
+  dragToCompare: string;
+  buildCampaign: string;
+  /**
+   * 영어 원문을 저장하면 자동 번역됩니다. 다시 번역하려면 상태를 "다시 번역"으로 바꾸고 저장하세요.
+   */
+  translationStatus?:
+    | {
+        locale: 'en' | 'ko' | 'zh' | 'ja' | 'es' | 'fr' | 'pt' | 'ru' | 'ar' | 'hi' | 'bn' | 'id';
+        status: 'pending' | 'auto' | 'reviewed' | 'outdated' | 'failed';
+        updatedAt?: string | null;
+        note?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  translationMeta?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * 버튼·제목처럼 화면 곳곳에 쓰이는 짧은 글입니다. 영어로 고치고 저장하면 자동 번역됩니다.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ui-labels-investors".
+ */
+export interface UiLabelsInvestor {
+  id: number;
+  title: string;
+  overview: string;
+  token: string;
+  whitepaper: string;
+  roadmap: string;
+  disclosure: string;
+  audit: string;
+  official: string;
+  disclaimer: string;
+  utilities: string;
+  tokenName: string;
+  symbol: string;
+  totalSupply: string;
+  network: string;
+  listing: string;
+  allocation: string;
+  vesting: string;
+  category: string;
+  tgeUnlock: string;
+  cliff: string;
+  vestingPeriod: string;
+  amount: string;
+  contracts: string;
+  wallets: string;
+  copy: string;
+  copied: string;
+  securityAlert: string;
+  verifyHint: string;
+  version: string;
+  download: string;
+  auditor: string;
+  scope: string;
+  report: string;
+  statusDone: string;
+  statusInProgress: string;
+  statusPlanned: string;
+  updated: string;
+  restricted: string;
+  tba: string;
+  catIssuance: string;
+  catAllocation: string;
+  catUnlock: string;
+  catPartnership: string;
+  catOther: string;
+  /**
+   * 영어 원문을 저장하면 자동 번역됩니다. 다시 번역하려면 상태를 "다시 번역"으로 바꾸고 저장하세요.
+   */
+  translationStatus?:
+    | {
+        locale: 'en' | 'ko' | 'zh' | 'ja' | 'es' | 'fr' | 'pt' | 'ru' | 'ar' | 'hi' | 'bn' | 'id';
+        status: 'pending' | 'auto' | 'reviewed' | 'outdated' | 'failed';
+        updatedAt?: string | null;
+        note?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  translationMeta?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * 버튼·제목처럼 화면 곳곳에 쓰이는 짧은 글입니다. 영어로 고치고 저장하면 자동 번역됩니다.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ui-labels-trust".
+ */
+export interface UiLabelsTrust {
+  id: number;
+  title: string;
+  intro: string;
+  reportTitle: string;
+  reportIntro: string;
+  reportedUrl: string;
+  details: string;
+  sendReport: string;
+  officialChannels: string;
+  officialHint: string;
+  tokenAddresses: string;
+  /**
+   * 영어 원문을 저장하면 자동 번역됩니다. 다시 번역하려면 상태를 "다시 번역"으로 바꾸고 저장하세요.
+   */
+  translationStatus?:
+    | {
+        locale: 'en' | 'ko' | 'zh' | 'ja' | 'es' | 'fr' | 'pt' | 'ru' | 'ar' | 'hi' | 'bn' | 'id';
+        status: 'pending' | 'auto' | 'reviewed' | 'outdated' | 'failed';
+        updatedAt?: string | null;
+        note?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  translationMeta?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * 버튼·제목처럼 화면 곳곳에 쓰이는 짧은 글입니다. 영어로 고치고 저장하면 자동 번역됩니다.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ui-labels-join".
+ */
+export interface UiLabelsJoin {
+  id: number;
+  title: string;
+  intro: string;
+  creators: string;
+  creatorsIntro: string;
+  careers: string;
+  careersIntro: string;
+  open: string;
+  closed: string;
+  deadline: string;
+  apply: string;
+  applyTitle: string;
+  position: string;
+  general: string;
+  portfolio: string;
+  sendApplication: string;
+  noOpenings: string;
+  notice: string;
+  /**
+   * 영어 원문을 저장하면 자동 번역됩니다. 다시 번역하려면 상태를 "다시 번역"으로 바꾸고 저장하세요.
+   */
+  translationStatus?:
+    | {
+        locale: 'en' | 'ko' | 'zh' | 'ja' | 'es' | 'fr' | 'pt' | 'ru' | 'ar' | 'hi' | 'bn' | 'id';
+        status: 'pending' | 'auto' | 'reviewed' | 'outdated' | 'failed';
+        updatedAt?: string | null;
+        note?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  translationMeta?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * 버튼·제목처럼 화면 곳곳에 쓰이는 짧은 글입니다. 영어로 고치고 저장하면 자동 번역됩니다.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ui-labels-news".
+ */
+export interface UiLabelsNew {
+  id: number;
+  eyebrow: string;
+  priority: string;
+  archive: string;
+  search: string;
+  more: string;
+  /**
+   * 영어 원문을 저장하면 자동 번역됩니다. 다시 번역하려면 상태를 "다시 번역"으로 바꾸고 저장하세요.
+   */
+  translationStatus?:
+    | {
+        locale: 'en' | 'ko' | 'zh' | 'ja' | 'es' | 'fr' | 'pt' | 'ru' | 'ar' | 'hi' | 'bn' | 'id';
+        status: 'pending' | 'auto' | 'reviewed' | 'outdated' | 'failed';
+        updatedAt?: string | null;
+        note?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  translationMeta?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * 버튼·제목처럼 화면 곳곳에 쓰이는 짧은 글입니다. 영어로 고치고 저장하면 자동 번역됩니다.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ui-labels-forms".
+ */
+export interface UiLabelsForm {
+  id: number;
+  submit: string;
+  sending: string;
+  success: string;
+  required: string;
+  privacyConsent: string;
+  tooMany: string;
+  error: string;
   /**
    * 영어 원문을 저장하면 자동 번역됩니다. 다시 번역하려면 상태를 "다시 번역"으로 바꾸고 저장하세요.
    */
@@ -2243,163 +3225,541 @@ export interface BusinessSettingsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "ui-labels_select".
+ * via the `definition` "investors_select".
  */
-export interface UiLabelsSelect<T extends boolean = true> {
-  common?:
+export interface InvestorsSelect<T extends boolean = true> {
+  visible?: T;
+  intro?: T;
+  utilities?:
     | T
     | {
-        viewAll?: T;
-        readMore?: T;
-        back?: T;
-        menu?: T;
-        close?: T;
+        title?: T;
+        description?: T;
+        id?: T;
+      };
+  tokenName?: T;
+  symbol?: T;
+  totalSupply?: T;
+  network?: T;
+  listingStatus?: T;
+  allocation?:
+    | T
+    | {
+        label?: T;
+        percent?: T;
+        id?: T;
+      };
+  vesting?:
+    | T
+    | {
+        category?: T;
+        tgeUnlock?: T;
+        cliff?: T;
+        vestingPeriod?: T;
+        amount?: T;
+        id?: T;
+      };
+  whitepapers?:
+    | T
+    | {
         language?: T;
-        prev?: T;
-        next?: T;
-        soundOn?: T;
-        soundOff?: T;
-        watchMv?: T;
-        getQuote?: T;
-        notFound?: T;
-        empty?: T;
-        all?: T;
-        originalNotice?: T;
-        openMap?: T;
+        version?: T;
+        date?: T;
+        file?: T;
+        id?: T;
       };
-  home?:
+  roadmap?:
     | T
     | {
-        newRelease?: T;
-        artists?: T;
-        news?: T;
-        notice?: T;
-        scrollDown?: T;
-        pinned?: T;
-      };
-  business?:
-    | T
-    | {
-        step1?: T;
-        step2?: T;
-        step3?: T;
-        step4?: T;
-        brandsTitle?: T;
-        viewCases?: T;
-        works?: T;
-        client?: T;
-        talent?: T;
-        similar?: T;
-      };
-  artist?:
-    | T
-    | {
-        profile?: T;
-        introduction?: T;
-        gallery?: T;
-        musicVideos?: T;
-        birthday?: T;
-        debut?: T;
-        nationality?: T;
-        quoteWithArtist?: T;
-        relatedNews?: T;
-        entries?: T;
-        viewAllPhotos?: T;
-        notice?: T;
-      };
-  campaign?:
-    | T
-    | {
-        eyebrow?: T;
+        period?: T;
+        status?: T;
         title?: T;
-        step1?: T;
-        step2?: T;
-        step3?: T;
-        step4?: T;
-        step5?: T;
-        talentTitle?: T;
-        talentHint?: T;
-        usageTitle?: T;
-        usageHint?: T;
-        usageDigital?: T;
-        usageDigitalDesc?: T;
-        usageVideo?: T;
-        usageVideoDesc?: T;
-        usageSocial?: T;
-        usageSocialDesc?: T;
-        usageOoh?: T;
-        usageOohDesc?: T;
-        periodTitle?: T;
-        duration?: T;
-        to?: T;
+        description?: T;
+        id?: T;
+      };
+  audits?:
+    | T
+    | {
+        auditor?: T;
+        date?: T;
+        report?: T;
         scope?: T;
-        regionWorldwide?: T;
-        regionKr?: T;
-        regionNa?: T;
-        regionEu?: T;
-        regionApac?: T;
-        regionOther?: T;
-        languagesTitle?: T;
-        languagesHint?: T;
-        contactTitle?: T;
-        company?: T;
-        contactName?: T;
-        email?: T;
-        phone?: T;
-        brief?: T;
-        briefPlaceholder?: T;
-        previous?: T;
-        continue?: T;
-        submit?: T;
-        summary?: T;
-        selectedTalent?: T;
-        pickTalent?: T;
-        pickUsage?: T;
-        fillContact?: T;
-        doneTitle?: T;
+        id?: T;
       };
-  contact?:
+  contracts?:
     | T
     | {
-        eyebrow?: T;
-        title?: T;
-        fastTitle?: T;
-        fastText?: T;
-        fastButton?: T;
-        formTitle?: T;
-        type?: T;
-        typePartnership?: T;
-        typePress?: T;
-        typeInvestment?: T;
-        typeOther?: T;
-        name?: T;
-        message?: T;
-        attach?: T;
-        attachHint?: T;
-        send?: T;
-        office?: T;
-        channels?: T;
+        label?: T;
+        network?: T;
+        address?: T;
+        id?: T;
       };
-  news?:
+  wallets?:
     | T
     | {
-        eyebrow?: T;
-        priority?: T;
-        archive?: T;
-        search?: T;
-        more?: T;
+        label?: T;
+        network?: T;
+        address?: T;
+        id?: T;
       };
-  forms?:
+  securityAlert?: T;
+  riskNotice?: T;
+  restrictedRegions?: T;
+  translationStatus?:
     | T
     | {
-        submit?: T;
-        sending?: T;
-        success?: T;
-        required?: T;
-        privacyConsent?: T;
-        tooMany?: T;
-        error?: T;
+        locale?: T;
+        status?: T;
+        updatedAt?: T;
+        note?: T;
+        id?: T;
       };
+  translationMeta?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ui-labels-common_select".
+ */
+export interface UiLabelsCommonSelect<T extends boolean = true> {
+  viewAll?: T;
+  readMore?: T;
+  back?: T;
+  menu?: T;
+  close?: T;
+  language?: T;
+  prev?: T;
+  next?: T;
+  soundOn?: T;
+  soundOff?: T;
+  watchMv?: T;
+  getQuote?: T;
+  notFound?: T;
+  empty?: T;
+  all?: T;
+  originalNotice?: T;
+  openMap?: T;
+  translationStatus?:
+    | T
+    | {
+        locale?: T;
+        status?: T;
+        updatedAt?: T;
+        note?: T;
+        id?: T;
+      };
+  translationMeta?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ui-labels-home_select".
+ */
+export interface UiLabelsHomeSelect<T extends boolean = true> {
+  newRelease?: T;
+  artists?: T;
+  news?: T;
+  notice?: T;
+  scrollDown?: T;
+  pinned?: T;
+  translationStatus?:
+    | T
+    | {
+        locale?: T;
+        status?: T;
+        updatedAt?: T;
+        note?: T;
+        id?: T;
+      };
+  translationMeta?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ui-labels-business_select".
+ */
+export interface UiLabelsBusinessSelect<T extends boolean = true> {
+  step1?: T;
+  step2?: T;
+  step3?: T;
+  step4?: T;
+  brandsTitle?: T;
+  viewCases?: T;
+  works?: T;
+  client?: T;
+  talent?: T;
+  similar?: T;
+  translationStatus?:
+    | T
+    | {
+        locale?: T;
+        status?: T;
+        updatedAt?: T;
+        note?: T;
+        id?: T;
+      };
+  translationMeta?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ui-labels-artist_select".
+ */
+export interface UiLabelsArtistSelect<T extends boolean = true> {
+  profile?: T;
+  introduction?: T;
+  gallery?: T;
+  musicVideos?: T;
+  birthday?: T;
+  debut?: T;
+  nationality?: T;
+  quoteWithArtist?: T;
+  relatedNews?: T;
+  entries?: T;
+  viewAllPhotos?: T;
+  notice?: T;
+  translationStatus?:
+    | T
+    | {
+        locale?: T;
+        status?: T;
+        updatedAt?: T;
+        note?: T;
+        id?: T;
+      };
+  translationMeta?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ui-labels-campaign_select".
+ */
+export interface UiLabelsCampaignSelect<T extends boolean = true> {
+  eyebrow?: T;
+  title?: T;
+  step1?: T;
+  step2?: T;
+  step3?: T;
+  step4?: T;
+  step5?: T;
+  talentTitle?: T;
+  talentHint?: T;
+  usageTitle?: T;
+  usageHint?: T;
+  usageDigital?: T;
+  usageDigitalDesc?: T;
+  usageVideo?: T;
+  usageVideoDesc?: T;
+  usageSocial?: T;
+  usageSocialDesc?: T;
+  usageOoh?: T;
+  usageOohDesc?: T;
+  periodTitle?: T;
+  duration?: T;
+  to?: T;
+  scope?: T;
+  regionWorldwide?: T;
+  regionKr?: T;
+  regionNa?: T;
+  regionEu?: T;
+  regionApac?: T;
+  regionOther?: T;
+  languagesTitle?: T;
+  languagesHint?: T;
+  contactTitle?: T;
+  company?: T;
+  contactName?: T;
+  email?: T;
+  phone?: T;
+  brief?: T;
+  briefPlaceholder?: T;
+  previous?: T;
+  continue?: T;
+  submit?: T;
+  summary?: T;
+  selectedTalent?: T;
+  pickTalent?: T;
+  pickUsage?: T;
+  fillContact?: T;
+  doneTitle?: T;
+  translationStatus?:
+    | T
+    | {
+        locale?: T;
+        status?: T;
+        updatedAt?: T;
+        note?: T;
+        id?: T;
+      };
+  translationMeta?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ui-labels-contact_select".
+ */
+export interface UiLabelsContactSelect<T extends boolean = true> {
+  eyebrow?: T;
+  title?: T;
+  fastTitle?: T;
+  fastText?: T;
+  fastButton?: T;
+  formTitle?: T;
+  type?: T;
+  typePartnership?: T;
+  typePress?: T;
+  typeInvestment?: T;
+  typeOther?: T;
+  typeReport?: T;
+  typeApplication?: T;
+  name?: T;
+  message?: T;
+  attach?: T;
+  attachHint?: T;
+  send?: T;
+  office?: T;
+  channels?: T;
+  translationStatus?:
+    | T
+    | {
+        locale?: T;
+        status?: T;
+        updatedAt?: T;
+        note?: T;
+        id?: T;
+      };
+  translationMeta?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ui-labels-family_select".
+ */
+export interface UiLabelsFamilySelect<T extends boolean = true> {
+  title?: T;
+  labels?: T;
+  brands?: T;
+  affiliates?: T;
+  visit?: T;
+  watchFilm?: T;
+  translationStatus?:
+    | T
+    | {
+        locale?: T;
+        status?: T;
+        updatedAt?: T;
+        note?: T;
+        id?: T;
+      };
+  translationMeta?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ui-labels-studio_select".
+ */
+export interface UiLabelsStudioSelect<T extends boolean = true> {
+  title?: T;
+  intro?: T;
+  process?: T;
+  showcase?: T;
+  phase?: T;
+  dragToCompare?: T;
+  buildCampaign?: T;
+  translationStatus?:
+    | T
+    | {
+        locale?: T;
+        status?: T;
+        updatedAt?: T;
+        note?: T;
+        id?: T;
+      };
+  translationMeta?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ui-labels-investors_select".
+ */
+export interface UiLabelsInvestorsSelect<T extends boolean = true> {
+  title?: T;
+  overview?: T;
+  token?: T;
+  whitepaper?: T;
+  roadmap?: T;
+  disclosure?: T;
+  audit?: T;
+  official?: T;
+  disclaimer?: T;
+  utilities?: T;
+  tokenName?: T;
+  symbol?: T;
+  totalSupply?: T;
+  network?: T;
+  listing?: T;
+  allocation?: T;
+  vesting?: T;
+  category?: T;
+  tgeUnlock?: T;
+  cliff?: T;
+  vestingPeriod?: T;
+  amount?: T;
+  contracts?: T;
+  wallets?: T;
+  copy?: T;
+  copied?: T;
+  securityAlert?: T;
+  verifyHint?: T;
+  version?: T;
+  download?: T;
+  auditor?: T;
+  scope?: T;
+  report?: T;
+  statusDone?: T;
+  statusInProgress?: T;
+  statusPlanned?: T;
+  updated?: T;
+  restricted?: T;
+  tba?: T;
+  catIssuance?: T;
+  catAllocation?: T;
+  catUnlock?: T;
+  catPartnership?: T;
+  catOther?: T;
+  translationStatus?:
+    | T
+    | {
+        locale?: T;
+        status?: T;
+        updatedAt?: T;
+        note?: T;
+        id?: T;
+      };
+  translationMeta?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ui-labels-trust_select".
+ */
+export interface UiLabelsTrustSelect<T extends boolean = true> {
+  title?: T;
+  intro?: T;
+  reportTitle?: T;
+  reportIntro?: T;
+  reportedUrl?: T;
+  details?: T;
+  sendReport?: T;
+  officialChannels?: T;
+  officialHint?: T;
+  tokenAddresses?: T;
+  translationStatus?:
+    | T
+    | {
+        locale?: T;
+        status?: T;
+        updatedAt?: T;
+        note?: T;
+        id?: T;
+      };
+  translationMeta?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ui-labels-join_select".
+ */
+export interface UiLabelsJoinSelect<T extends boolean = true> {
+  title?: T;
+  intro?: T;
+  creators?: T;
+  creatorsIntro?: T;
+  careers?: T;
+  careersIntro?: T;
+  open?: T;
+  closed?: T;
+  deadline?: T;
+  apply?: T;
+  applyTitle?: T;
+  position?: T;
+  general?: T;
+  portfolio?: T;
+  sendApplication?: T;
+  noOpenings?: T;
+  notice?: T;
+  translationStatus?:
+    | T
+    | {
+        locale?: T;
+        status?: T;
+        updatedAt?: T;
+        note?: T;
+        id?: T;
+      };
+  translationMeta?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ui-labels-news_select".
+ */
+export interface UiLabelsNewsSelect<T extends boolean = true> {
+  eyebrow?: T;
+  priority?: T;
+  archive?: T;
+  search?: T;
+  more?: T;
+  translationStatus?:
+    | T
+    | {
+        locale?: T;
+        status?: T;
+        updatedAt?: T;
+        note?: T;
+        id?: T;
+      };
+  translationMeta?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ui-labels-forms_select".
+ */
+export interface UiLabelsFormsSelect<T extends boolean = true> {
+  submit?: T;
+  sending?: T;
+  success?: T;
+  required?: T;
+  privacyConsent?: T;
+  tooMany?: T;
+  error?: T;
   translationStatus?:
     | T
     | {

@@ -6,7 +6,15 @@ import { useRef, useState, type DragEvent, type FormEvent } from 'react'
 import { Chip, Consent, Field, Honeypot, TextArea, TextInput, submitError } from './fields'
 
 type Labels = Record<string, string>
-type Props = { locale: string; labels: { contact: Labels; campaign: Labels; forms: Labels }; privacyHref: string | null }
+// contact: 일반 문의 (CONTACT) · report: 사칭 신고 (TRUST) · apply: 지원서 (JOIN US)
+type Mode = 'contact' | 'report' | 'apply'
+type Props = {
+  locale: string
+  labels: { contact: Labels; campaign: Labels; forms: Labels; trust?: Labels; join?: Labels }
+  privacyHref: string | null
+  mode?: Mode
+  positions?: string[]
+}
 
 const TYPES = [
   { value: 'partnership', label: 'typePartnership' },
@@ -19,11 +27,16 @@ const MAX_FILES = 5
 const MAX_BYTES = 50 * 1024 * 1024
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
-// 문의 양식 (design/09_CONTACT): 유형 · 연락처 · 내용 · 첨부 파일 → 문의함으로 접수
-export function ContactForm({ locale, labels, privacyHref }: Props) {
+// 문의 양식 (design/09_CONTACT): 유형 · 연락처 · 내용 · 첨부 파일 → 문의함으로 접수.
+// 사칭 신고와 지원서도 같은 문의함으로 들어간다 (유형만 다름).
+export function ContactForm({ locale, labels, privacyHref, mode = 'contact', positions = [] }: Props) {
   const c = labels.contact
   const f = labels.forms
-  const [type, setType] = useState<string>('partnership')
+  const t = labels.trust ?? {}
+  const j = labels.join ?? {}
+  const [type, setType] = useState<string>(mode === 'report' ? 'report' : mode === 'apply' ? 'application' : 'partnership')
+  const [position, setPosition] = useState(positions[0] ?? j.general ?? '')
+  const [reportedUrl, setReportedUrl] = useState('')
   const [fields, setFields] = useState({ companyName: '', contactName: '', email: '', phone: '', message: '' })
   const [files, setFiles] = useState<File[]>([])
   const [consent, setConsent] = useState(false)
@@ -40,7 +53,13 @@ export function ContactForm({ locale, labels, privacyHref }: Props) {
 
   const submit = async (event: FormEvent) => {
     event.preventDefault()
-    if (!fields.companyName.trim() || !fields.contactName.trim() || !EMAIL.test(fields.email) || !consent) {
+    const missing =
+      (mode === 'contact' && !fields.companyName.trim()) ||
+      (mode === 'report' && (!reportedUrl.trim() || !fields.message.trim())) ||
+      !fields.contactName.trim() ||
+      !EMAIL.test(fields.email) ||
+      !consent
+    if (missing) {
       setError(labels.campaign.fillContact)
       return
     }
@@ -60,7 +79,15 @@ export function ContactForm({ locale, labels, privacyHref }: Props) {
       const response = await fetch(`/api/inquiries?locale=${locale}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ type, ...fields, attachments, privacyConsent: consent, website }),
+        body: JSON.stringify({
+          type,
+          ...fields,
+          ...(mode === 'apply' ? { position } : {}),
+          ...(mode === 'report' ? { reportedUrl } : {}),
+          attachments,
+          privacyConsent: consent,
+          website,
+        }),
       })
       if (!response.ok) throw response
       setStatus('done')
@@ -90,36 +117,59 @@ export function ContactForm({ locale, labels, privacyHref }: Props) {
   return (
     <form onSubmit={submit} noValidate className="relative space-y-8">
       <Honeypot value={website} onChange={setWebsite} />
-      <div>
-        <p className="mb-4 font-mono text-[10px] tracking-[0.1em] text-white/50 uppercase">{c.type}</p>
-        <div className="flex flex-wrap gap-3">
-          {TYPES.map((item) => (
-            <Chip key={item.value} active={type === item.value} onClick={() => setType(item.value)}>
-              {c[item.label]}
-            </Chip>
-          ))}
+      {mode === 'contact' ? (
+        <div>
+          <p className="mb-4 font-mono text-[10px] tracking-[0.1em] text-white/50 uppercase">{c.type}</p>
+          <div className="flex flex-wrap gap-3">
+            {TYPES.map((item) => (
+              <Chip key={item.value} active={type === item.value} onClick={() => setType(item.value)}>
+                {c[item.label]}
+              </Chip>
+            ))}
+          </div>
         </div>
-      </div>
-      <div className="grid gap-6 md:grid-cols-2">
-        <Field label={labels.campaign.company} required>
-          <TextInput autoComplete="organization" value={fields.companyName} onChange={(e) => setFields({ ...fields, companyName: e.target.value })} />
+      ) : null}
+      {mode === 'apply' ? (
+        <div>
+          <p className="mb-4 font-mono text-[10px] tracking-[0.1em] text-white/50 uppercase">{j.position}</p>
+          <div className="flex flex-wrap gap-3">
+            {[...positions, j.general].map((item) => (
+              <Chip key={item} active={position === item} onClick={() => setPosition(item)}>
+                {item}
+              </Chip>
+            ))}
+          </div>
+        </div>
+      ) : null}
+      {mode === 'report' ? (
+        <Field label={t.reportedUrl} required>
+          <TextInput inputMode="url" value={reportedUrl} onChange={(e) => setReportedUrl(e.target.value)} />
         </Field>
+      ) : null}
+      <div className="grid gap-6 md:grid-cols-2">
+        {mode === 'contact' ? (
+          <Field label={labels.campaign.company} required>
+            <TextInput autoComplete="organization" value={fields.companyName} onChange={(e) => setFields({ ...fields, companyName: e.target.value })} />
+          </Field>
+        ) : null}
         <Field label={c.name} required>
           <TextInput autoComplete="name" value={fields.contactName} onChange={(e) => setFields({ ...fields, contactName: e.target.value })} />
         </Field>
         <Field label={labels.campaign.email} required>
           <TextInput type="email" autoComplete="email" value={fields.email} onChange={(e) => setFields({ ...fields, email: e.target.value })} />
         </Field>
-        <Field label={labels.campaign.phone}>
-          <TextInput type="tel" autoComplete="tel" value={fields.phone} onChange={(e) => setFields({ ...fields, phone: e.target.value })} />
-        </Field>
+        {mode !== 'report' ? (
+          <Field label={labels.campaign.phone}>
+            <TextInput type="tel" autoComplete="tel" value={fields.phone} onChange={(e) => setFields({ ...fields, phone: e.target.value })} />
+          </Field>
+        ) : null}
       </div>
-      <Field label={c.message}>
+      <Field label={mode === 'report' ? t.details : c.message} required={mode === 'report'}>
         <TextArea rows={8} maxLength={5000} value={fields.message} onChange={(e) => setFields({ ...fields, message: e.target.value })} />
       </Field>
 
       <div>
-        <p className="mb-2 font-mono text-[10px] tracking-[0.1em] text-white/50 uppercase">{c.attach}</p>
+        <p className="mb-2 font-mono text-[10px] tracking-[0.1em] text-white/50 uppercase">{mode === 'apply' ? j.portfolio : c.attach}</p>
         <button
           type="button"
           onClick={() => input.current?.click()}
@@ -168,7 +218,7 @@ export function ContactForm({ locale, labels, privacyHref }: Props) {
       ) : null}
 
       <button type="submit" disabled={status === 'sending'} className="btn-irid w-full px-9 py-3.5 md:w-auto disabled:opacity-60">
-        {status === 'sending' ? f.sending : c.send} <PaperPlaneTilt size={16} weight="fill" aria-hidden />
+        {status === 'sending' ? f.sending : mode === 'report' ? t.sendReport : mode === 'apply' ? j.sendApplication : c.send} <PaperPlaneTilt size={16} weight="fill" aria-hidden />
       </button>
     </form>
   )

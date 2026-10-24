@@ -104,7 +104,7 @@ const table = (rows: [string, unknown][]) =>
     .map(([label, value]) => `<tr><td style="color:#666;vertical-align:top">${escapeHtml(label)}</td><td>${escapeHtml(value)}</td></tr>`)
     .join('')}</table>`
 
-const TYPE_LABELS: Record<string, string> = { partnership: '제휴', press: '언론', investment: '투자', other: '기타' }
+const TYPE_LABELS: Record<string, string> = { partnership: '제휴', press: '언론', investment: '투자', other: '기타', report: '사칭 신고', application: '지원' }
 
 export const notifyTask: TaskConfig = {
   slug: NOTIFY_TASK,
@@ -163,13 +163,15 @@ export const notifyTask: TaskConfig = {
         ['담당자', doc.contactName],
         ['이메일', doc.email],
         ['연락처', doc.phone],
+        ['지원 분야', doc.position],
+        ['신고 대상', doc.reportedUrl],
         ['내용', doc.message],
         ['첨부 파일', doc.attachments?.length ? `${doc.attachments.length}개 (관리자 화면에서 확인)` : ''],
       ])
       if (settings.notifyEmails?.length) {
         await payload.sendEmail({
           to: settings.notifyEmails,
-          subject: `[문의 · ${TYPE_LABELS[doc.type] ?? doc.type}] ${doc.companyName}`,
+          subject: `[문의 · ${TYPE_LABELS[doc.type] ?? doc.type}] ${doc.companyName || doc.contactName}`,
           html: `<p>새 문의가 들어왔습니다.</p>${summary}<p><a href="${adminUrl}">관리자 화면에서 보기</a></p>`,
         })
       }

@@ -57,6 +57,8 @@ const contactFields: Field[] = [
   },
 ]
 
+const PERSONAL_TYPES = ['report', 'application']
+
 // 캠페인 빌더로 들어오는 견적 요청 (수익화 핵심)
 export const QuoteRequests: CollectionConfig = {
   slug: 'quote-requests',
@@ -167,9 +169,39 @@ export const Inquiries: CollectionConfig = {
         { label: '언론', value: 'press' },
         { label: '투자', value: 'investment' },
         { label: '기타', value: 'other' },
+        { label: '사칭 신고', value: 'report' },
+        { label: '지원 (JOIN US)', value: 'application' },
       ],
     },
-    ...contactFields,
+    {
+      type: 'row',
+      fields: [
+        {
+          name: 'companyName',
+          label: '회사명',
+          type: 'text',
+          // 개인이 보내는 사칭 신고 · 지원서는 회사명이 없어도 된다
+          validate: (value: string | null | undefined, { siblingData }: { siblingData: { type?: string } }) =>
+            PERSONAL_TYPES.includes(siblingData?.type ?? '') || Boolean(value?.trim()) || '회사명을 입력해 주세요.',
+          admin: { width: '50%', description: '사칭 신고 · 지원서는 비어 있을 수 있습니다.' },
+        },
+        { name: 'contactName', label: '이름', type: 'text', required: true, admin: { width: '50%' } },
+      ],
+    },
+    ...contactFields.slice(1),
+    {
+      name: 'position',
+      label: '지원 분야',
+      type: 'text',
+      admin: { condition: (data) => data?.type === 'application' },
+    },
+    {
+      name: 'reportedUrl',
+      label: '신고 대상 (계정 · 게시물 · 토큰 주소)',
+      type: 'text',
+      maxLength: 2000,
+      admin: { condition: (data) => data?.type === 'report' },
+    },
     {
       name: 'attachments',
       label: '첨부 파일',

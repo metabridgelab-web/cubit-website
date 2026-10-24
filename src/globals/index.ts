@@ -3,7 +3,8 @@ import type { Field, GlobalConfig } from 'payload'
 import { anyone, canUpdateContent, hasRole, isAdmin } from '../access'
 import { DEFAULT_LOCALE, LOCALE_OPTIONS } from '../constants/locales'
 import { linkFields } from '../fields'
-import { UiLabels } from './UiLabels'
+import { Investors } from './Investors'
+import { UiLabelGlobals } from './UiLabels'
 
 const contentAccess = { read: anyone, update: canUpdateContent }
 
@@ -315,4 +316,4 @@ export const BusinessSettings: GlobalConfig = {
   ],
 }
 
-export const globals = [SiteSettings, Navigation, HomeSettings, BusinessSettings, UiLabels]
+export const globals = [SiteSettings, Navigation, HomeSettings, BusinessSettings, Investors, ...UiLabelGlobals]

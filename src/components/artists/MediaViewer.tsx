@@ -8,7 +8,7 @@ export type GalleryImage = { thumb: string; full: string; alt: string }
 export type VideoItem = { id: string; youtubeId: string; title: string; date: string }
 
 // 크게 보기 창: 사진 넘겨보기 또는 YouTube 영상 재생. Esc로 닫고 ←/→로 넘긴다.
-function Viewer({ onClose, onPrev, onNext, closeLabel, children }: { onClose: () => void; onPrev?: () => void; onNext?: () => void; closeLabel: string; children: React.ReactNode }) {
+export function Viewer({ onClose, onPrev, onNext, closeLabel, children }: { onClose: () => void; onPrev?: () => void; onNext?: () => void; closeLabel: string; children: React.ReactNode }) {
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
       if (event.key === 'Escape') onClose()

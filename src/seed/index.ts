@@ -1,8 +1,9 @@
-// 기본 데이터 넣기: 아티스트 카테고리 · 게시판과 분류 · 메뉴 · 시작용 소개 페이지.
+// 기본 데이터 넣기: 아티스트 카테고리 · 게시판과 분류 · 메뉴 · 시작용 소개 페이지 · 계열사 · 스튜디오 단계.
 // 영어 원문과 한국어 번역을 함께 넣는다. 여러 번 실행해도 이미 있는 항목은 갱신만 한다.
 // 실행: npm run seed
-import { getPayload, type Where } from 'payload'
+import { getPayload, type GlobalSlug, type Where } from 'payload'
 
+import { UI_LABEL_GROUPS, uiLabelSlug } from '../globals/UiLabels'
 import config from '../payload.config'
 
 const payload = await getPayload({ config })
@@ -117,7 +118,17 @@ const menu: (Localized & { url: string; items: (Localized & { url: string })[] }
     items: [
       { en: 'About Us', ko: '회사 소개', url: '/about' },
       { en: 'History', ko: '연혁', url: '/about/history' },
+      { en: 'Family', ko: '레이블·브랜드·계열사', url: '/about/family' },
       { en: 'Location', ko: '오시는 길', url: '/about/location' },
+    ],
+  },
+  {
+    en: 'STUDIO',
+    ko: 'STUDIO',
+    url: '/studio',
+    items: [
+      { en: 'Production Process', ko: '제작 과정 공개', url: '/studio#process' },
+      { en: 'Technology Showcase', ko: '기술 쇼케이스', url: '/studio#showcase' },
     ],
   },
   {
@@ -133,12 +144,47 @@ const menu: (Localized & { url: string; items: (Localized & { url: string })[] }
     ],
   },
   {
+    // "투자자 정보 > 공개"를 켜기 전에는 사이트에서 자동으로 숨겨진다
+    en: 'INVESTORS',
+    ko: 'INVESTORS',
+    url: '/investors',
+    items: [
+      { en: 'Overview', ko: '프로젝트 개요', url: '/investors' },
+      { en: 'Token Info', ko: '토큰 정보', url: '/investors/token' },
+      { en: 'Whitepaper', ko: '백서', url: '/investors/whitepaper' },
+      { en: 'Roadmap', ko: '로드맵', url: '/investors/roadmap' },
+      { en: 'Disclosures', ko: '공시', url: '/investors/disclosure' },
+      { en: 'Security Audit', ko: '보안 감사', url: '/investors/audit' },
+      { en: 'Official Addresses', ko: '공식 주소 안내', url: '/investors/official' },
+      { en: 'Risk Notice', ko: '위험 고지', url: '/investors/disclaimer' },
+    ],
+  },
+  {
     en: 'NEWS',
     ko: 'NEWS',
     url: '/news',
     items: [
       { en: 'News', ko: '뉴스', url: '/news' },
       { en: 'Notice', ko: '공지사항', url: '/news/notice' },
+    ],
+  },
+  {
+    en: 'TRUST',
+    ko: 'TRUST',
+    url: '/trust',
+    items: [
+      { en: 'AI Content Labeling', ko: 'AI 표시 원칙', url: '/trust/ai-label' },
+      { en: 'Data Principles', ko: '데이터 원칙', url: '/trust/data' },
+      { en: 'Report Impersonation', ko: '사칭 신고', url: '/trust/report' },
+    ],
+  },
+  {
+    en: 'JOIN US',
+    ko: 'JOIN US',
+    url: '/join',
+    items: [
+      { en: 'Creator Partners', ko: '크리에이터 파트너 모집', url: '/join/creators' },
+      { en: 'Careers', ko: '채용', url: '/join/careers' },
     ],
   },
   { en: 'CONTACT', ko: 'CONTACT', url: '/contact', items: [] },
@@ -187,7 +233,7 @@ const richText = (...paragraphs: string[]) => ({
 })
 
 const LEGAL_NOTE = 'This policy is being prepared. The final text will be published here after legal review.'
-const starterPages: { slug: string; section: 'company' | 'business' | 'legal'; title: string; intro: string; reviewRequired?: boolean; layout: Record<string, unknown>[] }[] = [
+const starterPages: { slug: string; section: 'company' | 'business' | 'legal' | 'trust'; title: string; intro: string; reviewRequired?: boolean; layout: Record<string, unknown>[] }[] = [
   {
     slug: 'about',
     section: 'company',
@@ -233,6 +279,22 @@ const starterPages: { slug: string; section: 'company' | 'business' | 'legal'; t
       { blockType: 'cta', text: 'Talk to us about a talent made for your brand.', label: 'Contact us', url: '/contact' },
     ],
   },
+  {
+    slug: 'ai-label',
+    section: 'trust',
+    title: 'AI Content Labeling',
+    intro: 'All of our artists are AI. We label AI-generated content clearly so that fans and partners always know what they are seeing.',
+    reviewRequired: true,
+    layout: [{ blockType: 'text', heading: 'How we label', body: richText('[Replace with the labeling rules: where and how the AI label appears on music, video, images, and social posts. Confirm after legal review.]') }],
+  },
+  {
+    slug: 'data',
+    section: 'trust',
+    title: 'Data Principles',
+    intro: 'How we source training data, secure rights, and handle the likeness and voice of real people.',
+    reviewRequired: true,
+    layout: [{ blockType: 'text', heading: 'Our principles', body: richText('[Replace with the data principles: data sources, how rights are secured, and the rules for using the likeness or voice of real people. Confirm after legal review.]') }],
+  },
   { slug: 'privacy', section: 'legal', title: 'Privacy Policy', intro: LEGAL_NOTE, reviewRequired: true, layout: [] },
   { slug: 'cookies', section: 'legal', title: 'Cookie Policy', intro: LEGAL_NOTE, reviewRequired: true, layout: [] },
   { slug: 'terms', section: 'legal', title: 'Terms of Use', intro: LEGAL_NOTE, reviewRequired: true, layout: [] },
@@ -249,6 +311,40 @@ for (const page of starterPages) {
   if (page.section === 'legal') legalIds.push(doc.id)
 }
 
+// 계열사 6곳: 비어 있을 때만 만든다. 홈 슬라이드에 올린 소개 영상과 대표 이미지를 그대로 연결한다.
+if (!(await payload.count({ collection: 'family' })).totalDocs) {
+  const slides = (await payload.find({ collection: 'home-slides', depth: 0, limit: 50 })).docs
+  for (const name of ['CUBIT ENTERTAINMENT', 'CUBITER', 'VIONA', 'ANIMA-X', 'EXIMAX', 'EXORA']) {
+    const slide = slides.find((s) => s.headline === name)
+    await payload.create({
+      collection: 'family',
+      locale: 'en',
+      depth: 0,
+      data: {
+        name,
+        kind: 'affiliate',
+        description: `[Replace with a short introduction of ${name}.]`,
+        film: typeof slide?.videoFile === 'number' ? slide.videoFile : undefined,
+        poster: typeof slide?.poster === 'number' ? slide.poster : undefined,
+      },
+    })
+  }
+  payload.logger.info('추가: 계열사 6곳')
+}
+
+// STUDIO 제작 과정 3단계: 비어 있을 때만 만든다 (사진·영상은 관리자 화면에서 올린다)
+if (!(await payload.count({ collection: 'studio-items' })).totalDocs) {
+  const steps = [
+    { title: 'Planning', description: 'Story, look, and voice are designed first: who the artist is, how they sound, and what they stand for.' },
+    { title: 'Creation & Performance', description: 'The artist is generated and performs: music, video, and photo shoots made in our AI production pipeline.' },
+    { title: 'Review', description: 'Our team checks every release for quality, rights, and clear AI labeling before it goes out.' },
+  ]
+  for (const step of steps) {
+    await payload.create({ collection: 'studio-items', locale: 'en', depth: 0, data: { kind: 'process', ...step } })
+  }
+  payload.logger.info('추가: 스튜디오 제작 과정 3단계')
+}
+
 // 하단 정책 링크가 비어 있으면 정책 페이지 세 개를 연결한다
 const settings = await payload.findGlobal({ slug: 'site-settings', depth: 0 })
 if (!settings.policyLinks?.length) {
@@ -257,7 +353,7 @@ if (!settings.policyLinks?.length) {
 }
 
 // 사이트 고정 문구와 비즈니스 문구를 한 번 저장해서 기본값(영어)이 자동 번역되게 한다
-await payload.updateGlobal({ slug: 'ui-labels', locale: 'en', data: {} })
+for (const group of UI_LABEL_GROUPS) await payload.updateGlobal({ slug: uiLabelSlug(group) as GlobalSlug, locale: 'en', data: {} })
 await payload.updateGlobal({ slug: 'business-settings', locale: 'en', data: {} })
 payload.logger.info('갱신: 사이트 고정 문구 · 비즈니스 문구')
 

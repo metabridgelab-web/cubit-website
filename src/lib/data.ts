@@ -1,10 +1,11 @@
 import 'server-only'
 
 import config from '@payload-config'
-import { getPayload, type Where } from 'payload'
+import { getPayload, type GlobalSlug, type Where } from 'payload'
 import { cache } from 'react'
 
 import { DEFAULT_LOCALE, TRANSLATION_TARGETS, type LocaleCode } from '@/constants/locales'
+import { UI_LABEL_GROUPS, uiLabelSlug, type UiLabelsData } from '@/globals/UiLabels'
 
 // 홈페이지 화면이 쓰는 데이터를 꺼내오는 곳.
 // 디자인이 정해지면 화면(컴포넌트)은 여기 함수들만 불러 쓰면 된다.
@@ -31,9 +32,14 @@ export const getNavigation = cache(async (locale: LocaleCode) => {
   return { ...nav, sections: (nav.sections ?? []).filter((section) => !section.hidden) }
 })
 
-export const getUiLabels = cache(async (locale: LocaleCode) =>
-  (await payload()).findGlobal({ slug: 'ui-labels', locale, depth: 0, ...PUBLIC }),
-)
+// 사이트 고정 문구: 묶음별 관리자 페이지를 모두 읽어 { common: {...}, home: {...}, ... } 하나로 합친다
+export const getUiLabels = cache(async (locale: LocaleCode): Promise<UiLabelsData> => {
+  const p = await payload()
+  const groups = await Promise.all(
+    UI_LABEL_GROUPS.map(async (group) => [group, await p.findGlobal({ slug: uiLabelSlug(group) as GlobalSlug, locale, depth: 0, ...PUBLIC })] as const),
+  )
+  return Object.fromEntries(groups) as unknown as UiLabelsData
+})
 
 export const getHomeSettings = cache(async () =>
   (await payload()).findGlobal({ slug: 'home-settings', depth: 0, ...PUBLIC }),
@@ -177,8 +183,38 @@ export const getPagesBySection = cache(async (section: string, locale: LocaleCod
     locale,
     depth: 0,
     limit: 100,
-    select: { title: true, slug: true, updatedAt: true },
+    sort: 'createdAt',
+    select: { title: true, slug: true, intro: true, updatedAt: true },
     ...PUBLIC,
   })
+  return docs
+})
+
+// 레이블 · 브랜드 · 계열사 (숨기지 않은 것만, 관리자가 정한 순서대로)
+export const getFamily = cache(async (locale: LocaleCode) => {
+  const { docs } = await (await payload()).find({ collection: 'family', where: { hidden: { not_equals: true } }, sort: '_order', locale, depth: 2, limit: 100, ...PUBLIC })
+  return docs
+})
+
+// STUDIO: 제작 과정 단계 · 전후 비교 · 보유 기술
+export const getStudioItems = cache(async (locale: LocaleCode) => {
+  const { docs } = await (await payload()).find({ collection: 'studio-items', where: { hidden: { not_equals: true } }, sort: '_order', locale, depth: 1, limit: 100, ...PUBLIC })
+  return docs
+})
+
+// JOIN US: 크리에이터 모집 · 채용 공고 (모집 중인 것 먼저)
+export const getOpenings = cache(async (kind: 'creator' | 'career', locale: LocaleCode) => {
+  const { docs } = await (await payload()).find({ collection: 'openings', where: { kind: { equals: kind } }, sort: '_order', locale, depth: 0, limit: 100, ...PUBLIC })
+  return [...docs.filter((d) => d.status === 'open'), ...docs.filter((d) => d.status !== 'open')]
+})
+
+// INVESTORS: "공개"가 꺼져 있으면 null (메뉴와 페이지를 숨긴다)
+export const getInvestors = cache(async (locale: LocaleCode) => {
+  const investors = await (await payload()).findGlobal({ slug: 'investors', locale, depth: 1, ...PUBLIC })
+  return investors.visible ? investors : null
+})
+
+export const getDisclosures = cache(async (locale: LocaleCode) => {
+  const { docs } = await (await payload()).find({ collection: 'disclosures', sort: '-date', locale, depth: 1, limit: 200, ...PUBLIC })
   return docs
 })

@@ -1,9 +1,9 @@
-import type { Field, GlobalConfig } from 'payload'
+import type { GlobalConfig } from 'payload'
 
 import { anyone, hasRole } from '../access'
 
 // 사이트 고정 문구: 버튼·제목처럼 화면 곳곳에 쓰이는 짧은 글. 영어로 쓰면 자동 번역된다.
-// 새 문구가 필요하면 아래 목록에 한 줄 추가한다 (기본값 = 영어 원문).
+// 새 문구가 필요하면 아래 목록에 한 줄 추가한다 (기본값 = 영어 원문). 새 묶음을 만들면 관리자 화면에 페이지가 하나 더 생긴다.
 export const UI_LABELS = {
   common: {
     label: '공통',
@@ -136,6 +136,8 @@ export const UI_LABELS = {
       typePress: 'Press',
       typeInvestment: 'Investment',
       typeOther: 'Other',
+      typeReport: 'Impersonation report',
+      typeApplication: 'Application',
       name: 'Full name',
       message: 'Message',
       attach: 'Attach files',
@@ -143,6 +145,115 @@ export const UI_LABELS = {
       send: 'Send inquiry',
       office: 'Office',
       channels: 'Official channels',
+    },
+  },
+  family: {
+    label: '레이블·브랜드·계열사',
+    items: {
+      title: 'Family',
+      labels: 'Labels',
+      brands: 'Brands',
+      affiliates: 'Affiliates',
+      visit: 'Visit site',
+      watchFilm: 'Watch film',
+    },
+  },
+  studio: {
+    label: '스튜디오',
+    items: {
+      title: 'Studio',
+      intro: 'How our AI talent is made, and the technology behind it.',
+      process: 'Production Process',
+      showcase: 'Technology Showcase',
+      phase: 'Phase',
+      dragToCompare: 'Drag to compare',
+      buildCampaign: 'Build a campaign with this technology',
+    },
+  },
+  investors: {
+    label: '투자자 정보',
+    items: {
+      title: 'Investors',
+      overview: 'Overview',
+      token: 'Token Info',
+      whitepaper: 'Whitepaper',
+      roadmap: 'Roadmap',
+      disclosure: 'Disclosures',
+      audit: 'Security Audit',
+      official: 'Official Addresses',
+      disclaimer: 'Risk Notice',
+      utilities: 'Where the token is used',
+      tokenName: 'Token name',
+      symbol: 'Symbol',
+      totalSupply: 'Total supply',
+      network: 'Network',
+      listing: 'Listing status',
+      allocation: 'Token allocation',
+      vesting: 'Lock-up & vesting schedule',
+      category: 'Category',
+      tgeUnlock: 'Initial unlock',
+      cliff: 'Lock-up',
+      vestingPeriod: 'Vesting',
+      amount: 'Amount',
+      contracts: 'Official contract addresses',
+      wallets: 'Official wallets',
+      copy: 'Copy',
+      copied: 'Copied',
+      securityAlert: 'Security alert',
+      verifyHint: 'Always check addresses on this page before any transaction.',
+      version: 'Version',
+      download: 'Download PDF',
+      auditor: 'Auditor',
+      scope: 'Scope',
+      report: 'Report',
+      statusDone: 'Done',
+      statusInProgress: 'In progress',
+      statusPlanned: 'Planned',
+      updated: 'Updated',
+      restricted: 'Restricted regions',
+      tba: 'To be announced',
+      catIssuance: 'Issuance',
+      catAllocation: 'Allocation',
+      catUnlock: 'Unlock',
+      catPartnership: 'Partnership',
+      catOther: 'Other',
+    },
+  },
+  trust: {
+    label: '신뢰 센터',
+    items: {
+      title: 'Trust',
+      intro: 'How we label AI content, handle data, and protect fans from impersonation.',
+      reportTitle: 'Report impersonation',
+      reportIntro: 'Seen a fake account, a deepfake, or a fake token or investment offer using our name or our artists? Tell us and we will act on it.',
+      reportedUrl: 'Link to the account, post, or token',
+      details: 'What happened?',
+      sendReport: 'Send report',
+      officialChannels: 'Our official channels',
+      officialHint: 'We only communicate through the channels listed here.',
+      tokenAddresses: 'Official token addresses',
+    },
+  },
+  join: {
+    label: '함께하기',
+    items: {
+      title: 'Join Us',
+      intro: 'Create with us, or join the team.',
+      creators: 'Creator Partners',
+      creatorsIntro: 'We work with voice actors, motion performers, composers, and AI artists around the world.',
+      careers: 'Careers',
+      careersIntro: 'Join the team building the next generation of entertainment.',
+      open: 'Open',
+      closed: 'Closed',
+      deadline: 'Deadline',
+      apply: 'Apply',
+      applyTitle: 'Apply',
+      position: 'Field',
+      general: 'General application',
+      portfolio: 'Portfolio files',
+      sendApplication: 'Send application',
+      noOpenings: 'There are no open positions right now. You can still send a general application.',
+      notice: 'We recruit only through this website and our official channels. Any other recruitment, audition, or fee request using our name is impersonation.',
     },
   },
   news: {
@@ -169,23 +280,24 @@ export const UI_LABELS = {
   },
 } as const
 
-const groups: Field[] = Object.entries(UI_LABELS).map(([name, group]) => ({
-  name,
-  label: group.label,
-  type: 'group',
-  fields: Object.entries(group.items).map(([key, defaultValue]) => ({
-    name: key,
+export type UiLabelGroup = keyof typeof UI_LABELS
+export type UiLabelsData = { [G in UiLabelGroup]: { [K in keyof (typeof UI_LABELS)[G]['items']]: string } }
+
+export const UI_LABEL_GROUPS = Object.keys(UI_LABELS) as UiLabelGroup[]
+export const uiLabelSlug = (group: UiLabelGroup) => `ui-labels-${group}`
+
+// 묶음마다 관리자 화면 한 페이지(= 데이터베이스 표 하나)로 나눈다.
+// 한 표에 번역 칸이 100개를 넘으면 데이터베이스가 한 번에 읽지 못하기 때문이다.
+export const UiLabelGlobals: GlobalConfig[] = UI_LABEL_GROUPS.map((group) => ({
+  slug: uiLabelSlug(group),
+  label: `고정 문구 · ${UI_LABELS[group].label}`,
+  admin: { group: '사이트 고정 문구', description: '버튼·제목처럼 화면 곳곳에 쓰이는 짧은 글입니다. 영어로 고치고 저장하면 자동 번역됩니다.' },
+  access: { read: anyone, update: ({ req }) => hasRole(req, 'editor', 'translator') },
+  fields: Object.entries(UI_LABELS[group].items).map(([name, defaultValue]) => ({
+    name,
     type: 'text',
     localized: true,
     required: true,
     defaultValue,
   })),
 }))
-
-export const UiLabels: GlobalConfig = {
-  slug: 'ui-labels',
-  label: '사이트 고정 문구',
-  admin: { group: '번역 관리', description: '버튼·제목처럼 화면 곳곳에 쓰이는 짧은 글입니다. 영어로 고치고 저장하면 자동 번역됩니다.' },
-  access: { read: anyone, update: ({ req }) => hasRole(req, 'editor', 'translator') },
-  fields: groups,
-}

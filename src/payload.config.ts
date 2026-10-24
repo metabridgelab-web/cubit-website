@@ -14,12 +14,16 @@ import { Attachments } from './collections/Attachments'
 import { Artists } from './collections/Artists'
 import { Boards, PostCategories } from './collections/Boards'
 import { CaseStudies } from './collections/CaseStudies'
+import { Disclosures } from './collections/Disclosures'
+import { Family } from './collections/Family'
 import { Glossary } from './collections/Glossary'
 import { HomeSlides } from './collections/HomeSlides'
 import { Inquiries, QuoteRequests } from './collections/Inbox'
 import { Media } from './collections/Media'
+import { Openings } from './collections/Openings'
 import { Pages } from './collections/Pages'
 import { Posts } from './collections/Posts'
+import { StudioItems } from './collections/Studio'
 import { Users } from './collections/Users'
 import { DEFAULT_LOCALE, LOCALES } from './constants/locales'
 import { globals } from './globals'
@@ -59,6 +63,10 @@ export default buildConfig({
     Posts,
     CaseStudies,
     Pages,
+    Family,
+    StudioItems,
+    Openings,
+    Disclosures,
     QuoteRequests,
     Inquiries,
     Attachments,
