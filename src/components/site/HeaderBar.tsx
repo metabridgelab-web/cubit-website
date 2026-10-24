@@ -9,7 +9,6 @@ import { MenuOverlay, type MenuSection } from './MenuOverlay'
 type Props = {
   homeHref: string
   siteName: string
-  logoSrc: string
   menuLabel: string
   closeLabel: string
   sections: MenuSection[]
@@ -19,9 +18,9 @@ type Props = {
   languageMenu: ReactNode
 }
 
-// 모든 페이지 상단: 왼쪽 로고 · 오른쪽 언어 선택 + 메뉴 버튼.
+// 모든 페이지 상단: 왼쪽 사이트 이름(홈 버튼) · 오른쪽 언어 선택 + 메뉴 버튼.
 // 첫 화면 위에서는 투명하고, 아래로 내리면 어두운 유리 배경이 깔린다.
-export function HeaderBar({ homeHref, siteName, logoSrc, menuLabel, closeLabel, sections, cta, socials, copyright, languageMenu }: Props) {
+export function HeaderBar({ homeHref, siteName, menuLabel, closeLabel, sections, cta, socials, copyright, languageMenu }: Props) {
   const [open, setOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const close = useCallback(() => setOpen(false), [])
@@ -40,10 +39,9 @@ export function HeaderBar({ homeHref, siteName, logoSrc, menuLabel, closeLabel, 
           scrolled ? 'border-b border-white/10 bg-black/60 backdrop-blur-xl' : ''
         }`}
       >
-        <Link href={homeHref} className="flex items-center gap-3" aria-label={siteName}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={logoSrc} alt="" width={44} height={44} className="h-10 w-10 md:h-11 md:w-11" />
-          <span className="hidden text-sm font-black tracking-[0.4em] uppercase sm:inline">{siteName}</span>
+        {/* 휴대폰에서는 좁아서 두 줄(CUBIT / ENTERTAINMENT)로 접힌다 */}
+        <Link href={homeHref} className="max-w-[10rem] text-[11px] leading-snug font-black tracking-[0.3em] uppercase sm:max-w-none sm:text-sm sm:tracking-[0.4em]">
+          {siteName}
         </Link>
         <div className="flex items-center gap-3">
           {languageMenu}

@@ -20,9 +20,9 @@ export const SiteSettings: GlobalConfig = {
         {
           label: '기본',
           fields: [
-            { name: 'siteName', label: '사이트 이름', type: 'text', required: true, defaultValue: 'CUBIT ENTERTAINMENT' },
-            { name: 'logo', label: '로고', type: 'upload', relationTo: 'media' },
-            { name: 'logoDark', label: '로고 (어두운 배경용)', type: 'upload', relationTo: 'media' },
+            { name: 'siteName', label: '사이트 이름', type: 'text', required: true, defaultValue: 'CUBIT ENTERTAINMENT', admin: { description: '왼쪽 위 홈 버튼에 이 글자가 표시됩니다.' } },
+            { name: 'logo', label: '로고', type: 'upload', relationTo: 'media', admin: { description: '보관용입니다. 지금 사이트 상단에는 로고 없이 사이트 이름 글자만 표시됩니다.' } },
+            { name: 'logoDark', label: '로고 (어두운 배경용)', type: 'upload', relationTo: 'media', admin: { description: '보관용입니다. 지금 사이트 상단에는 쓰이지 않습니다.' } },
             {
               name: 'enabledLocales',
               label: '사용하는 언어',
