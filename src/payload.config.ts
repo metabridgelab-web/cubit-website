@@ -27,7 +27,7 @@ import { Users } from './collections/Users'
 import { DEFAULT_LOCALE, LOCALES } from './constants/locales'
 import { globals } from './globals'
 import { notifyTask } from './inbox'
-import { database, storagePlugins } from './infrastructure'
+import { attachmentUploadEndpoints, database, storagePlugins } from './infrastructure'
 import { translationPlugin } from './translation/plugin'
 
 const filename = fileURLToPath(import.meta.url)
@@ -85,6 +85,8 @@ export default buildConfig({
     Users,
   ],
   globals,
+  // 문의 양식 첨부 파일을 R2로 바로 올리는 허가 주소 (R2가 연결된 경우만)
+  endpoints: attachmentUploadEndpoints(),
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {

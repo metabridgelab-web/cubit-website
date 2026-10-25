@@ -457,6 +457,8 @@ export interface Media {
     | number
     | boolean
     | null;
+  prefix?: string | null;
+  _objectKey?: string | null;
   folder?: (number | null) | FolderInterface;
   updatedAt: string;
   createdAt: string;
@@ -1208,6 +1210,8 @@ export interface Inquiry {
 export interface Attachment {
   id: number;
   ipHash?: string | null;
+  prefix?: string | null;
+  _objectKey?: string | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -1953,6 +1957,8 @@ export interface InquiriesSelect<T extends boolean = true> {
  */
 export interface AttachmentsSelect<T extends boolean = true> {
   ipHash?: T;
+  prefix?: T;
+  _objectKey?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;
@@ -1981,6 +1987,8 @@ export interface MediaSelect<T extends boolean = true> {
         id?: T;
       };
   translationMeta?: T;
+  prefix?: T;
+  _objectKey?: T;
   folder?: T;
   updatedAt?: T;
   createdAt?: T;

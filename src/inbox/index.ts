@@ -61,6 +61,24 @@ const hashIp = (ip: string) =>
     .digest('hex')
     .slice(0, 32)
 
+// 같은 방문자(IP)가 한 시간에 maxPerHour번 넘게 보내면 막는다. 방문자 구분값(ipHash)을 돌려준다.
+export const assertSubmissionRate = async (req: PayloadRequest, slug: InboxSlug | 'attachments', maxPerHour: number) => {
+  const ipHash = hashIp(clientIp(req))
+  const since = new Date(Date.now() - 60 * 60 * 1000).toISOString()
+  const { totalDocs } = await req.payload.count({
+    collection: slug,
+    where: { ipHash: { equals: ipHash }, createdAt: { greater_than: since } },
+    overrideAccess: true,
+    req,
+  })
+  if (totalDocs >= maxPerHour) {
+    throw new APIError('Too many submissions. Please try again later.', 429, undefined, true)
+  }
+  return ipHash
+}
+
+export const ATTACHMENTS_PER_HOUR = 15
+
 export const guardSubmission =
   (slug: InboxSlug | 'attachments', { maxPerHour = 5 }: { maxPerHour?: number } = {}): CollectionBeforeChangeHook =>
   async ({ data, operation, req }) => {
@@ -68,17 +86,7 @@ export const guardSubmission =
 
     if (slug !== 'attachments' && data.website) throw new APIError('Submission rejected.', 400, undefined, true)
 
-    const ipHash = hashIp(clientIp(req))
-    const since = new Date(Date.now() - 60 * 60 * 1000).toISOString()
-    const { totalDocs } = await req.payload.count({
-      collection: slug,
-      where: { ipHash: { equals: ipHash }, createdAt: { greater_than: since } },
-      overrideAccess: true,
-      req,
-    })
-    if (totalDocs >= maxPerHour) {
-      throw new APIError('Too many submissions. Please try again later.', 429, undefined, true)
-    }
+    const ipHash = await assertSubmissionRate(req, slug, maxPerHour)
 
     if (slug === 'attachments') return { ...data, ipHash }
 

@@ -1,7 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
 import { anyone, canHandleInbox, isAdmin } from '../access'
-import { guardSubmission, ipHashField } from '../inbox'
+import { ATTACHMENTS_PER_HOUR, guardSubmission, ipHashField } from '../inbox'
 
 // 문의 양식에 방문자가 첨부한 파일. 담당자(영업·최고 관리자)만 열어볼 수 있고 사이트에는 보이지 않는다.
 export const Attachments: CollectionConfig = {
@@ -15,7 +15,7 @@ export const Attachments: CollectionConfig = {
     delete: isAdmin,
   },
   hooks: {
-    beforeChange: [guardSubmission('attachments', { maxPerHour: 15 })],
+    beforeChange: [guardSubmission('attachments', { maxPerHour: ATTACHMENTS_PER_HOUR })],
   },
   upload: {
     mimeTypes: ['application/pdf', 'image/jpeg', 'image/png', 'video/mp4', 'video/quicktime'],
