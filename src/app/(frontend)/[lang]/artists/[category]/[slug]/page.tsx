@@ -5,15 +5,16 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 
 import { ArtistHeroImage } from '@/components/artists/ArtistHeroImage'
+import { ArtistTile } from '@/components/artists/ArtistTile'
 import { Gallery, VideoGrid } from '@/components/artists/MediaViewer'
 import { PostRow } from '@/components/home/Sections'
 import { HudHeading } from '@/components/site/Hud'
 import { SocialIcon } from '@/components/site/SocialIcon'
 import { localePath } from '@/i18n'
-import { getArtist, getPosts, getUiLabels } from '@/lib/data'
+import { getArtist, getArtistById, getPosts, getUiLabels } from '@/lib/data'
 import { fitHeadline } from '@/lib/fit'
 import { mediaUrl, pageMetadata, resolveLocale, youtubeId, type LangParams } from '@/lib/page'
-import type { ArtistCategory } from '@/payload-types'
+import type { Artist, ArtistCategory } from '@/payload-types'
 
 type Params = LangParams & { category: string; slug: string }
 
@@ -32,11 +33,23 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
 // 아티스트 상세 (design/04_아티스트-상세): 큰 사진과 이름 · 프로필 · 자기소개 · 사진 모음 · 뮤직비디오 · 캠페인 견적
 export default async function ArtistPage({ params }: { params: Promise<Params> }) {
   const locale = await resolveLocale(params)
-  const { slug } = await params
+  const { category: categorySlug, slug } = await params
   const [artist, labels] = await Promise.all([getArtist(slug, locale), getUiLabels(locale)])
   if (!artist) notFound()
 
-  const news = await getPosts(locale, { artistId: artist.id, limit: 5 })
+  // 그룹이면 멤버를, 멤버면 소속 그룹과 같은 그룹의 다른 멤버를 보여 준다
+  const members = artist.kind === 'group' ? (artist.members ?? []).filter((m): m is Artist => typeof m === 'object') : []
+  const groupIds = artist.kind === 'group' ? [] : (artist.memberOf?.docs ?? []).map((g) => (typeof g === 'object' ? g.id : g))
+  const [news, groups] = await Promise.all([
+    getPosts(locale, { artistId: artist.id, limit: 5 }),
+    Promise.all(groupIds.map((id) => getArtistById(id, locale))),
+  ])
+  const memberOf = groups.filter((g): g is Artist => Boolean(g))
+  const otherMembers = memberOf.flatMap((g) => (g.members ?? []).filter((m): m is Artist => typeof m === 'object' && m.id !== artist.id))
+  const groupPath = (group: Artist) => {
+    const first = (group.categories ?? []).find((c): c is ArtistCategory => typeof c === 'object')
+    return localePath(locale, `/artists/${first?.slug ?? categorySlug}/${group.slug}`)
+  }
   const categories = (artist.categories ?? []).filter((c): c is ArtistCategory => typeof c === 'object')
   const disclaimers = categories.flatMap((c) => (c.disclaimer ? [c.disclaimer] : []))
   // 상세 페이지 사진이 있으면 그것을, 없으면 대표 사진을 크게 보여 준다
@@ -78,6 +91,19 @@ export default async function ArtistPage({ params }: { params: Promise<Params> }
           >
             {artist.name}
           </h1>
+          {memberOf.length ? (
+            <p className="mt-6 font-mono text-[11px] tracking-[0.15em] text-white/60 uppercase">
+              {labels.artist.memberOf}{' '}
+              {memberOf.map((group, i) => (
+                <span key={group.id}>
+                  {i ? ' · ' : null}
+                  <Link href={groupPath(group)} className="text-cyan underline-offset-4 hover:underline">
+                    {group.name}
+                  </Link>
+                </span>
+              ))}
+            </p>
+          ) : null}
           {artist.socials?.length ? (
             <ul className="mt-8 flex flex-wrap gap-4">
               {artist.socials.map((social) => (
@@ -152,10 +178,41 @@ export default async function ArtistPage({ params }: { params: Promise<Params> }
           ) : null}
         </div>
 
+        {members.length ? (
+          <section className="mt-32">
+            <HudHeading
+              tag="Unit_roster"
+              title={labels.artist.members}
+              size="lg"
+              aside={<span className="font-mono text-[9px] text-white/40">COUNT: {String(members.length).padStart(2, '0')}</span>}
+            />
+            <ul className="grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-6 lg:grid-cols-4">
+              {members.map((member) => (
+                <li key={member.id}>
+                  <ArtistTile locale={locale} artist={member} categorySlug={categorySlug} groupLabel={labels.artist.group} />
+                </li>
+              ))}
+            </ul>
+          </section>
+        ) : null}
+
         {videos.length ? (
           <section className="mt-32">
             <HudHeading tag="Digital_releases" title={labels.artist.musicVideos} size="lg" />
             <VideoGrid videos={videos} closeLabel={labels.common.close} />
+          </section>
+        ) : null}
+
+        {otherMembers.length ? (
+          <section className="mt-32">
+            <HudHeading tag="Unit_roster" title={labels.artist.otherMembers} size="lg" />
+            <ul className="grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-6 lg:grid-cols-4">
+              {otherMembers.map((member) => (
+                <li key={member.id}>
+                  <ArtistTile locale={locale} artist={member} categorySlug={categorySlug} groupLabel={labels.artist.group} />
+                </li>
+              ))}
+            </ul>
           </section>
         ) : null}
 

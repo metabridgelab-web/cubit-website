@@ -92,7 +92,7 @@ export function ArtistsSection({ index, locale, labels, artists, categories }: {
       <ul className="grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-6 lg:grid-cols-4 xl:grid-cols-6">
         {artists.map((artist) => (
           <li key={artist.id}>
-            <ArtistTile locale={locale} artist={artist} />
+            <ArtistTile locale={locale} artist={artist} groupLabel={labels.artist.group} />
           </li>
         ))}
       </ul>

@@ -1,4 +1,4 @@
-// 시험용 아티스트 4명 · 게시글 4개 · 작업 사례 1개 (화면 확인용). 주소가 sample- 로 시작한다.
+// 시험용 아티스트 4명 · 그룹 1개 · 게시글 4개 · 작업 사례 1개 (화면 확인용). 주소가 sample- 로 시작한다.
 // 이미 있는 항목은 건너뛰므로 여러 번 실행해도 된다.
 // 넣기: npm run samples -- add <사진 폴더>   지우기: npm run samples -- remove
 import fs from 'fs'
@@ -46,6 +46,7 @@ if (step === 'add') {
       draft: false,
       data: {
         name: s.name,
+        kind: 'solo',
         slug: s.slug,
         generateSlug: false,
         categories: s.cats.map((c) => cats[c]),
@@ -69,6 +70,36 @@ if (step === 'add') {
       },
     })
     console.log(`CHECK added ${s.name}`)
+  }
+
+  // 시험용 그룹: STELLA = LUNA V + ARIA (멤버는 목록에서 그룹으로만 보인다)
+  if (!(await exists('artists', 'sample-stella'))) {
+    const memberIds = (await payload.find({ collection: 'artists', where: { slug: { in: ['sample-luna-v', 'sample-aria'] } }, depth: 0, draft: true })).docs
+      .sort((a, b) => a.slug!.localeCompare(b.slug!) * -1)
+      .map((d) => d.id)
+    const kpop = (await payload.find({ collection: 'artist-genres', where: { slug: { equals: 'k-pop' } }, limit: 1, depth: 0 })).docs[0]
+    await payload.create({
+      collection: 'artists',
+      locale: 'en',
+      draft: false,
+      data: {
+        name: 'STELLA',
+        kind: 'group',
+        slug: 'sample-stella',
+        generateSlug: false,
+        categories: [cats.singers],
+        genres: kpop ? [kpop.id] : [],
+        members: memberIds,
+        profilePhoto: photos[5].id,
+        detailPhoto: photos[0].id,
+        debutDate: '2025-09-01',
+        intro: { root: { type: 'root', version: 1, direction: 'ltr', format: '', indent: 0, children: [paragraph('STELLA is a sample AI girl group used to preview the group page. Replace this text with the real introduction.')] } },
+        videos: [{ title: 'Sample Group Video', youtubeUrl: 'https://www.youtube.com/watch?v=aqz-KE-bpKQ', releaseDate: '2026-10-01' }],
+        featured: true,
+        _status: 'published',
+      },
+    })
+    console.log('CHECK added group STELLA')
   }
 
   // 시험용 게시글: 뉴스 3개 + 고정 공지 1개

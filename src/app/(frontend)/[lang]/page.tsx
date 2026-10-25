@@ -29,7 +29,7 @@ export default async function HomePage({ params }: { params: Promise<LangParams>
   ])
   const [releases, artists, news, notices] = await Promise.all([
     getNewReleases(locale, 4),
-    getArtists(locale, { featured: true, limit: 12 }),
+    getArtists(locale, { featured: true, limit: 12, forList: true }),
     newsBoard ? getPosts(locale, { boardId: newsBoard.id, limit: 4 }) : null,
     noticeBoard ? getPosts(locale, { boardId: noticeBoard.id, limit: 3 }) : null,
   ])

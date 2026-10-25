@@ -5,8 +5,9 @@ import { localePath } from '@/i18n'
 import { mediaUrl } from '@/lib/page'
 import type { Artist, ArtistCategory } from '@/payload-types'
 
-// 아티스트 카드 (design/03): 흑백 사진 → 마우스를 올리면 컬러 + 살짝 떠오름, 오른쪽 위에 카테고리 표시
-export function ArtistTile({ locale, artist, categorySlug }: { locale: LocaleCode; artist: Artist; categorySlug?: string }) {
+// 아티스트 카드 (design/03): 흑백 사진 → 마우스를 올리면 컬러 + 살짝 떠오름, 오른쪽 위에 카테고리 표시.
+// 그룹이면 이름 위에 "GROUP · 멤버 수"를 붙인다.
+export function ArtistTile({ locale, artist, categorySlug, groupLabel = 'Group' }: { locale: LocaleCode; artist: Artist; categorySlug?: string; groupLabel?: string }) {
   const categories = (artist.categories ?? []).filter((c): c is ArtistCategory => typeof c === 'object')
   const slug = categorySlug ?? categories[0]?.slug ?? 'all'
   const photo = mediaUrl(artist.profilePhoto, 'card')
@@ -31,6 +32,11 @@ export function ArtistTile({ locale, artist, categorySlug }: { locale: LocaleCod
         </span>
       ) : null}
       <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-6">
+        {artist.kind === 'group' ? (
+          <span className="mb-1 block font-mono text-[10px] tracking-[0.15em] text-cyan uppercase">
+            {groupLabel} · {String(artist.members?.length ?? 0).padStart(2, '0')}
+          </span>
+        ) : null}
         <span className="block text-2xl font-black tracking-[-0.02em] break-words uppercase">{artist.name}</span>
       </span>
     </Link>

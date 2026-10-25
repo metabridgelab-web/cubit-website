@@ -17,7 +17,7 @@ export async function ArtistList({ locale, category, genreSlug }: { locale: Loca
     category ? getGenres(category.id, locale) : Promise.resolve([]),
   ])
   const genre = genres.find((g) => g.slug === genreSlug) ?? null
-  const artists = await getArtists(locale, { categoryId: category?.id, genreId: genre?.id })
+  const artists = await getArtists(locale, { categoryId: category?.id, genreId: genre?.id, forList: true })
   const tabs = [{ id: 0, name: labels.common.all, href: '/artists' }, ...categories.map((c) => ({ id: c.id, name: c.name, href: `/artists/${c.slug}` }))]
   const activeId = category?.id ?? 0
 
@@ -59,7 +59,7 @@ export async function ArtistList({ locale, category, genreSlug }: { locale: Loca
           <ul className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {artists.map((artist) => (
               <li key={artist.id}>
-                <ArtistTile locale={locale} artist={artist} categorySlug={category?.slug} />
+                <ArtistTile locale={locale} artist={artist} categorySlug={category?.slug} groupLabel={labels.artist.group} />
               </li>
             ))}
           </ul>

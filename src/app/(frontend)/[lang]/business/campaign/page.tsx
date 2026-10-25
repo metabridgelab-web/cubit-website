@@ -6,7 +6,7 @@ import { CAMPAIGN_LANGUAGES } from '@/constants/campaign'
 import { localePath } from '@/i18n'
 import { getArtists, getBusinessSettings, getSiteSettings, getUiLabels } from '@/lib/data'
 import { mediaUrl, pageMetadata, resolveLocale, type LangParams } from '@/lib/page'
-import type { ArtistCategory } from '@/payload-types'
+import type { Artist, ArtistCategory } from '@/payload-types'
 
 export async function generateMetadata({ params }: { params: Promise<LangParams> }): Promise<Metadata> {
   const locale = await resolveLocale(params)
@@ -25,6 +25,23 @@ export default async function CampaignBuilderPage({ params, searchParams }: { pa
     searchParams,
   ])
   const initial = [search.talent ?? []].flat().map(Number).filter(Boolean)
+
+  // 그룹 → 그 멤버들 → 나머지 개인 순서로 보여 준다 (그룹 전체 또는 멤버 한 명만 고를 수 있게)
+  const byId = new Map(artists.map((a) => [a.id, a]))
+  const ordered: { artist: Artist; group?: string }[] = []
+  const placed = new Set<number>()
+  for (const group of artists.filter((a) => a.kind === 'group')) {
+    ordered.push({ artist: group, group: `${labels.artist.group} · ${String(group.members?.length ?? 0).padStart(2, '0')}` })
+    placed.add(group.id)
+    for (const m of group.members ?? []) {
+      const member = byId.get(typeof m === 'object' ? m.id : m)
+      if (member && !placed.has(member.id)) {
+        ordered.push({ artist: member, group: `↳ ${group.name}` })
+        placed.add(member.id)
+      }
+    }
+  }
+  for (const artist of artists) if (!placed.has(artist.id)) ordered.push({ artist })
   const privacy = (settings.policyLinks ?? []).find((page) => typeof page === 'object')
 
   return (
@@ -32,7 +49,7 @@ export default async function CampaignBuilderPage({ params, searchParams }: { pa
       <PageHeader eyebrow={labels.campaign.eyebrow} title={labels.campaign.title} />
       <CampaignBuilder
         locale={locale}
-        talents={artists.map((artist) => ({
+        talents={ordered.map(({ artist, group }) => ({
           id: artist.id,
           name: artist.name,
           photo: mediaUrl(artist.profilePhoto, 'card'),
@@ -40,6 +57,7 @@ export default async function CampaignBuilderPage({ params, searchParams }: { pa
             .filter((c): c is ArtistCategory => typeof c === 'object')
             .map((c) => c.name)
             .join(' · '),
+          group,
         }))}
         initialTalents={initial}
         languages={[...CAMPAIGN_LANGUAGES]}

@@ -2,6 +2,7 @@ import * as migration_20261024_081911_initial from './20261024_081911_initial';
 import * as migration_20261025_070144_storage_fields from './20261025_070144_storage_fields';
 import * as migration_20261025_080918_campaign_no_talent from './20261025_080918_campaign_no_talent';
 import * as migration_20261025_092149_artist_genres from './20261025_092149_artist_genres';
+import * as migration_20261025_095116_artist_groups from './20261025_095116_artist_groups';
 
 export const migrations = [
   {
@@ -22,6 +23,11 @@ export const migrations = [
   {
     up: migration_20261025_092149_artist_genres.up,
     down: migration_20261025_092149_artist_genres.down,
-    name: '20261025_092149_artist_genres'
+    name: '20261025_092149_artist_genres',
+  },
+  {
+    up: migration_20261025_095116_artist_groups.up,
+    down: migration_20261025_095116_artist_groups.down,
+    name: '20261025_095116_artist_groups'
   },
 ];

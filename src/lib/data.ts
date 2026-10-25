@@ -73,8 +73,15 @@ export const getArtistCategory = cache(async (slug: string, locale: LocaleCode) 
   return docs[0] ?? null
 })
 
+// 그룹에 속한 멤버 번호들 (목록에서 멤버를 그룹으로만 보여 주기 위해)
+const getGroupMemberIds = cache(async () => {
+  const { docs } = await (await payload()).find({ collection: 'artists', where: { kind: { equals: 'group' } }, depth: 0, limit: 500, select: { members: true }, ...PUBLIC })
+  return new Set(docs.flatMap((group) => (group.members ?? []).map((m) => (typeof m === 'object' ? m.id : m))))
+})
+
+// forList: 아티스트 목록 · 홈 화면용. 그룹 멤버는 빼고(그룹 카드로 보이므로), "그룹과 따로 목록에도 표시"를 켠 멤버만 남긴다.
 export const getArtists = cache(
-  async (locale: LocaleCode, options: { categoryId?: number; genreId?: number; featured?: boolean; limit?: number } = {}) => {
+  async (locale: LocaleCode, options: { categoryId?: number; genreId?: number; featured?: boolean; limit?: number; forList?: boolean } = {}) => {
     const conditions: Where[] = []
     if (options.categoryId) conditions.push({ categories: { contains: options.categoryId } })
     if (options.genreId) conditions.push({ genres: { contains: options.genreId } })
@@ -85,12 +92,19 @@ export const getArtists = cache(
       sort: 'sortOrder',
       locale,
       depth: 1,
-      limit: options.limit ?? 100,
+      limit: options.forList ? 500 : (options.limit ?? 100),
       ...PUBLIC,
     })
-    return docs
+    if (!options.forList) return docs
+    const memberIds = await getGroupMemberIds()
+    return docs.filter((artist) => !memberIds.has(artist.id) || artist.listAlone).slice(0, options.limit ?? 100)
   },
 )
+
+export const getArtistById = cache(async (id: number, locale: LocaleCode) => {
+  const { docs } = await (await payload()).find({ collection: 'artists', where: { id: { equals: id } }, locale, depth: 2, limit: 1, ...PUBLIC })
+  return docs[0] ?? null
+})
 
 // 카테고리 안의 장르 (관리자가 정한 순서대로)
 export const getGenres = cache(async (categoryId: number, locale: LocaleCode) => {

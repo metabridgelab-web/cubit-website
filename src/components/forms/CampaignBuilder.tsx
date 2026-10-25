@@ -5,7 +5,8 @@ import { useMemo, useState, type FormEvent } from 'react'
 
 import { Chip, Consent, Field, Honeypot, TextArea, TextInput, submitError } from './fields'
 
-export type BuilderTalent = { id: number; name: string; photo: string | null; categories: string }
+// group: 그룹이면 "GROUP · 멤버 수", 멤버면 소속 그룹 이름 (그룹 바로 뒤에 이어서 보인다)
+export type BuilderTalent = { id: number; name: string; photo: string | null; categories: string; group?: string }
 type Labels = Record<string, string>
 
 type Props = {
@@ -204,7 +205,7 @@ export function CampaignBuilder({ locale, talents, initialTalents, languages, la
                         {x.photo ? <img src={x.photo} alt="" className={`h-full w-full object-cover transition-all ${on ? '' : 'grayscale group-hover:grayscale-0'}`} /> : null}
                         <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 to-transparent p-4">
                           <span className="block text-xl font-black uppercase">{x.name}</span>
-                          <span className="block font-mono text-[9px] text-cyan uppercase">{x.categories}</span>
+                          <span className="block font-mono text-[9px] text-cyan uppercase">{x.group ?? x.categories}</span>
                         </span>
                         {on ? (
                           <span className="absolute end-2.5 top-2.5 flex h-6 w-6 items-center justify-center rounded-full bg-cyan text-black">

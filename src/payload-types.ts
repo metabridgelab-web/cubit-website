@@ -94,6 +94,9 @@ export interface Config {
     'payload-migrations': PayloadMigration;
   };
   collectionsJoins: {
+    artists: {
+      memberOf: 'artists';
+    };
     'payload-folders': {
       documentsAndFolders: 'payload-folders' | 'media';
     };
@@ -277,7 +280,7 @@ export interface HomeSlide {
   createdAt: string;
 }
 /**
- * 사진 · 정보 · 자기소개 · 뮤직비디오를 등록합니다. 영어로 쓰고 저장하면 다른 11개 언어로 자동 번역됩니다.
+ * 사진 · 정보 · 자기소개 · 뮤직비디오를 등록합니다. 그룹은 멤버(개인 아티스트)를 먼저 등록한 뒤 그룹의 "멤버" 칸에서 연결합니다. 영어로 쓰고 저장하면 다른 11개 언어로 자동 번역됩니다.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "artists".
@@ -288,6 +291,19 @@ export interface Artist {
    * 이름은 번역하지 않고 모든 언어에서 그대로 보입니다.
    */
   name: string;
+  kind: 'solo' | 'group';
+  /**
+   * 멤버를 개인 아티스트로 먼저 등록한 뒤 여기서 고릅니다. 끌어서 순서를 바꿀 수 있습니다.
+   */
+  members?: (number | Artist)[] | null;
+  /**
+   * 그룹의 "멤버" 칸에서 연결하면 자동으로 여기에 표시됩니다.
+   */
+  memberOf?: {
+    docs?: (number | Artist)[];
+    hasNextPage?: boolean;
+    totalDocs?: number;
+  };
   categories: (number | ArtistCategory)[];
   /**
    * 여러 개 고를 수 있습니다. 장르 목록은 "아티스트 관리 → 장르"에서 추가 · 수정합니다.
@@ -364,6 +380,10 @@ export interface Artist {
   generateSlug?: boolean | null;
   slug: string;
   featured?: boolean | null;
+  /**
+   * 그룹 멤버는 보통 아티스트 목록에 그룹으로만 나옵니다. 체크하면 개인으로도 목록에 나옵니다. (그룹 멤버가 아니면 상관없음)
+   */
+  listAlone?: boolean | null;
   /**
    * 숫자가 작을수록 앞에 보입니다.
    */
@@ -1625,6 +1645,9 @@ export interface ArtistGenresSelect<T extends boolean = true> {
  */
 export interface ArtistsSelect<T extends boolean = true> {
   name?: T;
+  kind?: T;
+  members?: T;
+  memberOf?: T;
   categories?: T;
   genres?: T;
   birthday?: T;
@@ -1659,6 +1682,7 @@ export interface ArtistsSelect<T extends boolean = true> {
   generateSlug?: T;
   slug?: T;
   featured?: T;
+  listAlone?: T;
   sortOrder?: T;
   translationStatus?:
     | T
@@ -2726,6 +2750,10 @@ export interface UiLabelsArtist {
   profile: string;
   introduction: string;
   genre: string;
+  group: string;
+  members: string;
+  memberOf: string;
+  otherMembers: string;
   gallery: string;
   musicVideos: string;
   birthday: string;
@@ -3578,6 +3606,10 @@ export interface UiLabelsArtistSelect<T extends boolean = true> {
   profile?: T;
   introduction?: T;
   genre?: T;
+  group?: T;
+  members?: T;
+  memberOf?: T;
+  otherMembers?: T;
   gallery?: T;
   musicVideos?: T;
   birthday?: T;

@@ -116,7 +116,7 @@ export default async function WorkPage({ params }: { params: Promise<Params> }) 
             <ul className="grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-6">
               {talents.map((talent) => (
                 <li key={talent.id}>
-                  <ArtistTile locale={locale} artist={talent} />
+                  <ArtistTile locale={locale} artist={talent} groupLabel={labels.artist.group} />
                 </li>
               ))}
             </ul>
