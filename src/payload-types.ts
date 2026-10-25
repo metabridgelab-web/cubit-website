@@ -1107,7 +1107,10 @@ export interface Disclosure {
  */
 export interface QuoteRequest {
   id: number;
-  talents: (number | Artist)[];
+  /**
+   * 공개된 아티스트가 없을 때는 비어 있을 수 있습니다. 요청 사항을 확인하세요.
+   */
+  talents?: (number | Artist)[] | null;
   usage: ('digital' | 'video' | 'social' | 'ooh')[];
   periodStart?: string | null;
   periodEnd?: string | null;
@@ -2688,6 +2691,7 @@ export interface UiLabelsCampaign {
   step5: string;
   talentTitle: string;
   talentHint: string;
+  noTalent: string;
   usageTitle: string;
   usageHint: string;
   usageDigital: string;
@@ -3525,6 +3529,7 @@ export interface UiLabelsCampaignSelect<T extends boolean = true> {
   step5?: T;
   talentTitle?: T;
   talentHint?: T;
+  noTalent?: T;
   usageTitle?: T;
   usageHint?: T;
   usageDigital?: T;

@@ -224,11 +224,17 @@
 :root:lang(ar) * {
   letter-spacing: 0 !important;
 }
-/* 한국어·일본어·중국어는 넓은 글자 간격이 어색하므로 줄인다 */
+/* 한국어·일본어·중국어는 넓은 글자 간격이 어색하므로 줄인다 ("필 수 쿠 키" 처럼 벌어져 보이지 않게)
+   - 버튼(btn-line · btn-irid)과 넓은 간격을 준 작은 글자(tracking-[0.…em] · tracking-wider/widest)
+   - 제목처럼 간격을 좁힌 글자(tracking-[-…])와 로고 글자(keep-tracking)는 그대로 둔다 */
 :root:lang(ko) :is(.hud-label, .tracking-wide-cjk),
 :root:lang(ja) :is(.hud-label, .tracking-wide-cjk),
 :root:lang(zh) :is(.hud-label, .tracking-wide-cjk) {
   letter-spacing: 0.08em;
+}
+:root:is(:lang(ko), :lang(ja), :lang(zh))
+  :is(.btn-line, .btn-irid, [class*='tracking-[0.'], .tracking-wider, .tracking-widest):not(.keep-tracking) {
+  letter-spacing: 0.02em;
 }
 /* 한국어는 단어 중간에서 줄이 바뀌지 않게 한다 */
 :root:lang(ko) {

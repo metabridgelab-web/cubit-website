@@ -87,7 +87,7 @@ export const QuoteRequests: CollectionConfig = {
       type: 'relationship',
       relationTo: 'artists',
       hasMany: true,
-      required: true,
+      admin: { description: '공개된 아티스트가 없을 때는 비어 있을 수 있습니다. 요청 사항을 확인하세요.' },
     },
     {
       name: 'usage',

@@ -82,6 +82,7 @@ export const UI_LABELS = {
       step5: 'Contact',
       talentTitle: 'Select talent',
       talentHint: 'Multiple selections allowed.',
+      noTalent: 'Our talent roster is being prepared. Continue to the next step and describe the talent you need in your brief.',
       usageTitle: 'Usage',
       usageHint: 'Choose how the content will be used.',
       usageDigital: 'Digital Ads',

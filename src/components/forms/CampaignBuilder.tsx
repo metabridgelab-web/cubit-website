@@ -57,7 +57,8 @@ export function CampaignBuilder({ locale, talents, initialTalents, languages, la
   const chosenTalents = useMemo(() => talents.filter((x) => selected.includes(x.id)), [talents, selected])
 
   const problem = (s: number): string => {
-    if (s === 1 && !selected.length) return t.pickTalent
+    // 아직 공개된 아티스트가 없으면 고르지 않고 넘어갈 수 있다 (요청 사항에 원하는 탤런트를 적는다)
+    if (s === 1 && talents.length > 0 && !selected.length) return t.pickTalent
     if (s === 2 && !usage.length) return t.pickUsage
     if (s === 5 && (!contact.companyName.trim() || !contact.contactName.trim() || !EMAIL.test(contact.email) || !consent)) return t.fillContact
     return ''
@@ -184,7 +185,8 @@ export function CampaignBuilder({ locale, talents, initialTalents, languages, la
         <div className="min-h-[460px]">
           {step === 1 ? (
             <section>
-              <StepTitle tag="Selection_phase" title={t.talentTitle} hint={t.talentHint} />
+              <StepTitle tag="Selection_phase" title={t.talentTitle} hint={talents.length ? t.talentHint : undefined} />
+              {talents.length ? null : <p className="glass max-w-2xl rounded-2xl p-8 leading-relaxed text-white/70">{t.noTalent}</p>}
               <ul className="grid grid-cols-2 gap-4 lg:grid-cols-4 lg:gap-6">
                 {talents.map((x) => {
                   const on = selected.includes(x.id)

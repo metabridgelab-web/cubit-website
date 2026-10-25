@@ -40,7 +40,7 @@ export function HeaderBar({ homeHref, siteName, menuLabel, closeLabel, sections,
         }`}
       >
         {/* 휴대폰에서는 좁아서 두 줄(CUBIT / ENTERTAINMENT)로 접힌다 */}
-        <Link href={homeHref} className="max-w-[10rem] text-[11px] leading-snug font-black tracking-[0.3em] uppercase sm:max-w-none sm:text-sm sm:tracking-[0.4em]">
+        <Link href={homeHref} className="keep-tracking max-w-[10rem] text-[11px] leading-snug font-black tracking-[0.3em] uppercase sm:max-w-none sm:text-sm sm:tracking-[0.4em]">
           {siteName}
         </Link>
         <div className="flex items-center gap-3">

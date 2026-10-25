@@ -133,7 +133,9 @@ export const notifyTask: TaskConfig = {
       const doc = await payload.findByID({ collection: 'quote-requests', id: input.id, depth: 1, overrideAccess: true })
       const locale = (doc.submittedLocale as LocaleCode | null) ?? DEFAULT_LOCALE
       const business = await payload.findGlobal({ slug: 'business-settings', locale, depth: 0 })
-      const talents = (doc.talents ?? []).map((t) => (typeof t === 'object' ? t.name : t)).join(', ')
+      const talentNames = (doc.talents ?? []).map((t) => (typeof t === 'object' ? t.name : t)).join(', ')
+      // 아티스트를 고르지 않은 요청 (공개된 아티스트가 없을 때)
+      const talents = talentNames || '탤런트 미지정'
 
       const summary = table([
         ['회사명', doc.companyName],
@@ -160,7 +162,7 @@ export const notifyTask: TaskConfig = {
         subject: `${siteName} — Quote request received`,
         html: `<p>${escapeHtml(business.confirmationMessage)}</p>${table([
           ['Company', doc.companyName],
-          ['Talent', talents],
+          ['Talent', talentNames || '—'],
         ])}<p>${escapeHtml(siteName)}</p>`,
       })
     } else {
