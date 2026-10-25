@@ -62,7 +62,7 @@ export function Gallery({ images, viewAllLabel, closeLabel }: { images: GalleryI
           <li key={image.full}>
             <button type="button" onClick={() => setOpen(index)} className="group block aspect-square w-full overflow-hidden rounded-xl border border-line">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={image.thumb} alt={image.alt} loading="lazy" className="h-full w-full object-cover grayscale transition duration-500 group-hover:scale-110 group-hover:grayscale-0" />
+              <img src={image.thumb} alt={image.alt} loading="lazy" className="h-full w-full object-cover transition duration-500 group-hover:scale-110" />
             </button>
           </li>
         ))}
@@ -94,7 +94,7 @@ export function VideoGrid({ videos, closeLabel }: { videos: VideoItem[]; closeLa
             <button type="button" onClick={() => setOpen(video)} className="group block w-full overflow-hidden rounded-2xl border border-line bg-[#0a0a0a] p-4 text-start transition-all hover:-translate-y-1 hover:border-cyan">
               <span className="relative block aspect-video overflow-hidden rounded-xl bg-[#111]">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={`https://i.ytimg.com/vi/${video.youtubeId}/hqdefault.jpg`} alt="" loading="lazy" className="h-full w-full object-cover grayscale transition duration-500 group-hover:grayscale-0" />
+                <img src={`https://i.ytimg.com/vi/${video.youtubeId}/hqdefault.jpg`} alt="" loading="lazy" className="h-full w-full object-cover transition duration-500 group-hover:scale-105" />
                 <span className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-opacity group-hover:opacity-100">
                   <Play size={36} weight="fill" aria-hidden />
                 </span>
