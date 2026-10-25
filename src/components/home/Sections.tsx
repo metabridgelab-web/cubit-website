@@ -20,7 +20,7 @@ export function SectionHeading({ index, eyebrow, title, action }: { index: numbe
     <div className="mb-10 flex flex-wrap items-end justify-between gap-6 border-b border-white/10 pb-6 md:mb-14">
       <div>
         <p className="hud-label mb-4 text-cyan!">
-          {String(index).padStart(2, '0')} // {eyebrow}
+          {`${String(index).padStart(2, '0')} // ${eyebrow}`}
         </p>
         <h2 className="text-[clamp(2.25rem,6vw,4.5rem)] leading-none font-black tracking-[-0.03em] uppercase">{title}</h2>
       </div>

@@ -68,7 +68,7 @@ export default async function ArtistPage({ params }: { params: Promise<Params> }
         ) : null}
         <div className="relative z-10 w-full">
           <p className="tracking-wide-cjk mb-4 font-mono text-[11px] tracking-[0.5em] text-cyan uppercase">
-            {categories.map((c) => c.name).join(' · ')} // CUBIT
+            {categories.map((c) => c.name).join(' · ')} {'// CUBIT'}
           </p>
           <h1
             className="bg-gradient-to-b from-white to-white/20 bg-clip-text leading-[0.8] font-black tracking-[-0.05em] text-transparent uppercase"

@@ -2,32 +2,40 @@
 
 import { Cookie } from '@phosphor-icons/react'
 import Link from 'next/link'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useSyncExternalStore } from 'react'
 
 import { CONSENT_COOKIE, CONSENT_EVENT, CONSENT_MAX_AGE, OPEN_CONSENT_EVENT, readConsent, type Consent } from '@/constants/consent'
 
 type Props = { title: string; text: string; acceptLabel: string; essentialLabel: string; policyLabel: string; policyHref: string | null }
 
+// 동의 쿠키를 React가 바로 읽게 한다. 서버에서는 쿠키를 모르니 'server'로 두어 배너를 그리지 않는다.
+const subscribeConsent = (onChange: () => void) => {
+  window.addEventListener(CONSENT_EVENT, onChange)
+  return () => window.removeEventListener(CONSENT_EVENT, onChange)
+}
+const consentSnapshot = () => readConsent() ?? 'none'
+const serverSnapshot = () => 'server'
+
 // 쿠키 동의 배너: 처음 방문했을 때(또는 6개월이 지나 기억이 사라졌을 때) 화면 아래에 뜬다.
 // "필수만"도 "모두 허용"과 같은 크기의 버튼으로 둬서 거절이 허용만큼 쉽게 한다. 하단 "쿠키 설정"으로 다시 열 수 있다.
 export function CookieBanner({ title, text, acceptLabel, essentialLabel, policyLabel, policyHref }: Props) {
-  const [open, setOpen] = useState(false)
+  const consent = useSyncExternalStore(subscribeConsent, consentSnapshot, serverSnapshot)
+  const [reopened, setReopened] = useState(false)
 
   useEffect(() => {
-    // 서버 화면과 어긋나지 않게, 쿠키는 화면이 뜬 뒤에 읽는다
-    if (!readConsent()) setOpen(true)
-    const reopen = () => setOpen(true)
+    const reopen = () => setReopened(true)
     window.addEventListener(OPEN_CONSENT_EVENT, reopen)
     return () => window.removeEventListener(OPEN_CONSENT_EVENT, reopen)
   }, [])
 
-  const choose = (consent: Consent) => {
+  const choose = (choice: Consent) => {
     const secure = location.protocol === 'https:' ? '; Secure' : ''
-    document.cookie = `${CONSENT_COOKIE}=${consent}; Max-Age=${CONSENT_MAX_AGE}; Path=/; SameSite=Lax${secure}`
-    window.dispatchEvent(new CustomEvent(CONSENT_EVENT, { detail: consent }))
-    setOpen(false)
+    document.cookie = `${CONSENT_COOKIE}=${choice}; Max-Age=${CONSENT_MAX_AGE}; Path=/; SameSite=Lax${secure}`
+    setReopened(false)
+    window.dispatchEvent(new CustomEvent(CONSENT_EVENT, { detail: choice }))
   }
 
+  const open = consent === 'none' || (consent !== 'server' && reopened)
   if (!open) return null
 
   return (

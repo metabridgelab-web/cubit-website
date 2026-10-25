@@ -187,20 +187,24 @@ export function MenuOverlay({ open, onClose, sections, cta, socials, copyright, 
   )
 }
 
-// 떠다니는 빛 입자 (화면에 그린 뒤에 만들어서 서버 화면과 어긋나지 않게 한다)
+// 떠다니는 빛 입자. 정해진 씨앗으로 만든 "고정된 무작위" 값이라 서버와 브라우저 화면이 똑같다.
+const seeded = (seed: number) => () => {
+  seed = (seed + 0x6d2b79f5) | 0
+  let t = Math.imul(seed ^ (seed >>> 15), 1 | seed)
+  t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t
+  return ((t ^ (t >>> 14)) >>> 0) / 4294967296
+}
+const random = seeded(2026)
+const DOTS = Array.from({ length: 50 }, () => ({
+  size: random() * 3,
+  left: random() * 100,
+  top: random() * 100,
+  delay: random() * 20,
+  duration: random() * 10 + 10,
+}))
+
 function Particles() {
-  const [dots, setDots] = useState<{ size: number; left: number; top: number; delay: number; duration: number }[]>([])
-  useEffect(() => {
-    setDots(
-      Array.from({ length: 50 }, () => ({
-        size: Math.random() * 3,
-        left: Math.random() * 100,
-        top: Math.random() * 100,
-        delay: Math.random() * 20,
-        duration: Math.random() * 10 + 10,
-      })),
-    )
-  }, [])
+  const dots = DOTS
   return (
     <div aria-hidden className="pointer-events-none fixed inset-0 z-0">
       {dots.map((dot, index) => (

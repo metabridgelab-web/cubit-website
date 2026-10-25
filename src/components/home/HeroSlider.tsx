@@ -118,7 +118,7 @@ export function HeroSlider({ slides, autoAdvanceSeconds, labels }: { slides: Her
       <div className="absolute inset-x-0 bottom-36 z-10 px-5 text-center md:bottom-40" aria-live="polite">
         <p className="tracking-wide-cjk mb-3 font-mono text-xs tracking-[0.5em] text-cyan uppercase drop-shadow-[0_1px_8px_rgba(0,0,0,0.8)] md:text-sm">
           {slide.title}
-          {slide.releaseDate ? <span className="text-white/40"> // {slide.releaseDate.slice(0, 10).replaceAll('-', '.')}</span> : null}
+          {slide.releaseDate ? <span className="text-white/40">{` // ${slide.releaseDate.slice(0, 10).replaceAll('-', '.')}`}</span> : null}
         </p>
         <h1
           className="bg-gradient-to-b from-white to-white/40 bg-clip-text leading-[0.85] font-black tracking-[-0.04em] text-transparent uppercase drop-shadow-[0_4px_30px_rgba(0,0,0,0.45)]"

@@ -107,22 +107,20 @@ function Addresses({ rows, l }: { rows: Investor['contracts']; l: L }) {
 }
 
 function Donut({ rows }: { rows: NonNullable<Investor['allocation']> }) {
-  let offset = 0
+  // 각 조각이 시작하는 위치 = 앞 조각들의 비율 합
+  const starts = rows.map((_, i) => rows.slice(0, i).reduce((sum, row) => sum + row.percent, 0))
+  const total = rows.reduce((sum, row) => sum + row.percent, 0)
   return (
     <div className="relative h-56 w-56 shrink-0 md:h-60 md:w-60">
       <svg viewBox="0 0 36 36" className="h-full w-full -rotate-90" aria-hidden>
         <circle cx="18" cy="18" r="15.915" fill="transparent" stroke="rgb(255 255 255 / 0.05)" strokeWidth="3" />
-        {rows.map((row, i) => {
-          const circle = (
-            <circle key={row.id} cx="18" cy="18" r="15.915" fill="transparent" stroke={CHART_COLORS[i % CHART_COLORS.length]} strokeWidth="3" strokeDasharray={`${row.percent} ${100 - row.percent}`} strokeDashoffset={-offset} />
-          )
-          offset += row.percent
-          return circle
-        })}
+        {rows.map((row, i) => (
+          <circle key={row.id} cx="18" cy="18" r="15.915" fill="transparent" stroke={CHART_COLORS[i % CHART_COLORS.length]} strokeWidth="3" strokeDasharray={`${row.percent} ${100 - row.percent}`} strokeDashoffset={-starts[i]} />
+        ))}
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
         <span className="font-mono text-[10px] text-white/50">GENESIS</span>
-        <span className="text-xl font-black">{offset}%</span>
+        <span className="text-xl font-black">{total}%</span>
       </div>
     </div>
   )
