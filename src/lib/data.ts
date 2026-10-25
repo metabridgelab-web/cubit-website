@@ -74,9 +74,10 @@ export const getArtistCategory = cache(async (slug: string, locale: LocaleCode) 
 })
 
 export const getArtists = cache(
-  async (locale: LocaleCode, options: { categoryId?: number; featured?: boolean; limit?: number } = {}) => {
+  async (locale: LocaleCode, options: { categoryId?: number; genreId?: number; featured?: boolean; limit?: number } = {}) => {
     const conditions: Where[] = []
     if (options.categoryId) conditions.push({ categories: { contains: options.categoryId } })
+    if (options.genreId) conditions.push({ genres: { contains: options.genreId } })
     if (options.featured) conditions.push({ featured: { equals: true } })
     const { docs } = await (await payload()).find({
       collection: 'artists',
@@ -90,6 +91,12 @@ export const getArtists = cache(
     return docs
   },
 )
+
+// 카테고리 안의 장르 (관리자가 정한 순서대로)
+export const getGenres = cache(async (categoryId: number, locale: LocaleCode) => {
+  const { docs } = await (await payload()).find({ collection: 'artist-genres', where: { category: { equals: categoryId } }, sort: '_order', locale, depth: 0, limit: 100, ...PUBLIC })
+  return docs
+})
 
 export const getArtist = cache(async (slug: string, locale: LocaleCode) => {
   const { docs } = await (await payload()).find({ collection: 'artists', where: { slug: { equals: slug } }, locale, depth: 2, limit: 1, ...PUBLIC })

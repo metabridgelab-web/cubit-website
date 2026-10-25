@@ -69,6 +69,7 @@ export interface Config {
   collections: {
     'home-slides': HomeSlide;
     'artist-categories': ArtistCategory;
+    'artist-genres': ArtistGenre;
     artists: Artist;
     boards: Board;
     'post-categories': PostCategory;
@@ -100,6 +101,7 @@ export interface Config {
   collectionsSelect: {
     'home-slides': HomeSlidesSelect<false> | HomeSlidesSelect<true>;
     'artist-categories': ArtistCategoriesSelect<false> | ArtistCategoriesSelect<true>;
+    'artist-genres': ArtistGenresSelect<false> | ArtistGenresSelect<true>;
     artists: ArtistsSelect<false> | ArtistsSelect<true>;
     boards: BoardsSelect<false> | BoardsSelect<true>;
     'post-categories': PostCategoriesSelect<false> | PostCategoriesSelect<true>;
@@ -287,6 +289,10 @@ export interface Artist {
    */
   name: string;
   categories: (number | ArtistCategory)[];
+  /**
+   * 여러 개 고를 수 있습니다. 장르 목록은 "아티스트 관리 → 장르"에서 추가 · 수정합니다.
+   */
+  genres?: (number | ArtistGenre)[] | null;
   birthday?: string | null;
   debutDate?: string | null;
   nationality?: string | null;
@@ -317,7 +323,14 @@ export interface Artist {
         id?: string | null;
       }[]
     | null;
+  /**
+   * 아티스트 목록 · 홈 화면의 카드에 나오는 사진. 세로(3:4) 사진을 추천합니다.
+   */
   profilePhoto: number | Media;
+  /**
+   * 아티스트를 눌렀을 때 상세 페이지 맨 위에 크게 나오는 사진. 비우면 대표 사진이 나옵니다.
+   */
+  detailPhoto?: (number | null) | Media;
   gallery?: (number | Media)[] | null;
   intro?: {
     root: {
@@ -400,6 +413,49 @@ export interface ArtistCategory {
    * 숫자가 작을수록 앞에 보입니다.
    */
   sortOrder?: number | null;
+  /**
+   * 영어 원문을 저장하면 자동 번역됩니다. 다시 번역하려면 상태를 "다시 번역"으로 바꾸고 저장하세요.
+   */
+  translationStatus?:
+    | {
+        locale: 'en' | 'ko' | 'zh' | 'ja' | 'es' | 'fr' | 'pt' | 'ru' | 'ar' | 'hi' | 'bn' | 'id';
+        status: 'pending' | 'auto' | 'reviewed' | 'outdated' | 'failed';
+        updatedAt?: string | null;
+        note?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  translationMeta?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * 카테고리 안의 세부 분류입니다. 목록에서 끌어서 순서를 바꿀 수 있고, 아티스트 목록 화면의 "장르" 선택 상자에 이 순서대로 나옵니다.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "artist-genres".
+ */
+export interface ArtistGenre {
+  id: number;
+  _order?: string | null;
+  name: string;
+  /**
+   * 어느 카테고리의 장르인지 고릅니다. 보통 "가수".
+   */
+  category: number | ArtistCategory;
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null;
+  slug: string;
   /**
    * 영어 원문을 저장하면 자동 번역됩니다. 다시 번역하려면 상태를 "다시 번역"으로 바꾸고 저장하세요.
    */
@@ -1372,6 +1428,10 @@ export interface PayloadLockedDocument {
         value: number | ArtistCategory;
       } | null)
     | ({
+        relationTo: 'artist-genres';
+        value: number | ArtistGenre;
+      } | null)
+    | ({
         relationTo: 'artists';
         value: number | Artist;
       } | null)
@@ -1538,11 +1598,35 @@ export interface ArtistCategoriesSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "artist-genres_select".
+ */
+export interface ArtistGenresSelect<T extends boolean = true> {
+  _order?: T;
+  name?: T;
+  category?: T;
+  generateSlug?: T;
+  slug?: T;
+  translationStatus?:
+    | T
+    | {
+        locale?: T;
+        status?: T;
+        updatedAt?: T;
+        note?: T;
+        id?: T;
+      };
+  translationMeta?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "artists_select".
  */
 export interface ArtistsSelect<T extends boolean = true> {
   name?: T;
   categories?: T;
+  genres?: T;
   birthday?: T;
   debutDate?: T;
   nationality?: T;
@@ -1561,6 +1645,7 @@ export interface ArtistsSelect<T extends boolean = true> {
         id?: T;
       };
   profilePhoto?: T;
+  detailPhoto?: T;
   gallery?: T;
   intro?: T;
   videos?:
@@ -2640,6 +2725,7 @@ export interface UiLabelsArtist {
   id: number;
   profile: string;
   introduction: string;
+  genre: string;
   gallery: string;
   musicVideos: string;
   birthday: string;
@@ -3491,6 +3577,7 @@ export interface UiLabelsBusinessSelect<T extends boolean = true> {
 export interface UiLabelsArtistSelect<T extends boolean = true> {
   profile?: T;
   introduction?: T;
+  genre?: T;
   gallery?: T;
   musicVideos?: T;
   birthday?: T;

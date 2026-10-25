@@ -14,9 +14,11 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
   return pageMetadata(locale, `/artists/${slug}`, { title: category?.name })
 }
 
-export default async function ArtistCategoryPage({ params }: { params: Promise<Params> }) {
+// /artists/singers?genre=k-pop 처럼 장르로 거를 수 있다
+export default async function ArtistCategoryPage({ params, searchParams }: { params: Promise<Params>; searchParams: Promise<{ genre?: string | string[] }> }) {
   const locale = await resolveLocale(params)
   const category = await getArtistCategory((await params).category, locale)
   if (!category) notFound()
-  return <ArtistList locale={locale} category={category} />
+  const genre = (await searchParams).genre
+  return <ArtistList locale={locale} category={category} genreSlug={typeof genre === 'string' ? genre : undefined} />
 }

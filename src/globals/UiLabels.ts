@@ -58,6 +58,7 @@ export const UI_LABELS = {
     items: {
       profile: 'Profile',
       introduction: 'Introduction',
+      genre: 'Genre',
       gallery: 'Gallery',
       musicVideos: 'Music Videos',
       birthday: 'Birthday',

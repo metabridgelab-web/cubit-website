@@ -39,7 +39,9 @@ export default async function ArtistPage({ params }: { params: Promise<Params> }
   const news = await getPosts(locale, { artistId: artist.id, limit: 5 })
   const categories = (artist.categories ?? []).filter((c): c is ArtistCategory => typeof c === 'object')
   const disclaimers = categories.flatMap((c) => (c.disclaimer ? [c.disclaimer] : []))
-  const hero = mediaUrl(artist.profilePhoto, 'hero')
+  // 상세 페이지 사진이 있으면 그것을, 없으면 대표 사진을 크게 보여 준다
+  const hero = mediaUrl(artist.detailPhoto, 'hero') ?? mediaUrl(artist.profilePhoto, 'hero')
+  const genres = (artist.genres ?? []).flatMap((g) => (typeof g === 'object' ? [g.name] : []))
   const profile = [
     artist.birthday ? { label: labels.artist.birthday, value: dot(artist.birthday) } : null,
     artist.debutDate ? { label: labels.artist.debut, value: dot(artist.debutDate) } : null,
@@ -68,7 +70,7 @@ export default async function ArtistPage({ params }: { params: Promise<Params> }
         ) : null}
         <div className="relative z-10 w-full">
           <p className="tracking-wide-cjk mb-4 font-mono text-[11px] tracking-[0.5em] text-cyan uppercase">
-            {categories.map((c) => c.name).join(' · ')} {'// CUBIT'}
+            {[...categories.map((c) => c.name), ...genres].join(' · ')} {'// CUBIT'}
           </p>
           <h1
             className="bg-gradient-to-b from-white to-white/20 bg-clip-text leading-[0.8] font-black tracking-[-0.05em] text-transparent uppercase"

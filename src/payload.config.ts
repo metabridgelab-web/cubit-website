@@ -9,6 +9,7 @@ import sharp from 'sharp'
 
 import { hasRole } from './access'
 import { ArtistCategories } from './collections/ArtistCategories'
+import { ArtistGenres } from './collections/ArtistGenres'
 import { Attachments } from './collections/Attachments'
 import { Artists } from './collections/Artists'
 import { Boards, PostCategories } from './collections/Boards'
@@ -67,6 +68,7 @@ export default buildConfig({
   collections: [
     HomeSlides,
     ArtistCategories,
+    ArtistGenres,
     Artists,
     Boards,
     PostCategories,

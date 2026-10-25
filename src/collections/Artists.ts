@@ -43,6 +43,21 @@ export const Artists: CollectionConfig = {
               required: true,
             },
             {
+              name: 'genres',
+              label: '장르',
+              type: 'relationship',
+              relationTo: 'artist-genres',
+              hasMany: true,
+              // 고른 카테고리(예: 가수)에 속한 장르만 보여 준다
+              filterOptions: ({ siblingData }) => {
+                const categories = ((siblingData as { categories?: unknown[] })?.categories ?? []).map((c) =>
+                  typeof c === 'object' && c !== null ? (c as { id: number }).id : c,
+                )
+                return categories.length ? { category: { in: categories } } : true
+              },
+              admin: { description: '여러 개 고를 수 있습니다. 장르 목록은 "아티스트 관리 → 장르"에서 추가 · 수정합니다.' },
+            },
+            {
               type: 'row',
               fields: [
                 { name: 'birthday', label: '생일', type: 'date', admin: { width: '33%', date: { pickerAppearance: 'dayOnly' } } },
@@ -93,10 +108,19 @@ export const Artists: CollectionConfig = {
           fields: [
             {
               name: 'profilePhoto',
-              label: '대표 사진',
+              label: '대표 사진 (목록용)',
               type: 'upload',
               relationTo: 'media',
               required: true,
+              admin: { description: '아티스트 목록 · 홈 화면의 카드에 나오는 사진. 세로(3:4) 사진을 추천합니다.' },
+            },
+            {
+              name: 'detailPhoto',
+              label: '상세 페이지 사진',
+              type: 'upload',
+              relationTo: 'media',
+              filterOptions: { mimeType: { contains: 'image' } },
+              admin: { description: '아티스트를 눌렀을 때 상세 페이지 맨 위에 크게 나오는 사진. 비우면 대표 사진이 나옵니다.' },
             },
             {
               name: 'gallery',

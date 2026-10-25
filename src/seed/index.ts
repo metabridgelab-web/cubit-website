@@ -1,4 +1,4 @@
-// 기본 데이터 넣기: 아티스트 카테고리 · 게시판과 분류 · 메뉴 · 시작용 소개 페이지 · 계열사 · 스튜디오 단계.
+// 기본 데이터 넣기: 아티스트 카테고리 · 가수 장르 · 게시판과 분류 · 메뉴 · 시작용 소개 페이지 · 계열사 · 스튜디오 단계.
 // 영어 원문과 한국어 번역을 함께 넣는다. 여러 번 실행해도 이미 있는 항목은 갱신만 한다.
 // 실행: npm run seed
 import { getPayload, type GlobalSlug, type Where } from 'payload'
@@ -52,6 +52,20 @@ for (const { slug, en, ko, sortOrder, disclaimer } of categories) {
     { name: en, slug, generateSlug: false, sortOrder, disclaimer: disclaimer?.en },
     { name: ko, disclaimer: disclaimer?.ko },
   )
+}
+
+// 가수 장르 20개: 비어 있을 때만 넣는다 (관리자 화면 "아티스트 관리 → 장르"에서 고친 내용은 덮어쓰지 않음)
+const SINGER_GENRES = [
+  'K-Pop', 'K-Ballad', 'Retro K-Pop', 'Pop', 'Rock', 'Electronic / Dance', 'Hip-Hop / Rap', 'R&B - Soul / Funk', 'Popera', 'Musical',
+  'Trot Music', 'Jazz', 'Blues', 'Classical', 'Folk / Acoustic', 'Country', 'Latin', 'World Music', 'Religious / Gospel', 'Soundtrack / Instrumental',
+]
+const singers = (await payload.find({ collection: 'artist-categories', where: { slug: { equals: 'singers' } }, limit: 1, depth: 0 })).docs[0]
+if (singers && !(await payload.count({ collection: 'artist-genres' })).totalDocs) {
+  for (const name of SINGER_GENRES) {
+    const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+    await payload.create({ collection: 'artist-genres', locale: 'en', depth: 0, data: { name, slug, generateSlug: false, category: singers.id } })
+  }
+  payload.logger.info(`추가: 가수 장르 ${SINGER_GENRES.length}개`)
 }
 
 const boards: (Localized & { slug: string; sortOrder: number; categories: Localized[] })[] = [
