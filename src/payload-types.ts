@@ -371,6 +371,10 @@ export interface Artist {
         title: string;
         youtubeUrl: string;
         releaseDate?: string | null;
+        /**
+         * 넣으면 영상 아래에 "가사 보기" 버튼이 생깁니다. 가사는 번역하지 않고 모든 언어에서 그대로 보입니다. 빈 줄로 절을 나눕니다.
+         */
+        lyrics?: string | null;
         id?: string | null;
       }[]
     | null;
@@ -1677,6 +1681,7 @@ export interface ArtistsSelect<T extends boolean = true> {
         title?: T;
         youtubeUrl?: T;
         releaseDate?: T;
+        lyrics?: T;
         id?: T;
       };
   generateSlug?: T;
@@ -2755,6 +2760,8 @@ export interface UiLabelsArtist {
   memberOf: string;
   otherMembers: string;
   gallery: string;
+  viewLyrics: string;
+  lyrics: string;
   musicVideos: string;
   birthday: string;
   debut: string;
@@ -3611,6 +3618,8 @@ export interface UiLabelsArtistSelect<T extends boolean = true> {
   memberOf?: T;
   otherMembers?: T;
   gallery?: T;
+  viewLyrics?: T;
+  lyrics?: T;
   musicVideos?: T;
   birthday?: T;
   debut?: T;

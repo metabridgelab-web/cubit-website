@@ -195,6 +195,15 @@ export const Artists: CollectionConfig = {
                 { name: 'title', label: '제목', type: 'text', required: true, localized: true },
                 youtubeUrlField({ required: true }),
                 { name: 'releaseDate', label: '공개일', type: 'date', admin: { date: { pickerAppearance: 'dayOnly' } } },
+                {
+                  name: 'lyrics',
+                  label: '가사',
+                  type: 'textarea',
+                  admin: {
+                    rows: 8,
+                    description: '넣으면 영상 아래에 "가사 보기" 버튼이 생깁니다. 가사는 번역하지 않고 모든 언어에서 그대로 보입니다. 빈 줄로 절을 나눕니다.',
+                  },
+                },
               ],
             },
           ],

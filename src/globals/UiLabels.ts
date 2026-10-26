@@ -64,6 +64,8 @@ export const UI_LABELS = {
       memberOf: 'Member of',
       otherMembers: 'Other members',
       gallery: 'Gallery',
+      viewLyrics: 'View lyrics',
+      lyrics: 'Lyrics',
       musicVideos: 'Music Videos',
       birthday: 'Birthday',
       debut: 'Debut',

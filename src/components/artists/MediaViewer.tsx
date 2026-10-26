@@ -1,11 +1,11 @@
 'use client'
 
-import { ArrowLeft, ArrowRight, Play, X } from '@phosphor-icons/react'
+import { ArrowLeft, ArrowRight, CaretRight, MusicNotes, Play, X } from '@phosphor-icons/react'
 import { useCallback, useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 
 export type GalleryImage = { thumb: string; full: string; alt: string }
-export type VideoItem = { id: string; youtubeId: string; title: string; date: string }
+export type VideoItem = { id: string; youtubeId: string; title: string; date: string; lyrics?: string | null }
 
 // 크게 보기 창: 사진 넘겨보기 또는 YouTube 영상 재생. Esc로 닫고 ←/→로 넘긴다.
 export function Viewer({ onClose, onPrev, onNext, closeLabel, children }: { onClose: () => void; onPrev?: () => void; onNext?: () => void; closeLabel: string; children: React.ReactNode }) {
@@ -82,10 +82,13 @@ export function Gallery({ images, viewAllLabel, closeLabel }: { images: GalleryI
   )
 }
 
-// 뮤직비디오 카드 (design/04 Discography): 누르면 사이트 안에서 바로 재생
-export function VideoGrid({ videos, closeLabel }: { videos: VideoItem[]; closeLabel: string }) {
+// 뮤직비디오 카드 (design/04 Discography): 누르면 사이트 안에서 바로 재생.
+// 가사가 있으면 카드 아래 "가사 보기" → 가사 창이 열린다.
+export function VideoGrid({ videos, closeLabel, lyricsLabel = 'View lyrics', lyricsTitle = 'Lyrics' }: { videos: VideoItem[]; closeLabel: string; lyricsLabel?: string; lyricsTitle?: string }) {
   const [open, setOpen] = useState<VideoItem | null>(null)
+  const [lyrics, setLyrics] = useState<VideoItem | null>(null)
   const close = useCallback(() => setOpen(null), [])
+  const closeLyrics = useCallback(() => setLyrics(null), [])
   return (
     <>
       <ul className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
@@ -104,9 +107,30 @@ export function VideoGrid({ videos, closeLabel }: { videos: VideoItem[]; closeLa
                 <span className="shrink-0 font-mono text-[9px] text-cyan">{video.date}</span>
               </span>
             </button>
+            {video.lyrics ? (
+              <button
+                type="button"
+                onClick={() => setLyrics(video)}
+                className="mt-3 flex w-full items-center justify-between gap-3 rounded-xl border border-line px-4 py-3 font-mono text-[11px] tracking-[0.15em] text-white/70 uppercase transition-colors hover:border-cyan hover:text-cyan"
+              >
+                <span className="flex items-center gap-2">
+                  <MusicNotes size={16} aria-hidden /> {lyricsLabel}
+                </span>
+                <CaretRight size={14} aria-hidden className="rtl:rotate-180" />
+              </button>
+            ) : null}
           </li>
         ))}
       </ul>
+      {lyrics ? (
+        <Viewer onClose={closeLyrics} closeLabel={closeLabel}>
+          <div className="mx-auto max-h-[80vh] max-w-2xl overflow-y-auto rounded-2xl border border-white/10 bg-black/80 p-8 md:p-12">
+            <p className="font-mono text-[10px] tracking-[0.15em] text-cyan uppercase">{lyricsTitle}</p>
+            <h2 className="mt-2 mb-8 text-2xl font-black uppercase">{lyrics.title}</h2>
+            <p className="text-lg leading-relaxed whitespace-pre-line text-white/80">{lyrics.lyrics}</p>
+          </div>
+        </Viewer>
+      ) : null}
       {open ? (
         <Viewer onClose={close} closeLabel={closeLabel}>
           <div className="aspect-video w-full">
