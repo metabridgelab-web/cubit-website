@@ -53,7 +53,10 @@ export default async function ArtistPage({ params }: { params: Promise<Params> }
   const categories = (artist.categories ?? []).filter((c): c is ArtistCategory => typeof c === 'object')
   const disclaimers = categories.flatMap((c) => (c.disclaimer ? [c.disclaimer] : []))
   // 상세 페이지 사진이 있으면 그것을, 없으면 대표 사진을 크게 보여 준다
-  const hero = mediaUrl(artist.detailPhoto, 'hero') ?? mediaUrl(artist.profilePhoto, 'hero')
+  const heroMedia = [artist.detailPhoto, artist.profilePhoto].find((m) => typeof m === 'object' && m && mediaUrl(m))
+  const hero = mediaUrl(heroMedia, 'hero')
+  // 관리자 화면에서 사진의 "초점"을 찍어 두면 휴대폰처럼 잘리는 화면에서도 그 부분이 보인다
+  const focus = typeof heroMedia === 'object' && heroMedia ? `${heroMedia.focalX ?? 50}% ${heroMedia.focalY ?? 50}%` : '50% 50%'
   const genres = (artist.genres ?? []).flatMap((g) => (typeof g === 'object' ? [g.name] : []))
   const profile = [
     artist.birthday ? { label: labels.artist.birthday, value: dot(artist.birthday) } : null,
@@ -75,10 +78,12 @@ export default async function ArtistPage({ params }: { params: Promise<Params> }
     <article>
       <section className="relative flex min-h-[90vh] items-end overflow-hidden px-5 pt-32 pb-16 md:items-center md:px-24 md:pb-0">
         {hero ? (
-          <div className="absolute inset-y-0 end-0 z-0 w-full md:w-[60%]">
+          // 컴퓨터: 사진 비율 그대로 화면 높이에 맞춰 오른쪽에 (3:4 사진도 잘리지 않음, 아주 넓은 사진만 화면의 60%까지)
+          // 휴대폰: 화면을 채우고, 사진의 초점이 보이게 맞춘다
+          <div className="absolute inset-y-0 end-0 z-0 w-full overflow-hidden md:w-auto md:max-w-[60%]">
             <div className="scanlines absolute inset-0 z-10" />
-            <ArtistHeroImage src={hero} alt={artist.name} />
-            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent md:bg-gradient-to-r md:from-black md:via-transparent md:to-black rtl:md:bg-gradient-to-l" />
+            <ArtistHeroImage src={hero} alt={artist.name} focus={focus} />
+            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent md:bg-gradient-to-r md:from-black md:via-transparent md:via-35% md:to-transparent rtl:md:bg-gradient-to-l" />
           </div>
         ) : null}
         <div className="relative z-10 w-full">

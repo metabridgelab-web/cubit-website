@@ -2,8 +2,9 @@
 
 import { useEffect, useRef } from 'react'
 
-// 아티스트 상세 맨 위 사진: 오른쪽 60%를 채우고, 아래로 내리면 천천히 따라 내려온다 (design/04). 원본 색 그대로 보여 준다.
-export function ArtistHeroImage({ src, alt }: { src: string; alt: string }) {
+// 아티스트 상세 맨 위 사진: 원본 색 그대로, 아래로 내리면 천천히 따라 내려온다 (design/04).
+// 컴퓨터에서는 화면 높이에 맞추고 너비는 사진 비율대로 (잘리지 않음). 휴대폰에서는 화면을 채우고 focus(초점) 위치를 보여 준다.
+export function ArtistHeroImage({ src, alt, focus = '50% 50%' }: { src: string; alt: string; focus?: string }) {
   const ref = useRef<HTMLImageElement>(null)
   useEffect(() => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
@@ -15,6 +16,6 @@ export function ArtistHeroImage({ src, alt }: { src: string; alt: string }) {
   }, [])
   return (
     // eslint-disable-next-line @next/next/no-img-element
-    <img ref={ref} src={src} alt={alt} fetchPriority="high" className="h-full w-full object-cover" />
+    <img ref={ref} src={src} alt={alt} fetchPriority="high" style={{ objectPosition: focus }} className="h-full w-full object-cover md:w-auto md:max-w-none" />
   )
 }
