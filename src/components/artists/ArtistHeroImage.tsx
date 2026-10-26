@@ -3,8 +3,7 @@
 import { useEffect, useRef } from 'react'
 
 // 아티스트 상세 맨 위 사진: 원본 색 그대로, 아래로 내리면 천천히 따라 내려온다 (design/04).
-// 원래 비율 그대로: 컴퓨터에서는 화면 높이에 맞추고(너비는 비율대로), 휴대폰에서는 화면 폭에 맞춘다(높이는 비율대로).
-// 컴퓨터에서 아주 넓은 사진이 60%를 넘으면 그때만 잘리며, focus(초점) 위치를 보여 준다.
+// 정해진 자리를 꽉 채우고, 넘치는 부분은 잘린다. 관리자 화면에서 사진의 "초점"을 찍어 두면 그 위치가 보이게 맞춘다(focus).
 export function ArtistHeroImage({ src, alt, focus = '50% 50%' }: { src: string; alt: string; focus?: string }) {
   const ref = useRef<HTMLImageElement>(null)
   useEffect(() => {
@@ -17,6 +16,6 @@ export function ArtistHeroImage({ src, alt, focus = '50% 50%' }: { src: string; 
   }, [])
   return (
     // eslint-disable-next-line @next/next/no-img-element
-    <img ref={ref} src={src} alt={alt} fetchPriority="high" style={{ objectPosition: focus }} className="h-auto w-full md:h-full md:w-auto md:max-w-none md:object-cover" />
+    <img ref={ref} src={src} alt={alt} fetchPriority="high" style={{ objectPosition: focus }} className="h-full w-full object-cover" />
   )
 }
