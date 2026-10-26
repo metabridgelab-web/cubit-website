@@ -78,9 +78,10 @@ export default async function ArtistPage({ params }: { params: Promise<Params> }
     <article>
       <section className="relative flex min-h-[90vh] items-end overflow-hidden px-5 pt-32 pb-16 md:items-center md:px-24 md:pb-0">
         {hero ? (
-          // 컴퓨터: 사진 비율 그대로 화면 높이에 맞춰 오른쪽에 (3:4 사진도 잘리지 않음, 아주 넓은 사진만 화면의 60%까지)
-          // 휴대폰: 화면을 채우고, 사진의 초점이 보이게 맞춘다
-          <div className="absolute inset-y-0 end-0 z-0 w-full overflow-hidden md:w-auto md:max-w-[60%]">
+          // 사진은 원래 비율 그대로 (잘리지 않음)
+          // - 컴퓨터: 화면 높이에 맞춰 오른쪽에. 아주 넓은 사진만 화면의 60%까지 (그때는 초점 위치를 보여 줌)
+          // - 휴대폰: 화면 폭에 맞춰 맨 위에. 이름은 사진 아래쪽에 겹쳐 보인다
+          <div className="absolute inset-x-0 top-0 z-0 overflow-hidden md:inset-x-auto md:inset-y-0 md:end-0 md:w-auto md:max-w-[60%]">
             <div className="scanlines absolute inset-0 z-10" />
             <ArtistHeroImage src={hero} alt={artist.name} focus={focus} />
             <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent md:bg-gradient-to-r md:from-black md:via-transparent md:via-35% md:to-transparent rtl:md:bg-gradient-to-l" />
