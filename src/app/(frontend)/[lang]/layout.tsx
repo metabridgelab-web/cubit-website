@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import type { ReactNode } from 'react'
 
+import { PreviewBanner } from '@/components/site/PreviewBanner'
 import { SiteFooter } from '@/components/site/SiteFooter'
 import { SiteHeader } from '@/components/site/SiteHeader'
 import { allowIndexing, textDirection } from '@/i18n'
@@ -33,6 +34,7 @@ export default async function LocaleLayout({ children, params }: { children: Rea
         <SiteHeader locale={locale} />
         <main>{children}</main>
         <SiteFooter locale={locale} />
+        <PreviewBanner />
       </body>
     </html>
   )

@@ -1,6 +1,7 @@
 import 'server-only'
 
 import config from '@payload-config'
+import { draftMode } from 'next/headers'
 import { getPayload, type GlobalSlug, type Where } from 'payload'
 import { cache } from 'react'
 
@@ -16,6 +17,9 @@ import { UI_LABEL_GROUPS, uiLabelSlug, type UiLabelsData } from '@/globals/UiLab
 const payload = cache(async () => getPayload({ config }))
 
 const PUBLIC = { overrideAccess: false } as const
+
+// 관리자 미리보기(초안 보기) 중이면 게시 전 초안을 읽는다. 초안 보기는 /preview 가 로그인한 관리자에게만 켜 준다.
+const readMode = async () => ((await draftMode()).isEnabled ? ({ draft: true, overrideAccess: true } as const) : PUBLIC)
 
 export const getEnabledLocales = cache(async (): Promise<LocaleCode[]> => {
   const settings = await (await payload()).findGlobal({ slug: 'site-settings', depth: 0, ...PUBLIC })
@@ -102,7 +106,7 @@ export const getArtists = cache(
 )
 
 export const getArtistById = cache(async (id: number, locale: LocaleCode) => {
-  const { docs } = await (await payload()).find({ collection: 'artists', where: { id: { equals: id } }, locale, depth: 2, limit: 1, ...PUBLIC })
+  const { docs } = await (await payload()).find({ collection: 'artists', where: { id: { equals: id } }, locale, depth: 2, limit: 1, ...(await readMode()) })
   return docs[0] ?? null
 })
 
@@ -113,7 +117,7 @@ export const getGenres = cache(async (categoryId: number, locale: LocaleCode) =>
 })
 
 export const getArtist = cache(async (slug: string, locale: LocaleCode) => {
-  const { docs } = await (await payload()).find({ collection: 'artists', where: { slug: { equals: slug } }, locale, depth: 2, limit: 1, ...PUBLIC })
+  const { docs } = await (await payload()).find({ collection: 'artists', where: { slug: { equals: slug } }, locale, depth: 2, limit: 1, ...(await readMode()) })
   return docs[0] ?? null
 })
 
@@ -179,15 +183,16 @@ export const getCaseStudies = cache(async (locale: LocaleCode, limit = 24) => {
 })
 
 export const getCaseStudy = cache(async (slug: string, locale: LocaleCode) => {
-  const { docs } = await (await payload()).find({ collection: 'case-studies', where: { slug: { equals: slug } }, locale, depth: 2, limit: 1, ...PUBLIC })
+  const { docs } = await (await payload()).find({ collection: 'case-studies', where: { slug: { equals: slug } }, locale, depth: 2, limit: 1, ...(await readMode()) })
   return docs[0] ?? null
 })
 
 // 소개 페이지. "번역 검수 필수 문서"는 해당 언어가 검수 완료되기 전까지 영어 원문을 보여준다.
 export const getPage = cache(async (slug: string, locale: LocaleCode, section?: string) => {
   const where: Where = section ? { and: [{ slug: { equals: slug } }, { section: { equals: section } }] } : { slug: { equals: slug } }
+  const mode = await readMode()
   const find = async (l: LocaleCode) =>
-    (await (await payload()).find({ collection: 'pages', where, locale: l, depth: 2, limit: 1, ...PUBLIC })).docs[0] ?? null
+    (await (await payload()).find({ collection: 'pages', where, locale: l, depth: 2, limit: 1, ...mode })).docs[0] ?? null
 
   const page = await find(locale)
   if (!page || locale === DEFAULT_LOCALE || !page.reviewRequired) return page ? { page, servedLocale: locale } : null

@@ -2,6 +2,7 @@ import { slugField, type CollectionConfig, type Where } from 'payload'
 
 import { canEditContent, canUpdateContent, publishedOrLoggedIn } from '../access'
 import { sortOrderField, youtubeUrlField } from '../fields'
+import { previewButton } from './preview'
 
 export const Artists: CollectionConfig = {
   slug: 'artists',
@@ -12,6 +13,7 @@ export const Artists: CollectionConfig = {
     group: '아티스트 관리',
     description:
       '사진 · 정보 · 자기소개 · 뮤직비디오를 등록합니다. 그룹은 멤버(개인 아티스트)를 먼저 등록한 뒤 그룹의 "멤버" 칸에서 연결합니다. 영어로 쓰고 저장하면 다른 11개 언어로 자동 번역됩니다.',
+    preview: previewButton('artists'),
   },
   access: {
     read: publishedOrLoggedIn,

@@ -57,13 +57,27 @@ const r2Settings = () => {
 const ATTACHMENT_PREFIX = 'attachments'
 const ATTACHMENT_MAX_BYTES = 50 * 1024 * 1024
 
+// 공개 파일의 주소: R2가 있으면 Cloudflare 주소, 없으면(개발) 프로젝트의 media 폴더를 보여 주는 Payload 주소
+const publicFileURL = (filename: string, prefix?: string | null) => {
+  const r2 = r2Settings()
+  return r2 ? `${r2.publicBase}/${[prefix, encodeURIComponent(filename)].filter(Boolean).join('/')}` : `/api/media/file/${encodeURIComponent(filename)}`
+}
+
+// 관리자 화면의 사진 미리보기(작은 사진). 기본값은 Payload 주소(/api/media/file/…)를 가리키는데,
+// R2 파일은 그 주소로 열리지 않아 파일 아이콘만 보였다.
+export const mediaAdminThumbnail = ({ doc }: { doc: Record<string, unknown> }): false | null | string => {
+  if (!String(doc.mimeType ?? '').startsWith('image/')) return null
+  const sizes = doc.sizes as { thumbnail?: { filename?: string | null } } | undefined
+  const filename = sizes?.thumbnail?.filename || (doc.filename as string | undefined)
+  return filename ? publicFileURL(filename, doc.prefix as string | null | undefined) : null
+}
+
 // R2가 없을 때(개발)도 플러그인을 꺼진 채로 넣어, 파일 위치 칸(prefix · _objectKey)이 언제나 같은 표 구조로 들어가게 한다.
 // (운영 데이터베이스의 표 구조 기록 src/migrations 과 어긋나지 않게)
 export const storagePlugins = (): Plugin[] => {
   const r2 = r2Settings()
   const enabled = Boolean(r2)
   const config = r2?.config ?? {}
-  const publicBase = r2?.publicBase ?? ''
 
   return [
     s3Storage({
@@ -78,7 +92,7 @@ export const storagePlugins = (): Plugin[] => {
           prefix: 'media',
           // Vercel을 거치지 않고 Cloudflare에서 바로 내려받게 한다 (누구나 볼 수 있는 파일만)
           disablePayloadAccessControl: true,
-          generateFileURL: ({ filename, prefix }) => `${publicBase}/${[prefix, encodeURIComponent(filename)].filter(Boolean).join('/')}`,
+          generateFileURL: ({ filename, prefix }) => publicFileURL(filename, prefix),
         },
       },
     }),

@@ -18,6 +18,6 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  // 관리자 화면 · API · Next.js 내부 파일 · 확장자가 있는 파일(이미지 등)은 건드리지 않는다
-  matcher: ['/((?!admin|api|_next|next|media|favicon\\.ico|robots\\.txt|sitemap\\.xml|.*\\..*).*)'],
+  // 관리자 화면 · API · 미리보기 · Next.js 내부 파일 · 확장자가 있는 파일(이미지 등)은 건드리지 않는다
+  matcher: ['/((?!admin|api|preview|_next|next|media|favicon\\.ico|robots\\.txt|sitemap\\.xml|.*\\..*).*)'],
 }

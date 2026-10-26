@@ -2,6 +2,7 @@ import { slugField, type Block, type CollectionConfig } from 'payload'
 
 import { canEditContent, canUpdateContent, publishedOrLoggedIn } from '../access'
 import { linkFields, streamIdField, youtubeUrlField } from '../fields'
+import { previewButton } from './preview'
 
 // 소개 페이지용 블록: 글 · 사진 · 영상 · 연혁 · 오시는 길 · 버튼을 원하는 순서로 쌓는다
 const TextBlock: Block = {
@@ -84,6 +85,7 @@ export const Pages: CollectionConfig = {
     defaultColumns: ['title', 'section', 'slug', '_status', 'updatedAt'],
     group: '페이지 관리',
     description: '글 · 사진 · 영상 블록을 원하는 순서로 쌓아 페이지를 만듭니다.',
+    preview: previewButton('pages'),
   },
   access: {
     read: publishedOrLoggedIn,

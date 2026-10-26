@@ -1,6 +1,7 @@
 import { slugField, type CollectionConfig } from 'payload'
 
 import { canEditContent, hasRole, publishedOrLoggedIn } from '../access'
+import { previewButton } from './preview'
 
 // BUSINESS > 작업 사례
 export const CaseStudies: CollectionConfig = {
@@ -10,6 +11,7 @@ export const CaseStudies: CollectionConfig = {
     useAsTitle: 'title',
     defaultColumns: ['title', 'brandName', 'date', '_status'],
     group: '비즈니스',
+    preview: previewButton('case-studies'),
   },
   access: {
     read: publishedOrLoggedIn,

@@ -1,6 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
 import { anyone, canEditContent, canUpdateContent } from '../access'
+import { mediaAdminThumbnail } from '../infrastructure'
 
 export const Media: CollectionConfig = {
   slug: 'media',
@@ -25,7 +26,7 @@ export const Media: CollectionConfig = {
       { name: 'large', width: 1600 },
       { name: 'hero', width: 2560 },
     ],
-    adminThumbnail: 'thumbnail',
+    adminThumbnail: mediaAdminThumbnail,
     focalPoint: true,
   },
   fields: [
