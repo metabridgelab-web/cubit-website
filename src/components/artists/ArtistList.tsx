@@ -9,7 +9,7 @@ import type { ArtistCategory } from '@/payload-types'
 import { ArtistTile } from './ArtistTile'
 import { GenreSelect } from './GenreSelect'
 
-// 아티스트 목록 (design/03_아티스트-목록): 카테고리 탭 + (장르가 있는 카테고리면) 장르 선택 상자 + 세로형 카드 격자
+// 아티스트 목록 (design/03_아티스트-목록): 카테고리 탭(가수 · 모델 · 배우 · 전문가) + (장르가 있는 카테고리면) 장르 선택 상자 + 세로형 카드 격자
 export async function ArtistList({ locale, category, genreSlug }: { locale: LocaleCode; category?: ArtistCategory; genreSlug?: string }) {
   const [labels, categories, genres] = await Promise.all([
     getUiLabels(locale),
@@ -18,8 +18,8 @@ export async function ArtistList({ locale, category, genreSlug }: { locale: Loca
   ])
   const genre = genres.find((g) => g.slug === genreSlug) ?? null
   const artists = await getArtists(locale, { categoryId: category?.id, genreId: genre?.id, forList: true })
-  const tabs = [{ id: 0, name: labels.common.all, href: '/artists' }, ...categories.map((c) => ({ id: c.id, name: c.name, href: `/artists/${c.slug}` }))]
-  const activeId = category?.id ?? 0
+  const tabs = categories.map((c) => ({ id: c.id, name: c.name, href: `/artists/${c.slug}` }))
+  const activeId = category?.id
 
   return (
     <PageShell>

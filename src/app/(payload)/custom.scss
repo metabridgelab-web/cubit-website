@@ -319,3 +319,64 @@ html[data-theme='dark'] {
     color: rgb(255 255 255 / 0.5);
   }
 }
+
+// 아티스트 목록 위 장르별 보기 단추 (components/admin/GenreTabs.tsx)
+.cubit-genres {
+  margin-bottom: 24px;
+
+  &__hint {
+    margin: 0 0 10px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: rgb(255 255 255 / 0.45);
+  }
+
+  ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  &__tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 14px;
+    border: 1px solid rgb(255 255 255 / 0.15);
+    border-radius: 999px;
+    font-size: 13px;
+    color: #fff;
+    text-decoration: none;
+    transition:
+      border-color 0.2s,
+      background 0.2s;
+
+    span {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: rgb(255 255 255 / 0.5);
+    }
+
+    &:hover {
+      border-color: rgb(255 255 255 / 0.4);
+    }
+
+    &--empty {
+      opacity: 0.45;
+    }
+
+    &[aria-current='page'] {
+      border-color: $cyan;
+      background: rgb(0 243 255 / 0.1);
+      opacity: 1;
+
+      span {
+        color: $cyan;
+      }
+    }
+  }
+}

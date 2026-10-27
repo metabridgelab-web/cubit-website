@@ -9,8 +9,9 @@ export const Artists: CollectionConfig = {
   labels: { singular: '아티스트', plural: '아티스트' },
   admin: {
     useAsTitle: 'name',
-    defaultColumns: ['name', 'kind', 'categories', 'featured', '_status', 'updatedAt'],
+    defaultColumns: ['name', 'kind', 'genres', 'categories', 'featured', '_status', 'updatedAt'],
     group: '아티스트 관리',
+    components: { beforeList: ['/components/admin/GenreTabs#GenreTabs'] },
     description:
       '사진 · 정보 · 자기소개 · 뮤직비디오를 등록합니다. 그룹은 멤버(개인 아티스트)를 먼저 등록한 뒤 그룹의 "멤버" 칸에서 연결합니다. 영어로 쓰고 저장하면 다른 11개 언어로 자동 번역됩니다.',
     preview: previewButton('artists'),

@@ -33,7 +33,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const paths: { path: string; lastModified?: string }[] = [
     { path: '/' },
-    { path: '/artists' },
     { path: '/news' },
     { path: '/news/notice' },
     { path: '/business' },

@@ -1,16 +1,13 @@
-import type { Metadata } from 'next'
+import { notFound, redirect } from 'next/navigation'
 
-import { ArtistList } from '@/components/artists/ArtistList'
-import { getUiLabels } from '@/lib/data'
-import { pageMetadata, resolveLocale, type LangParams } from '@/lib/page'
+import { localePath } from '@/i18n'
+import { getArtistCategories } from '@/lib/data'
+import { resolveLocale, type LangParams } from '@/lib/page'
 
-export async function generateMetadata({ params }: { params: Promise<LangParams> }): Promise<Metadata> {
-  const locale = await resolveLocale(params)
-  const labels = await getUiLabels(locale)
-  return pageMetadata(locale, '/artists', { title: labels.home.artists })
-}
-
+// "전체" 목록은 두지 않는다: /artists 로 오면 첫 번째 카테고리(가수)로 보낸다
 export default async function ArtistsPage({ params }: { params: Promise<LangParams> }) {
   const locale = await resolveLocale(params)
-  return <ArtistList locale={locale} />
+  const [first] = await getArtistCategories(locale)
+  if (!first) notFound()
+  redirect(localePath(locale, `/artists/${first.slug}`))
 }
