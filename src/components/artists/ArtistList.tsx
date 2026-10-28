@@ -1,6 +1,7 @@
 import Link from 'next/link'
 
 import { PageHeader, PageShell } from '@/components/site/Hud'
+import { ALL_GENRES } from '@/constants/artists'
 import type { LocaleCode } from '@/constants/locales'
 import { localePath } from '@/i18n'
 import { getArtistCategories, getArtists, getGenres, getUiLabels } from '@/lib/data'
@@ -16,7 +17,8 @@ export async function ArtistList({ locale, category, genreSlug }: { locale: Loca
     getArtistCategories(locale),
     category ? getGenres(category.id, locale) : Promise.resolve([]),
   ])
-  const genre = genres.find((g) => g.slug === genreSlug) ?? null
+  // 장르를 고르지 않고 들어오면 첫 장르(가수 → K-Pop)를 보여 준다. "전체"는 ?genre=all
+  const genre = genreSlug === ALL_GENRES ? null : (genres.find((g) => g.slug === genreSlug) ?? genres[0] ?? null)
   const artists = await getArtists(locale, { categoryId: category?.id, genreId: genre?.id, forList: true })
   const tabs = categories.map((c) => ({ id: c.id, name: c.name, href: `/artists/${c.slug}` }))
   const activeId = category?.id
@@ -49,7 +51,7 @@ export async function ArtistList({ locale, category, genreSlug }: { locale: Loca
             allLabel={labels.common.all}
             basePath={localePath(locale, `/artists/${category.slug}`)}
             genres={genres.map((g) => ({ slug: g.slug ?? String(g.id), name: g.name }))}
-            current={genre?.slug ?? null}
+            current={genre?.slug ?? ALL_GENRES}
           />
         </div>
       ) : null}
