@@ -5,7 +5,7 @@ import { INVESTOR_TABS } from '@/constants/investors'
 import { languageAlternates, localePath, SITE_URL } from '@/i18n'
 import {
   getArtistCategories,
-  getArtists,
+  getArtistSitemapEntries,
   getCaseStudies,
   getEnabledLocales,
   getInvestors,
@@ -14,14 +14,14 @@ import {
 } from '@/lib/data'
 
 // 검색엔진용 사이트맵 (/sitemap.xml). 주소마다 12개 언어 주소를 함께 알려준다.
-// 새 아티스트 · 글 · 페이지가 생기면 자동으로 들어간다. 1시간마다 다시 만든다.
-export const revalidate = 3600
+// 새 아티스트 · 글 · 페이지가 생기면 자동으로 들어가고, 지우면 바로 빠지도록 요청이 올 때마다 새로 만든다.
+export const dynamic = 'force-dynamic'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const locales = await getEnabledLocales()
   const [categories, artists, posts, works, company, business, legal, trust, investors] = await Promise.all([
     getArtistCategories(DEFAULT_LOCALE),
-    getArtists(DEFAULT_LOCALE),
+    getArtistSitemapEntries(DEFAULT_LOCALE),
     getPosts(DEFAULT_LOCALE, { limit: 1000 }),
     getCaseStudies(DEFAULT_LOCALE, 1000),
     getPagesBySection('company', DEFAULT_LOCALE),

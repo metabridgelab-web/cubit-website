@@ -105,6 +105,22 @@ export const getArtists = cache(
   },
 )
 
+// 사이트맵용: 게시된 아티스트 전부의 주소에 필요한 칸만 읽는다 (사진은 읽지 않아 수가 많아도 가볍다)
+export const getArtistSitemapEntries = cache(async (locale: LocaleCode) => {
+  const { docs } = await (await payload()).find({
+    collection: 'artists',
+    sort: 'sortOrder',
+    locale,
+    depth: 1,
+    limit: 0,
+    pagination: false,
+    select: { slug: true, categories: true, updatedAt: true },
+    populate: { 'artist-categories': { slug: true } },
+    ...PUBLIC,
+  })
+  return docs
+})
+
 export const getArtistById = cache(async (id: number, locale: LocaleCode) => {
   const { docs } = await (await payload()).find({ collection: 'artists', where: { id: { equals: id } }, locale, depth: 2, limit: 1, ...(await readMode()) })
   return docs[0] ?? null
