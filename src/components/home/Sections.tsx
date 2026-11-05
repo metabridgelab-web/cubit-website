@@ -6,9 +6,9 @@ import type { LocaleCode } from '@/constants/locales'
 import { localePath } from '@/i18n'
 import type { getBusinessSettings, getNewReleases, getUiLabels } from '@/lib/data'
 import { youtubeId } from '@/lib/page'
-import { ArtistTile } from '@/components/artists/ArtistTile'
+import { ArtistTile, type ArtistCard } from '@/components/artists/ArtistTile'
 import { BrandsRow, BuilderBar, ServiceGrid, ViewCasesLink } from '@/components/business/Parts'
-import type { Artist, ArtistCategory, Post } from '@/payload-types'
+import type { ArtistCategory, Post } from '@/payload-types'
 
 // 홈 첫 화면 아래 섹션들. 디자인 파일에 없던 부분이라 design/03·08의 부품(HUD 라벨, 유리 카드, 무지개빛 버튼)으로 맞춰 만들었다.
 
@@ -75,7 +75,7 @@ export function NewReleaseSection({ index, locale, labels, releases }: { index: 
   )
 }
 
-export function ArtistsSection({ index, locale, labels, artists, categories }: { index: number; locale: LocaleCode; labels: Labels; artists: Artist[]; categories: ArtistCategory[] }) {
+export function ArtistsSection({ index, locale, labels, artists, categories }: { index: number; locale: LocaleCode; labels: Labels; artists: ArtistCard[]; categories: ArtistCategory[] }) {
   if (!artists.length) return null
   return (
     <Wrap>

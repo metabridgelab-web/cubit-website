@@ -5,9 +5,11 @@ import { localePath } from '@/i18n'
 import { mediaUrl } from '@/lib/page'
 import type { Artist, ArtistCategory } from '@/payload-types'
 
+export type ArtistCard = Pick<Artist, 'id' | 'name' | 'slug' | 'kind' | 'members' | 'categories' | 'profilePhoto'>
+
 // 아티스트 카드 (design/03): 흑백 사진 → 마우스를 올리면 컬러 + 살짝 떠오름, 오른쪽 위에 카테고리 표시.
 // 그룹이면 이름 위에 "GROUP · 멤버 수"를 붙인다.
-export function ArtistTile({ locale, artist, categorySlug, groupLabel = 'Group' }: { locale: LocaleCode; artist: Artist; categorySlug?: string; groupLabel?: string }) {
+export function ArtistTile({ locale, artist, categorySlug, groupLabel = 'Group' }: { locale: LocaleCode; artist: ArtistCard; categorySlug?: string; groupLabel?: string }) {
   const categories = (artist.categories ?? []).filter((c): c is ArtistCategory => typeof c === 'object')
   const slug = categorySlug ?? categories[0]?.slug ?? 'all'
   const photo = mediaUrl(artist.profilePhoto, 'card')

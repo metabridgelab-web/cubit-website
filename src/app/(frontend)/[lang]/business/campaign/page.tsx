@@ -6,7 +6,8 @@ import { CAMPAIGN_LANGUAGES } from '@/constants/campaign'
 import { localePath } from '@/i18n'
 import { getArtists, getBusinessSettings, getSiteSettings, getUiLabels } from '@/lib/data'
 import { mediaUrl, pageMetadata, resolveLocale, type LangParams } from '@/lib/page'
-import type { Artist, ArtistCategory } from '@/payload-types'
+import type { ArtistCard } from '@/components/artists/ArtistTile'
+import type { ArtistCategory } from '@/payload-types'
 
 export async function generateMetadata({ params }: { params: Promise<LangParams> }): Promise<Metadata> {
   const locale = await resolveLocale(params)
@@ -28,7 +29,7 @@ export default async function CampaignBuilderPage({ params, searchParams }: { pa
 
   // 그룹 → 그 멤버들 → 나머지 개인 순서로 보여 준다 (그룹 전체 또는 멤버 한 명만 고를 수 있게)
   const byId = new Map(artists.map((a) => [a.id, a]))
-  const ordered: { artist: Artist; group?: string }[] = []
+  const ordered: { artist: ArtistCard; group?: string }[] = []
   const placed = new Set<number>()
   for (const group of artists.filter((a) => a.kind === 'group')) {
     ordered.push({ artist: group, group: `${labels.artist.group} · ${String(group.members?.length ?? 0).padStart(2, '0')}` })

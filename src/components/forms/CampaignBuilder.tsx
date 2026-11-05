@@ -202,7 +202,7 @@ export function CampaignBuilder({ locale, talents, initialTalents, languages, la
                         }`}
                       >
                         {/* eslint-disable-next-line @next/next/no-img-element */}
-                        {x.photo ? <img src={x.photo} alt="" className={`h-full w-full object-cover transition-all ${on ? '' : 'grayscale group-hover:grayscale-0'}`} /> : null}
+                        {x.photo ? <img src={x.photo} alt="" loading="lazy" className={`h-full w-full object-cover transition-all ${on ? '' : 'grayscale group-hover:grayscale-0'}`} /> : null}
                         <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 to-transparent p-4">
                           <span className="block text-xl font-black uppercase">{x.name}</span>
                           <span className="block font-mono text-[9px] text-cyan uppercase">{x.group ?? x.categories}</span>

@@ -79,10 +79,12 @@ export const getArtistCategory = cache(async (slug: string, locale: LocaleCode) 
 
 // 그룹에 속한 멤버 번호들 (목록에서 멤버를 그룹으로만 보여 주기 위해)
 const getGroupMemberIds = cache(async () => {
-  const { docs } = await (await payload()).find({ collection: 'artists', where: { kind: { equals: 'group' } }, depth: 0, limit: 500, select: { members: true }, ...PUBLIC })
+  const { docs } = await (await payload()).find({ collection: 'artists', where: { kind: { equals: 'group' } }, depth: 0, limit: 0, pagination: false, select: { members: true }, ...PUBLIC })
   return new Set(docs.flatMap((group) => (group.members ?? []).map((m) => (typeof m === 'object' ? m.id : m))))
 })
 
+// 카드 · 캠페인 빌더에 필요한 칸만 읽는다. 갤러리 사진은 읽지 않아 아티스트가 많아도 가볍다.
+// limit을 주지 않으면 전부 읽는다.
 // forList: 아티스트 목록 · 홈 화면용. 그룹 멤버는 빼고(그룹 카드로 보이므로), "그룹과 따로 목록에도 표시"를 켠 멤버만 남긴다.
 export const getArtists = cache(
   async (locale: LocaleCode, options: { categoryId?: number; genreId?: number; featured?: boolean; limit?: number; forList?: boolean } = {}) => {
@@ -96,12 +98,16 @@ export const getArtists = cache(
       sort: 'sortOrder',
       locale,
       depth: 1,
-      limit: options.forList ? 500 : (options.limit ?? 100),
+      limit: options.forList ? 0 : (options.limit ?? 0),
+      pagination: false,
+      select: { name: true, slug: true, kind: true, members: true, listAlone: true, categories: true, profilePhoto: true },
+      populate: { artists: { slug: true } },
       ...PUBLIC,
     })
     if (!options.forList) return docs
     const memberIds = await getGroupMemberIds()
-    return docs.filter((artist) => !memberIds.has(artist.id) || artist.listAlone).slice(0, options.limit ?? 100)
+    const listed = docs.filter((artist) => !memberIds.has(artist.id) || artist.listAlone)
+    return options.limit ? listed.slice(0, options.limit) : listed
   },
 )
 
@@ -139,7 +145,15 @@ export const getArtist = cache(async (slug: string, locale: LocaleCode) => {
 
 // NEW RELEASE: 모든 아티스트의 뮤직비디오를 공개일 최신순으로 모은다
 export const getNewReleases = cache(async (locale: LocaleCode, limit = 8) => {
-  const artists = await getArtists(locale)
+  const { docs: artists } = await (await payload()).find({
+    collection: 'artists',
+    locale,
+    depth: 0,
+    limit: 0,
+    pagination: false,
+    select: { name: true, videos: true },
+    ...PUBLIC,
+  })
   return artists
     .flatMap((artist) => (artist.videos ?? []).map((video) => ({ ...video, artist })))
     .sort((a, b) => (b.releaseDate ?? '').localeCompare(a.releaseDate ?? ''))
