@@ -36,7 +36,8 @@ const rank = (entry: Indexed, query: string) => {
   if (entry.nameKey === query || entry.altKey === query) return 0
   if (entry.nameKey.startsWith(query) || entry.altKey.startsWith(query)) return 1
   if (entry.words.some((word) => word.startsWith(query))) return 2
-  if (entry.nameKey.includes(query) || entry.altKey.includes(query)) return 3
+  // 낱말 안에서만 찾는다: "바렉"이 "노바 렉스"처럼 띄어쓰기를 넘어 걸리지 않게
+  if (entry.words.some((word) => word.includes(query))) return 3
   if (entry.groupKey.includes(query)) return 4
   return null
 }
