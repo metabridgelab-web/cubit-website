@@ -59,8 +59,6 @@ export default async function ArtistPage({ params }: { params: Promise<Params> }
   const focus = typeof heroMedia === 'object' && heroMedia ? `${heroMedia.focalX ?? 50}% ${heroMedia.focalY ?? 50}%` : '50% 50%'
   const genres = (artist.genres ?? []).flatMap((g) => (typeof g === 'object' ? [g.name] : []))
   const profile = [
-    artist.birthday ? { label: labels.artist.birthday, value: dot(artist.birthday) } : null,
-    artist.debutDate ? { label: labels.artist.debut, value: dot(artist.debutDate) } : null,
     artist.nationality ? { label: labels.artist.nationality, value: artist.nationality } : null,
     ...(artist.extraInfo ?? []).map((row) => ({ label: row.label, value: row.value })),
   ].filter(Boolean) as { label: string; value: string }[]

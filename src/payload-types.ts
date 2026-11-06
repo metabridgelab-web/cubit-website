@@ -313,8 +313,6 @@ export interface Artist {
    * 여러 개 고를 수 있습니다. 장르 목록은 "아티스트 관리 → 장르"에서 추가 · 수정합니다.
    */
   genres?: (number | ArtistGenre)[] | null;
-  birthday?: string | null;
-  debutDate?: string | null;
   nationality?: string | null;
   /**
    * 키, 전문 분야, 출연작처럼 카테고리마다 필요한 항목을 자유롭게 추가합니다.
@@ -1659,8 +1657,6 @@ export interface ArtistsSelect<T extends boolean = true> {
   memberOf?: T;
   categories?: T;
   genres?: T;
-  birthday?: T;
-  debutDate?: T;
   nationality?: T;
   extraInfo?:
     | T
@@ -2768,8 +2764,6 @@ export interface UiLabelsArtist {
   viewLyrics: string;
   lyrics: string;
   musicVideos: string;
-  birthday: string;
-  debut: string;
   nationality: string;
   quoteWithArtist: string;
   relatedNews: string;
@@ -3629,8 +3623,6 @@ export interface UiLabelsArtistSelect<T extends boolean = true> {
   viewLyrics?: T;
   lyrics?: T;
   musicVideos?: T;
-  birthday?: T;
-  debut?: T;
   nationality?: T;
   quoteWithArtist?: T;
   relatedNews?: T;

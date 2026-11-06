@@ -67,8 +67,6 @@ export const UI_LABELS = {
       viewLyrics: 'View lyrics',
       lyrics: 'Lyrics',
       musicVideos: 'Music Videos',
-      birthday: 'Birthday',
-      debut: 'Debut',
       nationality: 'Nationality',
       quoteWithArtist: 'Get a campaign quote with this artist',
       relatedNews: 'Related News',

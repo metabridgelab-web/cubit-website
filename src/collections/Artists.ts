@@ -107,14 +107,7 @@ export const Artists: CollectionConfig = {
               },
               admin: { description: '여러 개 고를 수 있습니다. 장르 목록은 "아티스트 관리 → 장르"에서 추가 · 수정합니다.' },
             },
-            {
-              type: 'row',
-              fields: [
-                { name: 'birthday', label: '생일', type: 'date', admin: { width: '33%', date: { pickerAppearance: 'dayOnly' } } },
-                { name: 'debutDate', label: '데뷔일', type: 'date', admin: { width: '33%', date: { pickerAppearance: 'dayOnly' } } },
-                { name: 'nationality', label: '국적', type: 'text', localized: true, admin: { width: '33%' } },
-              ],
-            },
+            { name: 'nationality', label: '국적', type: 'text', localized: true },
             {
               name: 'extraInfo',
               label: '추가 정보',
