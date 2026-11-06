@@ -7,10 +7,11 @@ import { localePath } from '@/i18n'
 import { getArtistCategories, getArtists, getGenres, getUiLabels } from '@/lib/data'
 import type { ArtistCategory } from '@/payload-types'
 
+import { ArtistSearch } from './ArtistSearch'
 import { ArtistTile } from './ArtistTile'
 import { GenreSelect } from './GenreSelect'
 
-// 아티스트 목록 (design/03_아티스트-목록): 카테고리 탭(가수 · 모델 · 배우 · 전문가) + (장르가 있는 카테고리면) 장르 선택 상자 + 세로형 카드 격자
+// 아티스트 목록 (design/03_아티스트-목록): 카테고리 탭(가수 · 모델 · 배우 · 전문가) + (장르가 있는 카테고리면) 이름 검색 · 장르 선택 상자 + 세로형 카드 격자
 export async function ArtistList({ locale, category, genreSlug }: { locale: LocaleCode; category?: ArtistCategory; genreSlug?: string }) {
   const [labels, categories, genres] = await Promise.all([
     getUiLabels(locale),
@@ -45,14 +46,28 @@ export async function ArtistList({ locale, category, genreSlug }: { locale: Loca
       </nav>
 
       {category && genres.length ? (
-        <div className="-mt-4 mb-10 flex justify-end">
-          <GenreSelect
-            label={labels.artist.genre}
-            allLabel={labels.common.all}
+        <div className="-mt-4 mb-10 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <ArtistSearch
+            categorySlug={category.slug ?? String(category.id)}
             basePath={localePath(locale, `/artists/${category.slug}`)}
-            genres={genres.map((g) => ({ slug: g.slug ?? String(g.id), name: g.name }))}
-            current={genre?.slug ?? ALL_GENRES}
+            labels={{
+              placeholder: labels.artist.searchPlaceholder,
+              noResults: labels.artist.searchNoResults,
+              failed: labels.artist.searchFailed,
+              group: labels.artist.group,
+              memberOf: labels.artist.memberOf,
+              clear: labels.common.close,
+            }}
           />
+          <div className="self-end sm:self-auto">
+            <GenreSelect
+              label={labels.artist.genre}
+              allLabel={labels.common.all}
+              basePath={localePath(locale, `/artists/${category.slug}`)}
+              genres={genres.map((g) => ({ slug: g.slug ?? String(g.id), name: g.name }))}
+              current={genre?.slug ?? ALL_GENRES}
+            />
+          </div>
         </div>
       ) : null}
 

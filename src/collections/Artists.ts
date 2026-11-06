@@ -39,6 +39,12 @@ export const Artists: CollectionConfig = {
               admin: { description: '이름은 번역하지 않고 모든 언어에서 그대로 보입니다.' },
             },
             {
+              name: 'searchNames',
+              label: '검색용 다른 이름',
+              type: 'text',
+              admin: { description: '사이트 검색에만 쓰이고 화면에는 보이지 않습니다. 한글 이름 등을 적습니다. 예: 바렉' },
+            },
+            {
               name: 'kind',
               label: '유형',
               type: 'radio',

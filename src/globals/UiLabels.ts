@@ -75,6 +75,9 @@ export const UI_LABELS = {
       entries: 'Entries',
       viewAllPhotos: 'View all photos',
       notice: 'Notice',
+      searchPlaceholder: 'Search all genres by name',
+      searchNoResults: 'No results found',
+      searchFailed: 'Search could not load. Please try again.',
     },
   },
   campaign: {

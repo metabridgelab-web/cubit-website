@@ -291,6 +291,10 @@ export interface Artist {
    * 이름은 번역하지 않고 모든 언어에서 그대로 보입니다.
    */
   name: string;
+  /**
+   * 사이트 검색에만 쓰이고 화면에는 보이지 않습니다. 한글 이름 등을 적습니다. 예: 바렉
+   */
+  searchNames?: string | null;
   kind: 'solo' | 'group';
   /**
    * 멤버를 개인 아티스트로 먼저 등록한 뒤 여기서 고릅니다. 끌어서 순서를 바꿀 수 있습니다.
@@ -1649,6 +1653,7 @@ export interface ArtistGenresSelect<T extends boolean = true> {
  */
 export interface ArtistsSelect<T extends boolean = true> {
   name?: T;
+  searchNames?: T;
   kind?: T;
   members?: T;
   memberOf?: T;
@@ -2771,6 +2776,9 @@ export interface UiLabelsArtist {
   entries: string;
   viewAllPhotos: string;
   notice: string;
+  searchPlaceholder: string;
+  searchNoResults: string;
+  searchFailed: string;
   /**
    * 영어 원문을 저장하면 자동 번역됩니다. 다시 번역하려면 상태를 "다시 번역"으로 바꾸고 저장하세요.
    */
@@ -3629,6 +3637,9 @@ export interface UiLabelsArtistSelect<T extends boolean = true> {
   entries?: T;
   viewAllPhotos?: T;
   notice?: T;
+  searchPlaceholder?: T;
+  searchNoResults?: T;
+  searchFailed?: T;
   translationStatus?:
     | T
     | {

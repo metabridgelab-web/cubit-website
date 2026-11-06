@@ -5,6 +5,7 @@ import { draftMode } from 'next/headers'
 import { getPayload, type GlobalSlug, type Where } from 'payload'
 import { cache } from 'react'
 
+import type { ArtistSearchEntry } from '@/constants/artists'
 import { DEFAULT_LOCALE, TRANSLATION_TARGETS, type LocaleCode } from '@/constants/locales'
 import { UI_LABEL_GROUPS, uiLabelSlug, type UiLabelsData } from '@/globals/UiLabels'
 
@@ -110,6 +111,44 @@ export const getArtists = cache(
     return options.limit ? listed.slice(0, options.limit) : listed
   },
 )
+
+// 사이트 검색용: 카테고리 안의 아티스트 전부(그룹 멤버 포함)를 이름 · 검색용 이름 · 소속 그룹과 함께 돌려준다
+export const getArtistSearchIndex = cache(async (categoryId: number): Promise<ArtistSearchEntry[]> => {
+  const { docs } = await (await payload()).find({
+    collection: 'artists',
+    where: { categories: { contains: categoryId } },
+    sort: 'sortOrder',
+    depth: 1,
+    limit: 0,
+    pagination: false,
+    select: { name: true, slug: true, kind: true, members: true, searchNames: true, profilePhoto: true },
+    populate: { artists: { slug: true } },
+    ...PUBLIC,
+  })
+  const groupsOf = new Map<number, { name: string; searchNames: string }[]>()
+  for (const group of docs) {
+    for (const member of group.members ?? []) {
+      const id = typeof member === 'object' ? member.id : member
+      groupsOf.set(id, [...(groupsOf.get(id) ?? []), { name: group.name, searchNames: group.searchNames ?? '' }])
+    }
+  }
+  return docs.flatMap((artist) => {
+    if (!artist.slug) return []
+    const groups = groupsOf.get(artist.id) ?? []
+    const photo = typeof artist.profilePhoto === 'object' ? artist.profilePhoto : null
+    return [
+      {
+        name: artist.name,
+        slug: artist.slug,
+        searchNames: artist.searchNames ?? '',
+        isGroup: artist.kind === 'group',
+        groups: groups.map((g) => g.name),
+        groupSearchNames: groups.map((g) => g.searchNames).join(' '),
+        photo: photo?.sizes?.thumbnail?.url ?? photo?.url ?? null,
+      },
+    ]
+  })
+})
 
 // 사이트맵용: 게시된 아티스트 전부의 주소에 필요한 칸만 읽는다 (사진은 읽지 않아 수가 많아도 가볍다)
 export const getArtistSitemapEntries = cache(async (locale: LocaleCode) => {
