@@ -22,16 +22,18 @@ export const ChannelVideoReviews: CollectionConfig = {
   hooks: {
     beforeChange: [
       async ({ data, originalDoc, operation, req }) => {
-        if (operation !== 'update' || data.status !== 'pending' || !data.artist) return data
-        if (!data.songTitle) throw new APIError('곡 제목을 적어 주세요.', 400, undefined, true)
-        const artistId = typeof data.artist === 'object' ? data.artist.id : data.artist
+        // 저장할 때 일부 칸만 올 수 있으므로 기존 값과 합쳐서 본다
+        const doc = { ...originalDoc, ...data }
+        if (operation !== 'update' || doc.status !== 'pending' || !doc.artist) return data
+        if (!doc.songTitle) throw new APIError('곡 제목을 적어 주세요.', 400, undefined, true)
+        const artistId = typeof doc.artist === 'object' ? doc.artist.id : doc.artist
         try {
           await addVideoToArtist({
             payload: req.payload,
             artistId,
-            url: data.youtubeUrl ?? originalDoc?.youtubeUrl,
-            song: data.songTitle,
-            releaseDate: data.publishedAt ?? originalDoc?.publishedAt,
+            url: doc.youtubeUrl,
+            song: doc.songTitle,
+            releaseDate: doc.publishedAt,
             req,
           })
         } catch (error) {
