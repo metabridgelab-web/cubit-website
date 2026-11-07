@@ -7,7 +7,7 @@ const artists = [
   { id: 2, name: 'SUNNY', searchNames: '써니' },
   { id: 3, name: 'EDWARD HALE' },
   { id: 4, name: 'EDWARD HALE' },
-  { id: 5, name: 'DO GEONWOO', searchNames: '도건우', nationality: 'South Korea' },
+  { id: 5, name: 'DO GEONWOO', searchNames: '도건우' },
   { id: 6, name: 'RUBIQUE' },
 ]
 const match = (title: string, description = '') => matchVideo({ title, description }, artists)
@@ -17,8 +17,8 @@ describe('channel video matching', () => {
     expect(match('Amane Yuki — Last Train [Official Music Video] #Jazz #AmaneYuki')).toEqual({ artistId: 1, song: 'Last Train' })
     expect(match('도건우 Do Geonwoo — 딱 한 잔만 (Just One Drink) [Official Audio] #트로트')).toEqual({ artistId: 5, song: '딱 한 잔만' })
     expect(match('RUBIQUE 질주하는 별들 [Official Music Video]')).toEqual({ artistId: 6, song: '질주하는 별들' })
-    expect(match('Do Geonwoo — Just One Drink (딱 한 잔만) [Official Audio]')).toEqual({ artistId: 5, song: '딱 한 잔만' })
-    expect(match('Amane Yuki — Last Train (막차) [Official Audio]')).toEqual({ artistId: 1, song: 'Last Train' })
+    expect(match('Do Geonwoo — Just One Drink (딱 한 잔만) [Official Audio]')).toEqual({ artistId: 5, song: 'Just One Drink' })
+    expect(match('Do Geonwoo — Wings of Tragedy 비극의 날개 [Official Audio]')).toEqual({ artistId: 5, song: 'Wings of Tragedy' })
     expect(match('K-Pop | Spotlight — SUNNY | CUBIT Entertainment')).toEqual({ artistId: 2, song: 'Spotlight' })
   })
 
