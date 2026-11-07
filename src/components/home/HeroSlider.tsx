@@ -20,7 +20,7 @@ export type HeroSlide = {
 type Labels = { watchMv: string; prev: string; next: string; soundOn: string; soundOff: string; scrollDown: string }
 
 // 가운데 큰 글자: 화면 폭의 92% 안, 최대 8rem
-const headlineSize = (text: string) => fitHeadline(text, { maxRem: 8, widthVw: 92 })
+const headlineSize = (text: string) => fitHeadline(text, { maxRem: 7.25, widthVw: 92 })
 
 // 홈 첫 화면: 화면 전체 영상 슬라이드 (design/01_홈-첫화면)
 // - 음소거로 자동 재생 · 직접 올린 영상은 끝나면 다음으로, YouTube·사진은 정해진 시간 뒤 다음으로
@@ -116,7 +116,7 @@ export function HeroSlider({ slides, autoAdvanceSeconds, labels }: { slides: Her
       <div className="scanline z-[2]" />
 
       <div className="absolute inset-x-0 bottom-36 z-10 px-5 text-center md:bottom-40" aria-live="polite">
-        <p className="tracking-wide-cjk mb-3 font-mono text-xs tracking-[0.5em] text-cyan uppercase drop-shadow-[0_1px_8px_rgba(0,0,0,0.8)] md:text-sm">
+        <p className="tracking-wide-cjk mb-4 font-mono text-sm tracking-[0.5em] text-cyan uppercase drop-shadow-[0_1px_8px_rgba(0,0,0,0.8)] md:text-xl">
           {slide.title}
           {slide.releaseDate ? <span className="text-white/40">{` // ${slide.releaseDate.slice(0, 10).replaceAll('-', '.')}`}</span> : null}
         </p>

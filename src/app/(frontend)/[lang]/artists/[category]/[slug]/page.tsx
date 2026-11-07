@@ -69,7 +69,7 @@ export default async function ArtistPage({ params }: { params: Promise<Params> }
   })
   const videos = (artist.videos ?? []).flatMap((video) => {
     const id = youtubeId(video.youtubeUrl)
-    return id ? [{ id: video.id ?? id, youtubeId: id, title: video.title, date: dot(video.releaseDate, 7), lyrics: video.lyrics }] : []
+    return id ? [{ id: video.id ?? id, youtubeId: id, title: video.title, date: dot(video.releaseDate, 7) }] : []
   })
 
   return (
@@ -183,7 +183,7 @@ export default async function ArtistPage({ params }: { params: Promise<Params> }
         {videos.length ? (
           <section className="mt-32">
             <HudHeading tag="Digital_releases" title={labels.artist.musicVideos} size="lg" />
-            <VideoGrid videos={videos} closeLabel={labels.common.close} lyricsLabel={labels.artist.viewLyrics} lyricsTitle={labels.artist.lyrics} />
+            <VideoGrid videos={videos} closeLabel={labels.common.close} />
           </section>
         ) : null}
 
