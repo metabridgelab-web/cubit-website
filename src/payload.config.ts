@@ -12,6 +12,7 @@ import { ArtistCategories } from './collections/ArtistCategories'
 import { ArtistGenres } from './collections/ArtistGenres'
 import { Attachments } from './collections/Attachments'
 import { Artists } from './collections/Artists'
+import { ChannelVideoReviews } from './collections/ChannelVideoReviews'
 import { Boards, PostCategories } from './collections/Boards'
 import { CaseStudies } from './collections/CaseStudies'
 import { Disclosures } from './collections/Disclosures'
@@ -70,6 +71,7 @@ export default buildConfig({
     ArtistCategories,
     ArtistGenres,
     Artists,
+    ChannelVideoReviews,
     Boards,
     PostCategories,
     Posts,
@@ -128,5 +130,5 @@ export default buildConfig({
     deleteJobOnComplete: false,
     enableConcurrencyControl: true,
   },
-  plugins: [translationPlugin({ exclude: ['users', 'glossary'] }), ...storagePlugins()],
+  plugins: [translationPlugin({ exclude: ['users', 'glossary', 'channel-video-reviews'] }), ...storagePlugins()],
 })

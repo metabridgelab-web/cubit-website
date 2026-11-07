@@ -71,6 +71,7 @@ export interface Config {
     'artist-categories': ArtistCategory;
     'artist-genres': ArtistGenre;
     artists: Artist;
+    'channel-video-reviews': ChannelVideoReview;
     boards: Board;
     'post-categories': PostCategory;
     posts: Post;
@@ -106,6 +107,7 @@ export interface Config {
     'artist-categories': ArtistCategoriesSelect<false> | ArtistCategoriesSelect<true>;
     'artist-genres': ArtistGenresSelect<false> | ArtistGenresSelect<true>;
     artists: ArtistsSelect<false> | ArtistsSelect<true>;
+    'channel-video-reviews': ChannelVideoReviewsSelect<false> | ChannelVideoReviewsSelect<true>;
     boards: BoardsSelect<false> | BoardsSelect<true>;
     'post-categories': PostCategoriesSelect<false> | PostCategoriesSelect<true>;
     posts: PostsSelect<false> | PostsSelect<true>;
@@ -374,6 +376,9 @@ export interface Artist {
    */
   videos?:
     | {
+        /**
+         * 곡 제목만 적습니다. 번역하지 않고 모든 언어에서 그대로 보입니다.
+         */
         title: string;
         youtubeUrl: string;
         releaseDate?: string | null;
@@ -615,6 +620,28 @@ export interface FolderInterface {
     totalDocs?: number;
   };
   folderType?: 'media'[] | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * 자동으로 가수를 정하지 못한 새 영상입니다. 가수와 곡 제목을 넣고 저장하면 그 가수에 등록됩니다. 등록하지 않을 영상은 처리 상태를 "등록 안 함"으로 바꿔 주세요.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "channel-video-reviews".
+ */
+export interface ChannelVideoReview {
+  id: number;
+  youtubeTitle: string;
+  youtubeUrl: string;
+  reason?: string | null;
+  artist?: (number | null) | Artist;
+  /**
+   * 번역 제목 없이 곡 제목만 적어 주세요.
+   */
+  songTitle?: string | null;
+  status: 'pending' | 'registered' | 'ignored';
+  publishedAt?: string | null;
+  youtubeId: string;
   updatedAt: string;
   createdAt: string;
 }
@@ -1466,6 +1493,10 @@ export interface PayloadLockedDocument {
         value: number | Artist;
       } | null)
     | ({
+        relationTo: 'channel-video-reviews';
+        value: number | ChannelVideoReview;
+      } | null)
+    | ({
         relationTo: 'boards';
         value: number | Board;
       } | null)
@@ -1708,6 +1739,22 @@ export interface ArtistsSelect<T extends boolean = true> {
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "channel-video-reviews_select".
+ */
+export interface ChannelVideoReviewsSelect<T extends boolean = true> {
+  youtubeTitle?: T;
+  youtubeUrl?: T;
+  reason?: T;
+  artist?: T;
+  songTitle?: T;
+  status?: T;
+  publishedAt?: T;
+  youtubeId?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

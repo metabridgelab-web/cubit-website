@@ -7,6 +7,7 @@ import * as migration_20261026_083021_video_lyrics from './20261026_083021_video
 import * as migration_20261106_121845_artist_search from './20261106_121845_artist_search';
 import * as migration_20261106_124351_remove_artist_dates from './20261106_124351_remove_artist_dates';
 import * as migration_20261107_084744_artist_gender from './20261107_084744_artist_gender';
+import * as migration_20261107_110817_channel_video_reviews from './20261107_110817_channel_video_reviews';
 
 export const migrations = [
   {
@@ -52,6 +53,11 @@ export const migrations = [
   {
     up: migration_20261107_084744_artist_gender.up,
     down: migration_20261107_084744_artist_gender.down,
-    name: '20261107_084744_artist_gender'
+    name: '20261107_084744_artist_gender',
+  },
+  {
+    up: migration_20261107_110817_channel_video_reviews.up,
+    down: migration_20261107_110817_channel_video_reviews.down,
+    name: '20261107_110817_channel_video_reviews'
   },
 ];

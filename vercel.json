@@ -3,6 +3,10 @@
     {
       "path": "/api/payload-jobs/run?queue=default&limit=20",
       "schedule": "* * * * *"
+    },
+    {
+      "path": "/api/channel-videos/sync",
+      "schedule": "0 * * * *"
     }
   ]
 }

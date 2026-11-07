@@ -207,7 +207,7 @@ export const Artists: CollectionConfig = {
               type: 'array',
               admin: { description: 'YouTube 주소만 붙여넣으면 됩니다. 위에 있을수록 먼저 보입니다.' },
               fields: [
-                { name: 'title', label: '제목', type: 'text', required: true, localized: true },
+                { name: 'title', label: '제목', type: 'text', required: true, localized: true, custom: { translate: false }, admin: { description: '곡 제목만 적습니다. 번역하지 않고 모든 언어에서 그대로 보입니다.' } },
                 youtubeUrlField({ required: true }),
                 { name: 'releaseDate', label: '공개일', type: 'date', admin: { date: { pickerAppearance: 'dayOnly' } } },
                 {
