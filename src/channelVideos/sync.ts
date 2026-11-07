@@ -46,7 +46,7 @@ export const syncChannelVideos = async (payload: Payload) => {
     pagination: false,
     locale: 'en',
     overrideAccess: true,
-    select: { name: true, searchNames: true, videos: true },
+    select: { name: true, searchNames: true, nationality: true, videos: true },
   })
   const { docs: reviews } = await payload.find({
     collection: 'channel-video-reviews',

@@ -2,7 +2,7 @@
 // 잘못 연결하는 것보다 사람에게 넘기는 편이 낫다: 확실할 때만 결과를 주고, 나머지는 이유와 함께 돌려준다.
 
 export type FeedVideo = { id: string; title: string; published: string; description: string }
-export type ArtistName = { id: number; name: string; searchNames?: string | null }
+export type ArtistName = { id: number; name: string; searchNames?: string | null; nationality?: string | null }
 export type VideoMatch = { artistId: number; song: string } | { reason: string; song: string; artistId?: number }
 
 const decode = (text: string) =>
@@ -91,20 +91,21 @@ const scriptOf = (text: string) => {
   return 'latin'
 }
 
-export const cleanSong = (song: string) => {
+// 제목에 두 언어가 같이 있으면 한국 가수는 한글 제목이 원래 제목이다
+export const cleanSong = (song: string, preferKorean = false) => {
   let text = song
     .replace(/,?\s*¡.*$/, '')
     .replace(/\s+(?:MV|M\/V|Official Audio|Official Music Video|Official Video|Music Video)$/i, '')
     .trim()
   const bracket = text.match(/^(.+?)\s*[(（]([^()（）]+)[)）]$/)
-  if (bracket && scriptOf(bracket[1]) !== scriptOf(bracket[2])) text = bracket[1].trim()
+  if (bracket && scriptOf(bracket[1]) !== scriptOf(bracket[2])) text = preferKorean && scriptOf(bracket[2]) === 'ko' ? bracket[2].trim() : bracket[1].trim()
   const twoScripts = text.match(/^([\x20-\x7e’‘À-ɏ]*[A-Za-z][\x20-\x7e’‘À-ɏ]*?)\s+([가-힣぀-ヿ一-鿿].*)$/)
-  if (twoScripts) return twoScripts[1].trim()
+  if (twoScripts) return (preferKorean && scriptOf(twoScripts[2]) === 'ko' ? twoScripts[2] : twoScripts[1]).trim()
   const koThenLatin = text.match(/^(.*[가-힣][^A-Za-z]*?)\s+([A-Za-z][ -~’‘]*)$/)
   return koThenLatin ? koThenLatin[1].trim() : text
 }
 
-const readTitle = (title: string, index: NameIndex): VideoMatch | null => {
+const readTitle = (title: string, index: NameIndex, koreanIds: Set<number>): VideoMatch | null => {
   const parts = segments(title)
   const named: Set<number>[] = []
   const others: string[] = []
@@ -130,7 +131,8 @@ const readTitle = (title: string, index: NameIndex): VideoMatch | null => {
     }
   }
   if (!named.length) return null
-  const song = others[0] ? cleanSong(others[0]) : ''
+  const korean = named.length === 1 && named[0].size === 1 && koreanIds.has([...named[0]][0])
+  const song = others[0] ? cleanSong(others[0], korean) : ''
   if (named.length > 1) return { reason: '제목에 가수 이름이 여럿 있습니다. 어느 가수의 영상인지 골라 주세요.', song }
   if (named[0].size > 1) return { reason: '같은 이름의 가수가 여러 명입니다. 어느 가수의 영상인지 골라 주세요.', song }
   const [artistId] = [...named[0]]
@@ -142,6 +144,7 @@ export const matchVideo = (video: Pick<FeedVideo, 'title' | 'description'>, arti
   if (COMPILATION.test(video.title.replace(/#\p{L}.*$/su, ''))) return { reason: '여러 곡 모음 또는 반복 영상으로 보입니다.', song: '' }
   const index = buildIndex(artists)
   const firstLine = video.description.split('\n')[0] ?? ''
-  const result = readTitle(video.title, index) ?? (firstLine ? readTitle(firstLine, index) : null)
+  const koreanIds = new Set(artists.filter((artist) => artist.nationality === 'South Korea').map((artist) => artist.id))
+  const result = readTitle(video.title, index, koreanIds) ?? (firstLine ? readTitle(firstLine, index, koreanIds) : null)
   return result ?? { reason: '제목과 설명에서 가수 이름을 찾지 못했습니다. 어느 가수의 영상인지 골라 주세요.', song: cleanSong(segments(video.title)[0] ?? '') }
 }
