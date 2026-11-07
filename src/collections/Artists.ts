@@ -57,6 +57,19 @@ export const Artists: CollectionConfig = {
               admin: { layout: 'horizontal' },
             },
             {
+              name: 'gender',
+              label: '성별',
+              type: 'select',
+              options: [
+                { label: '여성 (개인)', value: 'female' },
+                { label: '남성 (개인)', value: 'male' },
+                { label: '여성 그룹', value: 'all-female' },
+                { label: '남성 그룹', value: 'all-male' },
+                { label: '혼성 그룹', value: 'mixed' },
+              ],
+              admin: { description: '화면에는 보이지 않습니다. 자동 번역이 프랑스어 · 러시아어 등에서 성별에 맞는 표현을 쓰도록 알려 줍니다.' },
+            },
+            {
               name: 'members',
               label: '멤버',
               type: 'relationship',

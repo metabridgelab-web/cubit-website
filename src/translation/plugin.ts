@@ -17,7 +17,7 @@ import type {
 import { createLocalReq } from 'payload'
 
 import { DEFAULT_LOCALE, LOCALE_OPTIONS, TRANSLATION_TARGETS, type LocaleCode } from '../constants/locales'
-import { collectTexts, getAt, hasLocalizedFields, hashText, setAt, type TextEntry } from './extract'
+import { collectTexts, getAt, hasLocalizedFields, hashText, setAt, subjectNote, type TextEntry } from './extract'
 import { getTranslator } from './translator'
 
 // 자동 번역 흐름
@@ -260,6 +260,7 @@ const translateTask: TaskConfig = {
     const rows = normalizeRows(source.translationStatus, await getEnabledTargets(req))
     const meta: Meta = { ...((source.translationMeta as Meta | undefined) ?? {}) }
     const translator = getTranslator()
+    const note = target.kind === 'collection' ? subjectNote(target.slug, source) : undefined
 
     for (const row of rows.filter((r) => r.status === 'pending')) {
       try {
@@ -267,7 +268,7 @@ const translateTask: TaskConfig = {
         const previous = meta[row.locale] ?? {}
         const todo = entries.filter((entry) => previous[entry.key] !== hashes[entry.key] || !getAt(current, entry.path))
         const uniqueTexts = [...new Set(todo.map((entry) => entry.text))]
-        const translated = uniqueTexts.length ? await translator.translate(uniqueTexts, row.locale, glossary) : []
+        const translated = uniqueTexts.length ? await translator.translate(uniqueTexts, row.locale, glossary, note) : []
         const byText = new Map(uniqueTexts.map((text, index) => [text, translated[index]]))
 
         // 원문 구조를 그대로 복사하고, 글 조각만 번역본(바뀌지 않은 곳은 기존 번역)으로 바꾼다

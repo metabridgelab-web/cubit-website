@@ -4,7 +4,8 @@ import { LOCALES, type LocaleCode } from '../constants/locales'
 
 export type Translator = {
   name: string
-  translate: (texts: string[], target: LocaleCode, glossary: string[]) => Promise<string[]>
+  // note: 문서에 대해 번역기가 알아야 할 내용 (예: 아티스트 성별)
+  translate: (texts: string[], target: LocaleCode, glossary: string[], note?: string) => Promise<string[]>
 }
 
 // ANTHROPIC_API_KEY가 없을 때 쓰는 개발용 가짜 번역기. "[ko] 원문"처럼 표시만 한다.
@@ -21,7 +22,7 @@ const languageName = (code: LocaleCode) => {
   return locale ? `${locale.label} (${code})` : code
 }
 
-const systemPrompt = (target: LocaleCode, glossary: string[]) =>
+const systemPrompt = (target: LocaleCode, glossary: string[], note?: string) =>
   [
     `You localize website copy for CUBIT ENTERTAINMENT, a global entertainment company whose artists are AI talents.`,
     `Translate each English string into ${languageName(target)}.`,
@@ -31,6 +32,7 @@ const systemPrompt = (target: LocaleCode, glossary: string[]) =>
     glossary.length
       ? `Keep these terms exactly as written, untranslated: ${glossary.map((term) => JSON.stringify(term)).join(', ')}.`
       : '',
+    note ?? '',
     `Return one translation per input string, in the same order.`,
   ]
     .filter(Boolean)
@@ -56,7 +58,7 @@ const chunk = (texts: string[]) => {
 
 const claudeTranslator = (client: Anthropic): Translator => ({
   name: `claude (${MODEL})`,
-  translate: async (texts, target, glossary) => {
+  translate: async (texts, target, glossary, note) => {
     const results: string[] = []
     for (const part of chunk(texts)) {
       const response = await client.beta.messages.create({
@@ -76,7 +78,7 @@ const claudeTranslator = (client: Anthropic): Translator => ({
             },
           },
         },
-        system: systemPrompt(target, glossary),
+        system: systemPrompt(target, glossary, note),
         messages: [{ role: 'user', content: JSON.stringify({ strings: part }) }],
       })
 

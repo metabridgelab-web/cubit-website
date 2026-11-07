@@ -297,6 +297,10 @@ export interface Artist {
   searchNames?: string | null;
   kind: 'solo' | 'group';
   /**
+   * 화면에는 보이지 않습니다. 자동 번역이 프랑스어 · 러시아어 등에서 성별에 맞는 표현을 쓰도록 알려 줍니다.
+   */
+  gender?: ('female' | 'male' | 'all-female' | 'all-male' | 'mixed') | null;
+  /**
    * 멤버를 개인 아티스트로 먼저 등록한 뒤 여기서 고릅니다. 끌어서 순서를 바꿀 수 있습니다.
    */
   members?: (number | Artist)[] | null;
@@ -1653,6 +1657,7 @@ export interface ArtistsSelect<T extends boolean = true> {
   name?: T;
   searchNames?: T;
   kind?: T;
+  gender?: T;
   members?: T;
   memberOf?: T;
   categories?: T;

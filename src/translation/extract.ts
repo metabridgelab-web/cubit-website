@@ -93,6 +93,27 @@ const collectFields = (
   }
 }
 
+// 아티스트 성별 칸의 값별로 번역기에 알려 줄 내용
+const ARTIST_GENDER_NOTES: Record<string, string> = {
+  female: 'one woman, a solo female artist. Use feminine forms for her',
+  male: 'one man, a solo male artist. Use masculine forms for him',
+  'all-female': 'a group whose members are all women. Use feminine forms for the members',
+  'all-male': 'a group whose members are all men. Use masculine forms for the members',
+  mixed: "a group of both women and men. Use the language's usual forms for a mixed group of people for the members",
+}
+
+// 문서의 주인공에 대해 번역기가 알아야 할 내용. 지금은 성별이 입력된 아티스트만 해당하고, 나머지는 undefined.
+export const subjectNote = (slug: string, doc: Data): string | undefined => {
+  if (slug !== 'artists' || typeof doc.gender !== 'string') return undefined
+  const note = ARTIST_GENDER_NOTES[doc.gender]
+  if (!note) return undefined
+  return [
+    `The artist these strings are about is ${note} (nouns such as singer or actor, adjectives, participles, verbs, pronouns, nationality words), in languages whose grammar marks gender.`,
+    `This is confirmed: follow it even if the name suggests otherwise. Other people mentioned in the text keep their own gender, and a word like "group" keeps its own grammatical gender.`,
+    `In languages that do not mark gender, do not add gender words the English does not have.`,
+  ].join(' ')
+}
+
 export const collectTexts = (fields: Field[], data: Data): TextEntry[] => {
   const out: TextEntry[] = []
   collectFields(fields, data, '', [], out, false)
