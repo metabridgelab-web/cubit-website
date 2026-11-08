@@ -20,7 +20,7 @@ export type HeroSlide = {
 type Labels = { watchMv: string; prev: string; next: string; soundOn: string; soundOff: string; scrollDown: string }
 
 // 가운데 큰 글자: 화면 폭의 92% 안, 최대 8rem
-const headlineSize = (text: string) => fitHeadline(text, { maxRem: 6, widthVw: 92 })
+const headlineSize = (text: string) => fitHeadline(text, { maxRem: 6, widthVw: 92, lines: 2 })
 
 // 홈 첫 화면: 화면 전체 영상 슬라이드 (design/01_홈-첫화면)
 // - 음소거로 자동 재생 · 직접 올린 영상은 끝나면 다음으로, YouTube·사진은 정해진 시간 뒤 다음으로
