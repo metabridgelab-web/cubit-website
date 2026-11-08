@@ -226,6 +226,9 @@ export interface UserAuthOperations {
 export interface HomeSlide {
   id: number;
   _order?: string | null;
+  /**
+   * 번역하지 않습니다. 영어 칸에 적은 그대로 모든 언어에서 보입니다.
+   */
   title: string;
   artist?: (number | null) | Artist;
   releaseDate?: string | null;
