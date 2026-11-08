@@ -4,13 +4,13 @@ import { useEffect, useRef, type RefObject, type VideoHTMLAttributes } from 'rea
 
 // 영상 주소를 <video>에 연결한다.
 // - 일반 파일(mp4): 그대로
-// - Cloudflare Stream(.m3u8, 화면 크기 · 인터넷 속도에 맞춰 화질이 바뀌는 방식): Safari는 그대로 재생,
-//   다른 브라우저는 hls.js를 그때만 불러와 재생한다.
+// - Cloudflare Stream(.m3u8): hls.js를 그때만 불러와, 처음부터 끝까지 가장 높은 화질(원본 해상도)로 고정해 재생한다.
+//   낮은 화질로 시작했다가 올라가는 일이 없다. hls.js를 못 쓰는 오래된 기기만 브라우저 기본 재생(화질 자동 조절)으로 둔다.
 export function useVideoSource(ref: RefObject<HTMLVideoElement | null>, src: string | null | undefined) {
   useEffect(() => {
     const video = ref.current
     if (!video || !src) return
-    if (!src.includes('.m3u8') || video.canPlayType('application/vnd.apple.mpegurl')) {
+    if (!src.includes('.m3u8')) {
       video.src = src
       return
     }
@@ -22,7 +22,14 @@ export function useVideoSource(ref: RefObject<HTMLVideoElement | null>, src: str
         video.src = src
         return
       }
-      const instance = new Hls({ capLevelToPlayerSize: true })
+      const instance = new Hls({ capLevelToPlayerSize: false })
+      instance.on(Hls.Events.MANIFEST_PARSED, (_event, data) => {
+        const top = data.levels.reduce((best, level, index, all) => {
+          const current = all[best]
+          return level.height > current.height || (level.height === current.height && level.bitrate > current.bitrate) ? index : best
+        }, 0)
+        instance.currentLevel = top
+      })
       instance.loadSource(src)
       instance.attachMedia(video)
       hls = instance
