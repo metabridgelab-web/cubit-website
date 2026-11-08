@@ -27,6 +27,8 @@ export const HomeSlides: CollectionConfig = {
       type: 'text',
       required: true,
       localized: true,
+      custom: { translate: false },
+      admin: { description: '번역하지 않습니다. 영어 칸에 적은 그대로 모든 언어에서 보입니다.' },
     },
     {
       type: 'row',
