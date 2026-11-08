@@ -1,5 +1,7 @@
 import type { CollectionSlug, GlobalSlug, Payload, SanitizedPermissions, TypedUser, Where } from 'payload'
 
+import { SystemStatusPanel } from './SystemStatus'
+
 // 관리자 첫 화면 위쪽: 인사 · 확인할 일(새 견적 요청 · 새 문의 · 임시저장 글) · 자주 쓰는 바로가기.
 // 계정 권한에 맞는 카드만 보인다 (예: 영업 담당자에게만 견적 요청 카드). 꾸밈은 app/(payload)/custom.scss
 
@@ -86,6 +88,8 @@ export async function Dashboard({ payload, user, permissions }: Props) {
           사이트 보기 ↗
         </a>
       </div>
+
+      {((user as { roles?: string[] } | null)?.roles ?? []).includes('admin') ? <SystemStatusPanel /> : null}
 
       {stats.length ? (
         <>

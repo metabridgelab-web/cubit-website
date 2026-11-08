@@ -53,6 +53,8 @@ export default buildConfig({
         Icon: '/components/admin/Graphics#Icon',
       },
       beforeDashboard: ['/components/admin/Dashboard#Dashboard'],
+      // 로그인한 뒤 첫 화면에서 한 번 "오늘의 시스템 점검" 창을 띄운다 (최고 관리자만)
+      providers: ['/components/admin/SystemStatus#SystemStatusPopup'],
     },
   },
   // 관리자 화면 언어: 한국어 기본, 필요하면 영어로 바꿀 수 있다
