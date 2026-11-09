@@ -1,8 +1,8 @@
 ﻿관리자 화면 사용법 ① 아티스트 등록하기
 (2026-10-25 작성 · 뉴스 · 작업 사례 · 페이지도 같은 방식)
 
-관리자 화면: https://cubit-website-three.vercel.app/admin
-(도메인을 옮긴 뒤에는 https://www.cubitenter.com/admin)
+관리자 화면: https://www.cubitenter.com/admin
+(예전 임시 주소 https://cubit-website-three.vercel.app/admin 도 계속 열린다)
 
 
 ====================================================================
@@ -117,7 +117,7 @@
         번역 실패 가 있으면 상태를 "다시 번역"으로 바꾸고 저장.
 
 [9] 사이트에서 보기
-    - https://cubit-website-three.vercel.app/ko/artists  (한국어 화면)
+    - https://www.cubitenter.com/ko/artists  (한국어 화면)
     - 언어를 바꾸려면 사이트 오른쪽 위 언어 선택.
 
 
