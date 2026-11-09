@@ -20,6 +20,8 @@ export async function generateMetadata({ params }: { params: Promise<LangParams>
     ...(await pageMetadata(locale, '/')),
     title: { default: settings.siteName, template: `%s | ${settings.siteName}` },
     icons: { icon: '/brand/cubit-logo.png' },
+    // 네이버 서치어드바이저 소유 확인 (지우면 확인이 풀린다). 구글은 Cloudflare의 TXT 기록으로 확인했다.
+    verification: { other: { 'naver-site-verification': '2e215d66c093849efd2a7aa39774d187edc015d3' } },
     // 오픈 전에는 페이지마다 "검색에 넣지 말 것" 표시도 단다
     ...(allowIndexing() ? {} : { robots: { index: false, follow: false } }),
   }
