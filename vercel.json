@@ -2,7 +2,7 @@
   "crons": [
     {
       "path": "/api/payload-jobs/run?queue=default&limit=20",
-      "schedule": "* * * * *"
+      "schedule": "*/15 * * * *"
     },
     {
       "path": "/api/channel-videos/sync",

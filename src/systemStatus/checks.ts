@@ -42,13 +42,12 @@ const database = async (payload: Payload): Promise<Omit<Check, 'key' | 'name'>> 
   const [size] = await rows(payload, sql`select pg_database_size(current_database())::bigint as bytes`)
   const ms = Date.now() - started
   const mb = Math.round(Number(size.bytes) / 1024 / 1024)
-  // Neon 무료 요금제는 512MB까지. 유료 요금제면 한도가 훨씬 크다 (요금제는 여기서 알 수 없다)
-  const nearFreeLimit = mb >= 450
+  // 2026-11-09부터 Neon 유료 요금제(Launch, 쓴 만큼 냄)라 한도에 막히지 않는다. 이번 달 사용 시간 · 요금은 Neon 화면에서 본다.
   return {
-    state: ms > 3000 || nearFreeLimit ? 'warn' : 'ok',
-    detail: `${ms > 3000 ? '응답이 느립니다' : '정상'} · 응답 ${ms}ms · 사용 용량 ${mb}MB${mb >= 300 ? ` (무료 요금제라면 한도 512MB${nearFreeLimit ? '에 거의 찼습니다' : ''})` : ''}`,
+    state: ms > 3000 ? 'warn' : 'ok',
+    detail: `${ms > 3000 ? '응답이 느립니다' : '정상'} · 응답 ${ms}ms · 사용 용량 ${mb}MB`,
     link: 'https://console.neon.tech',
-    linkLabel: 'Neon 요금 · 용량 보기',
+    linkLabel: 'Neon 사용 시간 · 요금 보기',
   }
 }
 
@@ -110,13 +109,14 @@ const claude = async (): Promise<Omit<Check, 'key' | 'name'>> => {
   return result
 }
 
-// 예약 작업(자동 번역 · 알림 메일 · 예약 게시)을 1분마다 실행하는 Vercel 정기 호출
+// 예약 작업(자동 번역 · 알림 메일 · 예약 게시). 번역 · 메일은 저장 직후 바로 처리하고, 남은 것은 15분마다 정기 호출이 처리한다.
+// 예약 게시처럼 정해 둔 시각(wait_until)이 아직 안 된 작업은 밀린 것으로 세지 않는다.
 const jobs = async (payload: Payload): Promise<Omit<Check, 'key' | 'name'>> => {
   const [stat] = await rows(
     payload,
     sql`select
-      count(*) filter (where completed_at is null and has_error is not true)::int as open,
-      extract(epoch from now() - min(created_at) filter (where completed_at is null and has_error is not true))::int as oldest,
+      count(*) filter (where completed_at is null and has_error is not true and (wait_until is null or wait_until <= now()))::int as open,
+      extract(epoch from now() - min(coalesce(wait_until, created_at)) filter (where completed_at is null and has_error is not true and (wait_until is null or wait_until <= now())))::int as oldest,
       count(*) filter (where has_error and updated_at > now() - interval '1 day')::int as failed
     from payload_jobs`,
   )

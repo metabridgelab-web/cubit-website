@@ -623,7 +623,7 @@ export interface FolderInterface {
   createdAt: string;
 }
 /**
- * 자동으로 가수를 정하지 못한 새 영상입니다. 가수와 곡 제목을 넣고 저장하면 그 가수에 등록됩니다. 등록하지 않을 영상은 처리 상태를 "등록 안 함"으로 바꿔 주세요.
+ * 자동으로 가수를 정하지 못한 새 영상입니다. 가수와 곡 제목을 넣고 저장하면 그 가수에 등록됩니다. 등록하지 않을 영상은 처리 상태를 "등록 안 함"으로 바꿔 주세요. 처리가 끝난 영상은 기록으로 남고 회색으로 보입니다 (지우면 같은 영상을 다시 묻습니다).
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "channel-video-reviews".

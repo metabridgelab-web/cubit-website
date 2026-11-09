@@ -17,6 +17,7 @@ import type {
 import { createLocalReq } from 'payload'
 
 import { DEFAULT_LOCALE, LOCALE_OPTIONS, TRANSLATION_TARGETS, type LocaleCode } from '../constants/locales'
+import { runJobSoon } from '../jobs/runSoon'
 import { collectTexts, getAt, hasLocalizedFields, hashText, setAt, subjectNote, type TextEntry } from './extract'
 import { getTranslator } from './translator'
 
@@ -216,11 +217,12 @@ const markStatuses = async (args: {
 const queueTranslation = async (req: PayloadRequest, target: Target, id: Doc['id'], context: RequestContext) => {
   if (context.translating || req.context.translating || !req.context.queueTranslation) return
   req.context.queueTranslation = false
-  await req.payload.jobs.queue({
+  const job = await req.payload.jobs.queue({
     task: TRANSLATE_TASK,
     input: { kind: target.kind, slug: target.slug, id: id == null ? '' : String(id) },
     req,
   })
+  runJobSoon(req.payload, job?.id)
 }
 
 // 번역 작업: "번역 대기" 언어만 바뀐 글을 번역해서 넣는다

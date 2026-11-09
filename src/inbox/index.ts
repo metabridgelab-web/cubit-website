@@ -11,6 +11,7 @@ import {
 import { hasRole } from '../access'
 import { CAMPAIGN_LANGUAGES, CAMPAIGN_REGIONS, CAMPAIGN_USAGES, labelOf } from '../constants/campaign'
 import { DEFAULT_LOCALE, LOCALE_OPTIONS, LOCALES, type LocaleCode } from '../constants/locales'
+import { runJobSoon } from '../jobs/runSoon'
 
 // 방문자가 보내는 접수(견적 요청 · 문의) 공통 처리
 // - 스팸 막기: 숨은 칸(봇만 채움) · 같은 곳에서 1시간에 5건까지 (첨부 파일은 15개까지)
@@ -99,7 +100,8 @@ export const queueNotification =
   (slug: InboxSlug): CollectionAfterChangeHook =>
   async ({ doc, operation, req }) => {
     if (operation !== 'create') return doc
-    await req.payload.jobs.queue({ task: NOTIFY_TASK, input: { slug, id: String(doc.id) }, req })
+    const job = await req.payload.jobs.queue({ task: NOTIFY_TASK, input: { slug, id: String(doc.id) }, req })
+    runJobSoon(req.payload, job?.id)
     return doc
   }
 

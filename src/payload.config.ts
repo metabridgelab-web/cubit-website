@@ -113,7 +113,9 @@ export default buildConfig({
     : undefined,
   // 예약된 작업(자동 번역 · 알림 메일 · 예약 게시)
   // - 개발 서버: 10초마다 자동 처리
-  // - Vercel: 서버가 계속 켜져 있지 않으므로 vercel.json의 정기 호출(1분마다)이 /api/payload-jobs/run 을 부른다
+  // - Vercel: 번역 · 알림 메일은 예약한 요청이 끝나자마자 바로 처리한다 (src/jobs/runSoon.ts).
+  //   놓친 작업과 예약 게시는 vercel.json의 정기 호출(15분마다)이 /api/payload-jobs/run 으로 처리한다.
+  //   (1분마다 부르면 데이터베이스가 잠들지 못해 Neon 사용 시간이 계속 쌓인다 — 2026-11-09 무료 한도 초과로 사이트가 멈췄다)
   jobs: {
     tasks: [notifyTask],
     autoRun: [{ cron: '*/10 * * * * *', queue: 'default', limit: 10 }],
