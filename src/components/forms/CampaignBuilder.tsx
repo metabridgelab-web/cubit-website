@@ -4,20 +4,24 @@ import { ArrowLeft, ArrowRight, Check, Image as ImageIcon, Megaphone, ShareNetwo
 import { useMemo, useState, type FormEvent } from 'react'
 
 import { Chip, Consent, Field, Honeypot, TextArea, TextInput, submitError } from './fields'
+import { MIN_SLOTS, TalentSlots, type BuilderTalent, type GenreFilterGroup } from './TalentSlots'
 
-// group: 그룹이면 "GROUP · 멤버 수", 멤버면 소속 그룹 이름 (그룹 바로 뒤에 이어서 보인다)
-export type BuilderTalent = { id: number; name: string; photo: string | null; categories: string; group?: string }
+export type { BuilderTalent, GenreFilterGroup } from './TalentSlots'
 type Labels = Record<string, string>
 
 type Props = {
   locale: string
   talents: BuilderTalent[]
+  genreGroups: GenreFilterGroup[]
   initialTalents: number[]
   languages: { value: string; label: string }[]
-  labels: { campaign: Labels; forms: Labels; common: Labels }
+  labels: { campaign: Labels; forms: Labels; common: Labels; artist: Labels }
   confirmation: string
   privacyHref: string | null
 }
+
+// 처음 보이는 인물 칸: 미리 고른 아티스트(아티스트 상세의 견적 버튼에서 온 경우) + 나머지는 빈 칸, 최소 3칸
+const initialSlots = (ids: number[]) => [...ids, ...Array<null>(Math.max(0, MIN_SLOTS - ids.length)).fill(null)]
 
 const USAGES = [
   { value: 'digital', icon: Megaphone, color: 'text-cyan', title: 'usageDigital', desc: 'usageDigitalDesc' },
@@ -38,10 +42,13 @@ const toggle = <T,>(list: T[], value: T) => (list.includes(value) ? list.filter(
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 // 캠페인 빌더 (design/05_캠페인빌더): 5단계 선택 + 오른쪽 요약 → 견적 요청함으로 접수
-export function CampaignBuilder({ locale, talents, initialTalents, languages, labels, confirmation, privacyHref }: Props) {
+export function CampaignBuilder({ locale, talents, genreGroups, initialTalents, languages, labels, confirmation, privacyHref }: Props) {
   const t = labels.campaign
   const [step, setStep] = useState(1)
-  const [selected, setSelected] = useState<number[]>(initialTalents.filter((id) => talents.some((x) => x.id === id)))
+  const [slots, setSlots] = useState<(number | null)[]>(() =>
+    initialSlots([...new Set(initialTalents)].filter((id) => talents.some((x) => x.id === id))),
+  )
+  const selected = useMemo(() => [...new Set(slots.filter((id): id is number => id !== null))], [slots])
   const [usage, setUsage] = useState<string[]>([])
   const [periodStart, setPeriodStart] = useState('')
   const [periodEnd, setPeriodEnd] = useState('')
@@ -55,7 +62,8 @@ export function CampaignBuilder({ locale, talents, initialTalents, languages, la
   const [error, setError] = useState('')
 
   const steps = [t.step1, t.step2, t.step3, t.step4, t.step5]
-  const chosenTalents = useMemo(() => talents.filter((x) => selected.includes(x.id)), [talents, selected])
+  // 요약에는 칸 순서대로 보인다
+  const chosenTalents = useMemo(() => selected.flatMap((id) => talents.filter((x) => x.id === id)), [talents, selected])
 
   const problem = (s: number): string => {
     // 아직 공개된 아티스트가 없으면 고르지 않고 넘어갈 수 있다 (요청 사항에 원하는 탤런트를 적는다)
@@ -186,37 +194,29 @@ export function CampaignBuilder({ locale, talents, initialTalents, languages, la
         <div className="min-h-[460px]">
           {step === 1 ? (
             <section>
-              <StepTitle tag="Selection_phase" title={t.talentTitle} hint={talents.length ? t.talentHint : undefined} />
-              {talents.length ? null : <p className="glass max-w-2xl rounded-2xl p-8 leading-relaxed text-white/70">{t.noTalent}</p>}
-              <ul className="grid grid-cols-2 gap-4 lg:grid-cols-4 lg:gap-6">
-                {talents.map((x) => {
-                  const on = selected.includes(x.id)
-                  return (
-                    <li key={x.id}>
-                      <button
-                        type="button"
-                        aria-pressed={on}
-                        onClick={() => setSelected((list) => toggle(list, x.id))}
-                        className={`group relative block aspect-[3/4] w-full overflow-hidden rounded-xl border bg-[#0a0a0a] text-start transition-all ${
-                          on ? 'border-cyan shadow-[0_0_20px_rgba(0,243,255,0.15)]' : 'border-line'
-                        }`}
-                      >
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        {x.photo ? <img src={x.photo} alt="" loading="lazy" className={`h-full w-full object-cover transition-all ${on ? '' : 'grayscale group-hover:grayscale-0'}`} /> : null}
-                        <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 to-transparent p-4">
-                          <span className="block text-xl font-black uppercase">{x.name}</span>
-                          <span className="block font-mono text-[9px] text-cyan uppercase">{x.group ?? x.categories}</span>
-                        </span>
-                        {on ? (
-                          <span className="absolute end-2.5 top-2.5 flex h-6 w-6 items-center justify-center rounded-full bg-cyan text-black">
-                            <Check size={14} weight="bold" aria-hidden />
-                          </span>
-                        ) : null}
-                      </button>
-                    </li>
-                  )
-                })}
-              </ul>
+              <StepTitle tag="Selection_phase" title={t.talentTitle} hint={talents.length ? t.slotHint : undefined} />
+              {talents.length ? (
+                <TalentSlots
+                  talents={talents}
+                  slots={slots}
+                  onChange={setSlots}
+                  genreGroups={genreGroups}
+                  labels={{
+                    slotEmpty: t.slotEmpty,
+                    addSlot: t.addSlot,
+                    changeTalent: t.changeTalent,
+                    removeTalent: t.removeTalent,
+                    pickerTitle: t.talentTitle,
+                    search: labels.artist.searchPlaceholder,
+                    noResults: labels.artist.searchNoResults,
+                    genre: labels.artist.genre,
+                    all: labels.common.all,
+                    close: labels.common.close,
+                  }}
+                />
+              ) : (
+                <p className="glass max-w-2xl rounded-2xl p-8 leading-relaxed text-white/70">{t.noTalent}</p>
+              )}
             </section>
           ) : null}
 

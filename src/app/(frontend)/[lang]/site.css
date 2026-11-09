@@ -220,6 +220,39 @@
   }
 }
 
+/* 캠페인 빌더의 빈 인물 칸: 어두운 거울에 아티스트 실루엣이 2초마다 한 명씩 비친다 */
+.mirror-slot::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(135deg, rgb(255 255 255 / 0.09), transparent 38%, transparent 62%, rgb(0 243 255 / 0.06));
+}
+.mirror-face {
+  filter: grayscale(1) brightness(0.42) contrast(1.25);
+  mask-image: linear-gradient(to bottom, #000 35%, transparent 95%);
+}
+.mirror-sheen {
+  position: absolute;
+  inset-block: -20%;
+  inset-inline-start: -60%;
+  width: 45%;
+  z-index: 1;
+  background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.12), transparent);
+  transform: skewX(-18deg);
+  animation: mirror-sheen 2s ease-in-out infinite;
+}
+@keyframes mirror-sheen {
+  0% {
+    inset-inline-start: -60%;
+  }
+  60%,
+  100% {
+    inset-inline-start: 130%;
+  }
+}
+
 /* 아랍어는 글자가 이어지는 문자라 글자 간격을 넣으면 끊어져 보인다 → 간격과 대문자 효과를 끈다 */
 :root:lang(ar) * {
   letter-spacing: 0 !important;

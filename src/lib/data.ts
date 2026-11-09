@@ -101,8 +101,8 @@ export const getArtists = cache(
       depth: 1,
       limit: options.forList ? 0 : (options.limit ?? 0),
       pagination: false,
-      select: { name: true, slug: true, kind: true, members: true, listAlone: true, categories: true, profilePhoto: true },
-      populate: { artists: { slug: true } },
+      select: { name: true, slug: true, kind: true, members: true, listAlone: true, categories: true, genres: true, searchNames: true, profilePhoto: true },
+      populate: { artists: { slug: true }, 'artist-genres': { slug: true } },
       ...PUBLIC,
     })
     if (!options.forList) return docs

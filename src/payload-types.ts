@@ -2862,6 +2862,11 @@ export interface UiLabelsCampaign {
   step5: string;
   talentTitle: string;
   talentHint: string;
+  slotHint: string;
+  slotEmpty: string;
+  addSlot: string;
+  changeTalent: string;
+  removeTalent: string;
   noTalent: string;
   usageTitle: string;
   usageHint: string;
@@ -3706,6 +3711,11 @@ export interface UiLabelsCampaignSelect<T extends boolean = true> {
   step5?: T;
   talentTitle?: T;
   talentHint?: T;
+  slotHint?: T;
+  slotEmpty?: T;
+  addSlot?: T;
+  changeTalent?: T;
+  removeTalent?: T;
   noTalent?: T;
   usageTitle?: T;
   usageHint?: T;
