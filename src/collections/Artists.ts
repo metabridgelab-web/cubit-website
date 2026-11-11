@@ -9,6 +9,8 @@ export const Artists: CollectionConfig = {
   labels: { singular: '아티스트', plural: '아티스트' },
   admin: {
     useAsTitle: 'name',
+    // 관리자 목록 검색: 영어 이름뿐 아니라 "검색용 다른 이름"(한글 이름 등)으로도 찾는다
+    listSearchableFields: ['name', 'searchNames'],
     defaultColumns: ['name', 'kind', 'genres', 'categories', 'featured', '_status', 'updatedAt'],
     group: '아티스트 관리',
     components: { beforeList: ['/components/admin/GenreTabs#GenreTabs'] },
@@ -42,7 +44,7 @@ export const Artists: CollectionConfig = {
               name: 'searchNames',
               label: '검색용 다른 이름',
               type: 'text',
-              admin: { description: '사이트 검색에만 쓰이고 화면에는 보이지 않습니다. 한글 이름 등을 적습니다. 예: 바렉' },
+              admin: { description: '사이트 검색과 관리자 목록 검색에 쓰이고 화면에는 보이지 않습니다. 한글 이름 등을 적습니다. 예: 바렉' },
             },
             {
               name: 'kind',

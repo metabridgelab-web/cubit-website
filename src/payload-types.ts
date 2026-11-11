@@ -297,7 +297,7 @@ export interface Artist {
    */
   name: string;
   /**
-   * 사이트 검색에만 쓰이고 화면에는 보이지 않습니다. 한글 이름 등을 적습니다. 예: 바렉
+   * 사이트 검색과 관리자 목록 검색에 쓰이고 화면에는 보이지 않습니다. 한글 이름 등을 적습니다. 예: 바렉
    */
   searchNames?: string | null;
   kind: 'solo' | 'group';
