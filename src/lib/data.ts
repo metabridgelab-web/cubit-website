@@ -190,7 +190,7 @@ export const getNewReleases = cache(async (locale: LocaleCode, limit = 8) => {
     depth: 0,
     limit: 0,
     pagination: false,
-    select: { name: true, videos: true },
+    select: { name: true, searchNames: true, videos: true },
     ...PUBLIC,
   })
   return artists

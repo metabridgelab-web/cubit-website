@@ -1,6 +1,8 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 
+import { normalizeName } from '@/components/artists/searchMatch'
+import { ReleaseSearch } from '@/components/home/ReleaseSearch'
 import { ReleaseCard } from '@/components/home/Sections'
 import { PageHeader, PageShell } from '@/components/site/Hud'
 import { localePath } from '@/i18n'
@@ -16,17 +18,27 @@ export async function generateMetadata({ params }: { params: Promise<LangParams>
 }
 
 // /releases = 발매된 뮤직비디오 전체 (홈 "신규 발매"의 전체 보기). 공개일 최신순, 한 쪽에 32개.
-export default async function ReleasesPage({ params, searchParams }: { params: Promise<LangParams>; searchParams: Promise<{ page?: string }> }) {
+// ?q= 로 가수 이름(검색용 한글 이름 포함) · 곡 제목을 찾는다. 대소문자 · 띄어쓰기 · 악센트는 무시하고, 한글은 입력 중인 글자도 걸린다.
+export default async function ReleasesPage({ params, searchParams }: { params: Promise<LangParams>; searchParams: Promise<{ page?: string; q?: string }> }) {
   const locale = await resolveLocale(params)
   const [labels, all, search] = await Promise.all([getUiLabels(locale), getNewReleases(locale, 0), searchParams])
-  const totalPages = Math.max(1, Math.ceil(all.length / PER_PAGE))
+  const q = (search.q ?? '').trim().slice(0, 100)
+  const key = normalizeName(q)
+  const found = key
+    ? all.filter((video) => [video.artist.name, video.artist.searchNames ?? '', video.title].some((text) => normalizeName(text).includes(key)))
+    : all
+  const totalPages = Math.max(1, Math.ceil(found.length / PER_PAGE))
   const page = Math.min(totalPages, Math.max(1, Number(search.page) || 1))
-  const videos = all.slice((page - 1) * PER_PAGE, page * PER_PAGE)
-  const href = (n: number) => localePath(locale, n === 1 ? '/releases' : `/releases?page=${n}`)
+  const videos = found.slice((page - 1) * PER_PAGE, page * PER_PAGE)
+  const href = (n: number) => {
+    const query = new URLSearchParams({ ...(q ? { q } : {}), ...(n > 1 ? { page: String(n) } : {}) }).toString()
+    return localePath(locale, `/releases${query ? `?${query}` : ''}`)
+  }
 
   return (
     <PageShell>
-      <PageHeader eyebrow="Latest transmissions" title={labels.home.newRelease} aside={<p className="hud-label">{String(all.length).padStart(3, '0')} {labels.artist.entries}</p>} />
+      <PageHeader eyebrow="Latest transmissions" title={labels.home.newRelease} aside={<p className="hud-label">{String(found.length).padStart(3, '0')} {labels.artist.entries}</p>} />
+      <ReleaseSearch initial={q} placeholder={labels.home.releaseSearch} clearLabel={labels.common.close} />
       {videos.length ? (
         <ul className="grid gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-4">
           {videos.map((video) => (
@@ -36,7 +48,9 @@ export default async function ReleasesPage({ params, searchParams }: { params: P
           ))}
         </ul>
       ) : (
-        <p className="hud-label py-24 text-center">{labels.common.empty}</p>
+        <p role="status" className="hud-label py-24 text-center">
+          {q ? labels.artist.searchNoResults : labels.common.empty}
+        </p>
       )}
 
       {totalPages > 1 ? (

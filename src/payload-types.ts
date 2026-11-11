@@ -2729,6 +2729,7 @@ export interface UiLabelsHome {
   notice: string;
   scrollDown: string;
   pinned: string;
+  releaseSearch: string;
   /**
    * 영어 원문을 저장하면 자동 번역됩니다. 다시 번역하려면 상태를 "다시 번역"으로 바꾸고 저장하세요.
    */
@@ -3617,6 +3618,7 @@ export interface UiLabelsHomeSelect<T extends boolean = true> {
   notice?: T;
   scrollDown?: T;
   pinned?: T;
+  releaseSearch?: T;
   translationStatus?:
     | T
     | {

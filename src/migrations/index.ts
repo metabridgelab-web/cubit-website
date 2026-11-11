@@ -10,6 +10,7 @@ import * as migration_20261107_084744_artist_gender from './20261107_084744_arti
 import * as migration_20261107_110817_channel_video_reviews from './20261107_110817_channel_video_reviews';
 import * as migration_20261107_122446_remove_lyrics from './20261107_122446_remove_lyrics';
 import * as migration_20261109_124250_campaign_slots from './20261109_124250_campaign_slots';
+import * as migration_20261111_082921_release_search from './20261111_082921_release_search';
 
 export const migrations = [
   {
@@ -70,6 +71,11 @@ export const migrations = [
   {
     up: migration_20261109_124250_campaign_slots.up,
     down: migration_20261109_124250_campaign_slots.down,
-    name: '20261109_124250_campaign_slots'
+    name: '20261109_124250_campaign_slots',
+  },
+  {
+    up: migration_20261111_082921_release_search.up,
+    down: migration_20261111_082921_release_search.down,
+    name: '20261111_082921_release_search'
   },
 ];

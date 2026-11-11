@@ -36,6 +36,7 @@ export const UI_LABELS = {
       notice: 'Notice',
       scrollDown: 'Scroll down',
       pinned: 'Pinned',
+      releaseSearch: 'Search by artist or song',
     },
   },
   business: {
