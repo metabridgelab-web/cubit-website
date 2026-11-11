@@ -182,7 +182,7 @@ export const getArtist = cache(async (slug: string, locale: LocaleCode) => {
   return docs[0] ?? null
 })
 
-// NEW RELEASE: 모든 아티스트의 뮤직비디오를 공개일 최신순으로 모은다
+// NEW RELEASE: 모든 아티스트의 뮤직비디오를 공개일 최신순으로 모은다 (limit 0 = 전부, 발매 목록 페이지)
 export const getNewReleases = cache(async (locale: LocaleCode, limit = 8) => {
   const { docs: artists } = await (await payload()).find({
     collection: 'artists',
@@ -196,7 +196,7 @@ export const getNewReleases = cache(async (locale: LocaleCode, limit = 8) => {
   return artists
     .flatMap((artist) => (artist.videos ?? []).map((video) => ({ ...video, artist })))
     .sort((a, b) => (b.releaseDate ?? '').localeCompare(a.releaseDate ?? ''))
-    .slice(0, limit)
+    .slice(0, limit || undefined)
 })
 
 export const getBoard = cache(async (slug: string, locale: LocaleCode) => {

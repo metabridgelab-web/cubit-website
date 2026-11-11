@@ -34,6 +34,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const paths: { path: string; lastModified?: string }[] = [
     { path: '/' },
     { path: '/news' },
+    { path: '/releases' },
     { path: '/news/notice' },
     { path: '/business' },
     { path: '/business/works' },

@@ -41,35 +41,42 @@ const Wrap = ({ children, id }: { children: ReactNode; id?: string }) => (
   </section>
 )
 
-export function NewReleaseSection({ index, locale, labels, releases }: { index: number; locale: LocaleCode; labels: Labels; releases: Awaited<ReturnType<typeof getNewReleases>> }) {
+export type Release = Awaited<ReturnType<typeof getNewReleases>>[number]
+
+// 발매 영상 카드 (홈 "신규 발매"와 발매 목록 페이지에서 같이 쓴다). 누르면 유튜브가 새 창으로 열린다.
+export function ReleaseCard({ video }: { video: Release }) {
+  const id = youtubeId(video.youtubeUrl)
+  return (
+    <a href={video.youtubeUrl} target="_blank" rel="noopener noreferrer" className="group block">
+      <div className="relative mb-4 aspect-video overflow-hidden border border-white/10 bg-[#111]">
+        {id ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={`https://i.ytimg.com/vi/${id}/hqdefault.jpg`} alt="" loading="lazy" className="h-full w-full object-cover grayscale transition duration-500 group-hover:scale-105 group-hover:grayscale-0" />
+        ) : null}
+        <span className="absolute inset-0 flex items-center justify-center">
+          <span className="flex h-14 w-14 items-center justify-center rounded-full border border-white/40 bg-black/40 backdrop-blur transition group-hover:border-cyan group-hover:text-cyan">
+            <Play size={20} weight="fill" aria-hidden />
+          </span>
+        </span>
+      </div>
+      <p className="hud-label mb-1">{dot(video.releaseDate)}</p>
+      <p className="text-lg font-black uppercase">{video.artist.name}</p>
+      <p className="text-sm text-white/60">{video.title}</p>
+    </a>
+  )
+}
+
+export function NewReleaseSection({ index, locale, labels, releases }: { index: number; locale: LocaleCode; labels: Labels; releases: Release[] }) {
   if (!releases.length) return null
   return (
     <Wrap>
-      <SectionHeading index={index} eyebrow="Latest transmissions" title={labels.home.newRelease} action={<ViewAll href={localePath(locale, '/artists')} label={labels.common.viewAll} />} />
+      <SectionHeading index={index} eyebrow="Latest transmissions" title={labels.home.newRelease} action={<ViewAll href={localePath(locale, '/releases')} label={labels.common.viewAll} />} />
       <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-        {releases.map((video) => {
-          const id = youtubeId(video.youtubeUrl)
-          return (
-            <li key={video.id}>
-              <a href={video.youtubeUrl} target="_blank" rel="noopener noreferrer" className="group block">
-                <div className="relative mb-4 aspect-video overflow-hidden border border-white/10 bg-[#111]">
-                  {id ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={`https://i.ytimg.com/vi/${id}/hqdefault.jpg`} alt="" loading="lazy" className="h-full w-full object-cover grayscale transition duration-500 group-hover:scale-105 group-hover:grayscale-0" />
-                  ) : null}
-                  <span className="absolute inset-0 flex items-center justify-center">
-                    <span className="flex h-14 w-14 items-center justify-center rounded-full border border-white/40 bg-black/40 backdrop-blur transition group-hover:border-cyan group-hover:text-cyan">
-                      <Play size={20} weight="fill" aria-hidden />
-                    </span>
-                  </span>
-                </div>
-                <p className="hud-label mb-1">{dot(video.releaseDate)}</p>
-                <p className="text-lg font-black uppercase">{video.artist.name}</p>
-                <p className="text-sm text-white/60">{video.title}</p>
-              </a>
-            </li>
-          )
-        })}
+        {releases.map((video) => (
+          <li key={video.id}>
+            <ReleaseCard video={video} />
+          </li>
+        ))}
       </ul>
     </Wrap>
   )
