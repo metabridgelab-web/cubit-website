@@ -1,5 +1,7 @@
 import type { Field, TextField } from 'payload'
 
+import { DEFAULT_LOCALE } from '../constants/locales'
+
 const YOUTUBE_URL = /^https:\/\/(www\.)?(youtube\.com\/(watch\?v=|shorts\/|embed\/)|youtu\.be\/)[\w-]{6,}/
 
 // YouTube 주소 칸. 붙여넣은 주소가 YouTube 영상 주소인지 확인한다.
@@ -35,6 +37,15 @@ export const streamIdField = (
     ...overrides.admin,
   },
 })
+
+// 번역하지 않는 칸(곡 제목 등)의 필수 검사. 다른 언어 칸은 비어 있으면 영어가 대신 보이므로(fallback)
+// 영어 칸만 꼭 채우게 한다. 다른 언어까지 검사하면 자동 번역이나 한국어 수정 저장이 "제목이 비었다"로 막힌다.
+export const requiredInEnglish =
+  (message: string) =>
+  (value: string | null | undefined, { req }: { req?: { locale?: string | null } }): true | string => {
+    if (req?.locale && req.locale !== DEFAULT_LOCALE) return true
+    return (typeof value === 'string' && value.trim() !== '') || message
+  }
 
 // 사이드바의 노출 순서 칸 (숫자가 작을수록 앞에 나온다)
 export const sortOrderField: Field = {

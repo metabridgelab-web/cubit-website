@@ -1,7 +1,7 @@
 import { slugField, type CollectionConfig, type Where } from 'payload'
 
 import { canEditContent, canUpdateContent, publishedOrLoggedIn } from '../access'
-import { sortOrderField, youtubeUrlField } from '../fields'
+import { requiredInEnglish, sortOrderField, youtubeUrlField } from '../fields'
 import { previewButton } from './preview'
 
 export const Artists: CollectionConfig = {
@@ -209,7 +209,7 @@ export const Artists: CollectionConfig = {
               type: 'array',
               admin: { description: 'YouTube 주소만 붙여넣으면 됩니다. 위에 있을수록 먼저 보입니다.' },
               fields: [
-                { name: 'title', label: '제목', type: 'text', required: true, localized: true, custom: { translate: false }, admin: { description: '곡 제목만 적습니다. 번역하지 않고 모든 언어에서 그대로 보입니다.' } },
+                { name: 'title', label: '제목', type: 'text', required: true, validate: requiredInEnglish('곡 제목을 입력해 주세요.'), localized: true, custom: { translate: false }, admin: { description: '곡 제목만 적습니다. 번역하지 않고 모든 언어에서 그대로 보입니다.' } },
                 youtubeUrlField({ required: true }),
                 { name: 'releaseDate', label: '공개일', type: 'date', admin: { date: { pickerAppearance: 'dayOnly' } } },
               ],

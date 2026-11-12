@@ -184,6 +184,17 @@ const markStatuses = async (args: {
 
   if (locale === DEFAULT_LOCALE) {
     const hashes = hashMap(collectTexts(fields, data))
+    if (Object.keys(hashes).length === 0) {
+      // 번역할 글이 없다(예: 사진 — 설명 칸은 번역하지 않음). 번역 작업을 만들지 않는다.
+      for (const row of rows) {
+        if (row.status !== 'pending' && row.status !== 'failed') continue
+        row.status = 'auto'
+        row.updatedAt = now
+        row.note = '번역할 글 없음'
+      }
+      data.translationStatus = rows
+      return data
+    }
     for (const row of rows) {
       if (row.status === 'pending') continue
       const previous = meta[row.locale] ?? {}

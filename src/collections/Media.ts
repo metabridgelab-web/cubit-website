@@ -35,8 +35,10 @@ export const Media: CollectionConfig = {
       label: '대체 텍스트',
       type: 'text',
       localized: true,
+      // 대부분 아티스트 이름이라 번역할 게 없다. 사진마다 11개 언어 번역을 돌리면 번역 비용만 든다.
+      custom: { translate: false },
       admin: {
-        description: '사진을 볼 수 없는 사람(화면 낭독기)과 검색엔진을 위한 짧은 설명. 예: "AI-01 프로필 사진"',
+        description: '사진을 볼 수 없는 사람(화면 낭독기)과 검색엔진을 위한 짧은 설명. 번역하지 않고 영어 칸에 적은 그대로 모든 언어에서 쓰입니다. 예: "AI-01 프로필 사진"',
       },
     },
   ],

@@ -1,7 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
 import { anyone, canEditContent, canUpdateContent } from '../access'
-import { streamIdField, youtubeUrlField } from '../fields'
+import { requiredInEnglish, streamIdField, youtubeUrlField } from '../fields'
 
 // 홈 첫 화면의 전체 화면 영상 슬라이드. 목록에서 끌어서 순서를 바꾼다.
 export const HomeSlides: CollectionConfig = {
@@ -26,6 +26,7 @@ export const HomeSlides: CollectionConfig = {
       label: '곡 · 작품 제목',
       type: 'text',
       required: true,
+      validate: requiredInEnglish('제목을 입력해 주세요.'),
       localized: true,
       custom: { translate: false },
       admin: { description: '번역하지 않습니다. 영어 칸에 적은 그대로 모든 언어에서 보입니다.' },
