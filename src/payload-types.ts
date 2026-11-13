@@ -523,7 +523,7 @@ export interface ArtistGenre {
 export interface Media {
   id: number;
   /**
-   * 사진을 볼 수 없는 사람(화면 낭독기)과 검색엔진을 위한 짧은 설명. 예: "AI-01 프로필 사진"
+   * 사진을 볼 수 없는 사람(화면 낭독기)과 검색엔진을 위한 짧은 설명. 번역하지 않고 영어 칸에 적은 그대로 모든 언어에서 쓰입니다. 예: "AI-01 프로필 사진"
    */
   alt?: string | null;
   /**
